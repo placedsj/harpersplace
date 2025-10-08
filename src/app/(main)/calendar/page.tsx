@@ -8,7 +8,7 @@ import { format, isSameDay, getDay, isTuesday, isThursday, isSunday, getWeek, st
 import { Cake, Users, Handshake, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { familyMembers } from '@/app/(main)/family-tree/page';
+import { familyMembers } from '@/lib/family-data';
 import { cn } from '@/lib/utils';
 
 
