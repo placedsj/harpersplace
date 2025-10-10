@@ -1,10 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
 
-export const metadata: Metadata = {
-  title: "Family Tree | Harper's Home",
-};
 
 export const familyMembers = {
     harper: { name: "Harper Ryan", dob: "11/12/2024" },

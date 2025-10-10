@@ -55,22 +55,27 @@ function EvidenceLogPageInternal() {
         resolver: zodResolver(logSchema),
         defaultValues: {
             eventDate: format(new Date(), 'yyyy-MM-dd'),
-            category: searchParams.get('category') || 'Communication',
-            description: searchParams.get('description') || '',
+            category: 'Communication',
+            description: '',
             partiesInvolved: '',
             yourResponse: '',
         },
     });
      
     useEffect(() => {
-        // This effect updates the form if the query params change after initial load.
-        form.reset({
-            eventDate: format(new Date(), 'yyyy-MM-dd'),
-            category: searchParams.get('category') || 'Communication',
-            description: searchParams.get('description') || searchParams.get('evidence') || '',
-            partiesInvolved: '',
-            yourResponse: '',
-        })
+        const category = searchParams.get('category');
+        const description = searchParams.get('description');
+        const evidence = searchParams.get('evidence');
+
+        if (category || description || evidence) {
+            form.reset({
+                eventDate: format(new Date(), 'yyyy-MM-dd'),
+                category: category || 'Communication',
+                description: description || evidence || '',
+                partiesInvolved: '',
+                yourResponse: '',
+            });
+        }
     }, [searchParams, form]);
 
 
@@ -134,16 +139,16 @@ function EvidenceLogPageInternal() {
     };
 
     return (
-    <div className="main-content">
-        <div className="page-header">
-            <h1>EVIDENCE LOG</h1>
-            <p>A secure and chronological record of co-parenting events</p>
+    <div className="space-y-8">
+        <div>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Evidence Log</h1>
+            <p className="text-muted-foreground mt-1">A secure and chronological record of co-parenting events.</p>
         </div>
 
-        <div className="evidence-container">
-            <Card className="log-new-event">
+        <div className="grid lg:grid-cols-3 gap-8">
+            <Card className="lg:col-span-1">
                 <CardHeader>
-                    <CardTitle as="h2">Log New Event</CardTitle>
+                    <CardTitle>Log New Event</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -152,13 +157,13 @@ function EvidenceLogPageInternal() {
                                 control={form.control}
                                 name="eventDate"
                                 render={({ field }) => (
-                                    <FormItem className="form-group">
+                                    <FormItem>
                                         <FormLabel>Date of Event</FormLabel>
-                                         <div className="input-with-icon">
+                                         <div className="relative">
                                             <FormControl>
-                                                <Input type="date" {...field} />
+                                                <Input type="date" {...field} className="pr-10" />
                                             </FormControl>
-                                             <CalendarIcon className="far" />
+                                             <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                         </div>
                                         <FormMessage />
                                     </FormItem>
@@ -168,7 +173,7 @@ function EvidenceLogPageInternal() {
                                 control={form.control}
                                 name="category"
                                 render={({ field }) => (
-                                    <FormItem className="form-group">
+                                    <FormItem>
                                         <FormLabel>Category</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                             <FormControl>
@@ -193,7 +198,7 @@ function EvidenceLogPageInternal() {
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
-                                    <FormItem className="form-group">
+                                    <FormItem>
                                         <FormLabel>Factual Description</FormLabel>
                                         <FormControl>
                                             <Textarea placeholder="Describe the event in factual, objective detail..." {...field} />
@@ -206,7 +211,7 @@ function EvidenceLogPageInternal() {
                                 control={form.control}
                                 name="partiesInvolved"
                                 render={({ field }) => (
-                                    <FormItem className="form-group">
+                                    <FormItem>
                                         <FormLabel>Parties Involved (Optional)</FormLabel>
                                         <FormControl>
                                             <Input placeholder="e.g., Jane Doe, Officer Smith" {...field} />
@@ -219,7 +224,7 @@ function EvidenceLogPageInternal() {
                                 control={form.control}
                                 name="yourResponse"
                                 render={({ field }) => (
-                                    <FormItem className="form-group">
+                                    <FormItem>
                                         <FormLabel>Your Response (Optional)</FormLabel>
                                         <FormControl>
                                             <Textarea placeholder="How you responded to the event..." {...field} />
@@ -228,70 +233,52 @@ function EvidenceLogPageInternal() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="btn-primary" disabled={isLoading}>
-                                {isLoading && <Loader2 className="animate-spin" />}
-                                Log Event
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? <Loader2 className="animate-spin" /> : 'Log Event'}
                             </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
 
-            <div className="event-history-section">
-                <div className="event-history-header">
-                    <h2>Event History</h2>
-                    <p>A chronological record of events</p>
-                    <div className="filter-sort">
-                        <div className="filter-group">
-                            <Label htmlFor="filterCategory">Filter by Category</Label>
-                            <Select>
-                               <SelectTrigger id="filterCategory">
-                                    <SelectValue placeholder="All Categories" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="All">All Categories</SelectItem>
-                                    <SelectItem value="Communication">Communication</SelectItem>
-                                    <SelectItem value="Custody Exchange">Custody Exchange</SelectItem>
-                                    <SelectItem value="Financial">Financial</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="sort-group">
-                            <Label htmlFor="sortOrder">Sort by</Label>
-                            <Select>
-                               <SelectTrigger id="sortOrder">
-                                    <SelectValue placeholder="Date (Newest)" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="newest">Date (Newest)</SelectItem>
-                                    <SelectItem value="oldest">Date (Oldest)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </div>
+            <div className="lg:col-span-2 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Event History</CardTitle>
+                        <p className="text-muted-foreground">A chronological record of events</p>
+                    </CardHeader>
+                     <CardContent>
+                        {/* Filters could be added here later */}
+                     </CardContent>
+                </Card>
 
-                <div className="event-list">
-                    {events.length === 0 && <p className="text-center text-muted-foreground py-8">No events logged yet.</p>}
+                <div className="space-y-4">
+                    {events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
                     {events.map(event => (
-                        <Card key={event.id} className="event-item">
-                            <div className="event-meta">
-                               <span className="event-date">
-                                    {format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}
-                                </span>
-                                {event.timestamp && (
-                                     <span className="event-time">
-                                        {format(event.timestamp.toDate(), 'p')}
-                                     </span>
-                                )}
-                                <span className="logged-by">Logged by {event.loggedBy}</span>
-                            </div>
-                            <div className="event-details">
-                                <h3>{event.category}</h3>
+                        <Card key={event.id}>
+                            <CardHeader>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                      <CardTitle className="text-lg">{event.category}</CardTitle>
+                                       <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                                            <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
+                                             {event.timestamp && (
+                                                <>
+                                                 <span>&bull;</span>
+                                                 <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
+                                                </>
+                                             )}
+                                             <span>&bull;</span>
+                                             <span>by {event.loggedBy}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
                                 <p>{event.description}</p>
-                                {event.partiesInvolved && <p><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.response && <p><strong>Your Response:</strong> {event.response}</p>}
-                            </div>
+                                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
+                                {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
+                            </CardContent>
                         </Card>
                     ))}
                 </div>
@@ -304,7 +291,7 @@ function EvidenceLogPageInternal() {
 // Wrap the component in a Suspense boundary to use useSearchParams
 export default function EvidenceLogPage() {
     return (
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <React.Suspense fallback={<div className="flex h-screen w-screen items-center justify-center"><Loader2 className="animate-spin" /></div>}>
             <EvidenceLogPageInternal />
         </React.Suspense>
     );
