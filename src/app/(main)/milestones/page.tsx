@@ -28,8 +28,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
-import { db } from '@/lib/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 
 
@@ -59,8 +58,9 @@ const iconMap: Record<Milestone['category'], React.ElementType> = {
 
 export default function MilestonesPage() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { data: milestones, loading } = useCollection<Milestone>(
-        user ? query(collection(db, `users/${user.uid}/milestones`), orderBy('date', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/milestones`), orderBy('date', 'desc')) : null
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -77,7 +77,7 @@ export default function MilestonesPage() {
     });
 
     async function onSubmit(values: z.infer<typeof milestoneSchema>) {
-        if (!user) {
+        if (!user || !db) {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }

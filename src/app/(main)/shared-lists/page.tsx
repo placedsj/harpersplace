@@ -10,8 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PlusCircle, ShoppingCart, Gift, School, X } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
-import { db } from '@/lib/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -45,15 +44,16 @@ const schoolWishlist: WishlistItem[] = [
 
 export default function SharedListsPage() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { data: groceries, loading } = useCollection<GroceryItem>(
-        user ? query(collection(db, `users/${user.uid}/groceries`), orderBy('timestamp', 'asc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/groceries`), orderBy('timestamp', 'asc')) : null
     );
 
     const [newGroceryItem, setNewGroceryItem] = React.useState('');
     const { toast } = useToast();
 
     const handleAddGrocery = async () => {
-        if (newGroceryItem.trim() === '' || !user) return;
+        if (newGroceryItem.trim() === '' || !user || !db) return;
         
         const newItem = {
             name: newGroceryItem,
@@ -72,7 +72,7 @@ export default function SharedListsPage() {
     };
     
     const toggleGrocery = async (id: string, checked: boolean) => {
-        if (!user) return;
+        if (!user || !db) return;
         const itemRef = doc(db, `users/${user.uid}/groceries`, id);
         try {
             await updateDoc(itemRef, { checked: !checked });

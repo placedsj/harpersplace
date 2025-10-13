@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,12 +13,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
+import { useFirestore, useCollection } from '@/firebase';
 
 const logSchema = z.object({
   eventDate: z.string().min(1, 'Date is required.'),
@@ -38,19 +38,24 @@ interface Event {
     partiesInvolved?: string;
     response?: string;
     loggedBy: string;
-    timestamp?: {
-        toDate: () => Date;
-    };
+    userId: string;
+    timestamp?: Timestamp
 }
 
 
 function EvidenceLogPageInternal() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { toast } = useToast();
     const searchParams = useSearchParams();
-
-    const [events, setEvents] = useState<Event[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const evidenceQuery = useMemo(() => {
+        if (!user || !db) return null;
+        return query(collection(db, `users/${user.uid}/evidence`), orderBy('timestamp', 'desc'));
+    }, [user, db]);
+
+    const { data: events, loading: eventsLoading } = useCollection<Event>(evidenceQuery);
 
     const form = useForm<LogFormValues>({
         resolver: zodResolver(logSchema),
@@ -80,24 +85,8 @@ function EvidenceLogPageInternal() {
     }, [searchParams, form]);
 
 
-    useEffect(() => {
-        if (!user) return;
-        const evidenceCollectionRef = collection(db, `users/${user.uid}/evidence`);
-        const q = query(evidenceCollectionRef, orderBy('timestamp', 'desc'));
-        
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const eventsData: Event[] = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...(doc.data() as Omit<Event, 'id'>),
-            }));
-            setEvents(eventsData);
-        });
-
-        return () => unsubscribe();
-    }, [user]);
-
     const handleLogEvent = async (values: LogFormValues) => {
-        if (!user) {
+        if (!user || !db) {
             toast({
                 variant: 'destructive',
                 title: 'Not authenticated',
@@ -254,8 +243,9 @@ function EvidenceLogPageInternal() {
                 </Card>
 
                 <div className="space-y-4">
-                    {events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
-                    {events.map(event => (
+                    {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
+                    {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
+                    {events && events.map(event => (
                         <Card key={event.id}>
                             <CardHeader>
                                 <div className="flex justify-between items-start">
@@ -263,7 +253,7 @@ function EvidenceLogPageInternal() {
                                       <CardTitle className="text-lg">{event.category}</CardTitle>
                                        <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
                                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
-                                             {event.timestamp && (
+                                             {event.timestamp?.toDate && (
                                                 <>
                                                  <span>&bull;</span>
                                                  <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
@@ -278,7 +268,7 @@ function EvidenceLogPageInternal() {
                             <CardContent>
                                 <p>{event.description}</p>
                                 {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
+                                {event.yourResponse && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.yourResponse}</p>}
                             </CardContent>
                         </Card>
                     ))}

@@ -26,8 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
-import { db } from '@/lib/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 
 const logSchema = z.object({
@@ -54,8 +53,9 @@ const iconMap: Record<string, LucideIcon> = {
 
 export default function LogPage() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { data: logs, loading } = useCollection<DailyLog>(
-        user ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -73,7 +73,7 @@ export default function LogPage() {
     });
 
     async function onSubmit(values: z.infer<typeof logSchema>) {
-        if (!user) {
+        if (!user || !db) {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }

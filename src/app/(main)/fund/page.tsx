@@ -14,11 +14,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Loader2, Trash2, Edit, X } from 'lucide-react';
 import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense'; // Assuming the flow can be imported
-import { run } from '@genkit-ai/flow';
+import { runFlow } from '@genkit-ai/flow';
 
 const expenseSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
@@ -36,6 +36,7 @@ interface Expense extends ExpenseFormValues {
 
 export default function FundPage() {
   const { user } = useAuth();
+  const { db } = useFirestore();
   const { toast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +53,7 @@ export default function FundPage() {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !db) return;
     const expensesColRef = collection(db, `users/${user.uid}/expenses`);
     const q = query(expensesColRef, orderBy('timestamp', 'desc'));
 
@@ -62,7 +63,7 @@ export default function FundPage() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, db]);
 
   const handleAiCategorize = async () => {
     const description = form.getValues('description');
@@ -72,7 +73,7 @@ export default function FundPage() {
     }
     setIsAiLoading(true);
     try {
-      const result = await run(categorizeExpenseFlow, description);
+      const result = await runFlow(categorizeExpenseFlow, description);
       if (result.category) {
         form.setValue('category', result.category);
         toast({ title: 'AI Suggestion Applied', description: `Category set to ${result.category}` });
@@ -89,7 +90,7 @@ export default function FundPage() {
   };
 
   const onSubmit = async (values: ExpenseFormValues) => {
-    if (!user) return;
+    if (!user || !db) return;
     setIsLoading(true);
     try {
       if (editId) {
@@ -106,7 +107,11 @@ export default function FundPage() {
         });
         toast({ title: 'Expense Logged' });
       }
-      form.reset();
+      form.reset({
+        description: '',
+        amount: 0,
+        category: 'Other',
+      });
     } catch (error) {
       console.error('Failed to save expense:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to save expense.' });
@@ -122,11 +127,15 @@ export default function FundPage() {
 
   const handleCancelEdit = () => {
       setEditId(null);
-      form.reset();
+      form.reset({
+        description: '',
+        amount: 0,
+        category: 'Other',
+      });
   }
 
   const handleDelete = async (id: string) => {
-      if (!user) return;
+      if (!user || !db) return;
       if (confirm('Are you sure you want to delete this expense?')) {
           const docRef = doc(db, `users/${user.uid}/expenses`, id);
           try {

@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot, SnapshotOptions } from 'firebase/firestore';
+import { useState, useEffect, useRef } from 'react';
+import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,12 +9,25 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const queryRef = useRef(query);
+
   useEffect(() => {
+    // Prevent re-running the effect if the query object itself is just a new instance
+    // but logically the same. A better implementation might involve deep-comparing queries.
+    // For now, we'll assume developers will use useMemo for dynamic queries.
+    if (queryRef.current === query) {
+      return;
+    }
+    queryRef.current = query;
+
     if (!query) {
       setData([]);
       setLoading(false);
       return;
     }
+    
+    // Set loading to true when a new query is provided
+    setLoading(true);
 
     const unsubscribe = onSnapshot(
       query,
@@ -25,6 +38,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
         });
         setData(result);
         setLoading(false);
+        setError(null);
       },
       (err) => {
         console.error(err);
