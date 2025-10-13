@@ -1,4 +1,4 @@
-// src/components/user-nav.tsx
+'''// src/components/user-nav.tsx
 'use client';
 
 import {
@@ -60,6 +60,9 @@ export function UserNav() {
           <DropdownMenuItem onClick={() => router.push('/profile')}>
             Profile
           </DropdownMenuItem>
+           <DropdownMenuItem onClick={() => router.push('/transition-summary')}>
+            Transition Summary
+          </DropdownMenuItem>
            <DropdownMenuItem onClick={() => router.push('/preview')}>
             Features Preview
           </DropdownMenuItem>
@@ -75,3 +78,4 @@ export function UserNav() {
     </DropdownMenu>
   )
 }
+'''
