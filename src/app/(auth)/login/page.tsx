@@ -58,6 +58,9 @@ export default function LoginPage() {
           <Button onClick={() => router.push('/login-form')} size="lg" className="w-full">
             Parent Login
           </Button>
+           <Button onClick={() => router.push('/signup')} size="lg" variant="outline" className="w-full">
+            Create Parent Account
+          </Button>
           <Button onClick={handleGuestMode} size="lg" variant="secondary" className="w-full">
             Team & Guest Access
           </Button>

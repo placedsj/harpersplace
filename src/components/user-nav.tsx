@@ -1,4 +1,4 @@
-'''// src/components/user-nav.tsx
+// src/components/user-nav.tsx
 'use client';
 
 import {
@@ -78,4 +78,3 @@ export function UserNav() {
     </DropdownMenu>
   )
 }
-'''

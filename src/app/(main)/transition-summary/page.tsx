@@ -1,4 +1,3 @@
-'''
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -249,4 +248,3 @@ ${summary.fullSummary}
     </div>
   );
 }
-'''

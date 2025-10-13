@@ -23,7 +23,7 @@ const ExpenseCategorySchema = z.object({
 export const categorizeExpenseFlow = defineFlow(
   {
     name: 'categorizeExpenseFlow',
-    inputSchema: z.string().describe('The user's description of the expense.'),
+    inputSchema: z.string().describe('The user\'s description of the expense.'),
     outputSchema: ExpenseCategorySchema.describe('The categorized expense details.'),
   },
   async (prompt) => {
