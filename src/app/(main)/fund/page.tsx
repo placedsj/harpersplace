@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,8 +14,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useFirestore } from '@/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useFirestore, useCollection } from '@/firebase';
+import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { Loader2, Trash2, Edit, X } from 'lucide-react';
 import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense'; // Assuming the flow can be imported
 import { runFlow } from '@genkit-ai/flow';
@@ -28,20 +28,29 @@ const expenseSchema = z.object({
 
 type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
-interface Expense extends ExpenseFormValues {
+interface Expense {
   id: string;
+  description: string;
+  amount: number;
+  category: 'Health' | 'Education' | 'Extracurricular' | 'Clothing' | 'Childcare' | 'Travel' | 'Other';
   loggedBy: string;
-  timestamp: { toDate: () => Date };
+  timestamp: Timestamp;
 }
 
 export default function FundPage() {
   const { user } = useAuth();
   const { db } = useFirestore();
   const { toast } = useToast();
-  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+
+  const expensesQuery = useMemo(() => {
+    if (!user || !db) return null;
+    return query(collection(db, `users/${user.uid}/expenses`), orderBy('timestamp', 'desc'));
+  }, [user, db]);
+
+  const { data: expenses, loading: expensesLoading } = useCollection<Expense>(expensesQuery);
 
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
@@ -51,19 +60,6 @@ export default function FundPage() {
       category: 'Other',
     },
   });
-
-  useEffect(() => {
-    if (!user || !db) return;
-    const expensesColRef = collection(db, `users/${user.uid}/expenses`);
-    const q = query(expensesColRef, orderBy('timestamp', 'desc'));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const userExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Expense));
-      setExpenses(userExpenses);
-    });
-
-    return () => unsubscribe();
-  }, [user, db]);
 
   const handleAiCategorize = async () => {
     const description = form.getValues('description');
@@ -122,7 +118,11 @@ export default function FundPage() {
   
   const handleEdit = (expense: Expense) => {
       setEditId(expense.id);
-      form.reset(expense);
+      form.reset({
+          description: expense.description,
+          amount: expense.amount,
+          category: expense.category,
+      });
   }
 
   const handleCancelEdit = () => {
@@ -147,7 +147,7 @@ export default function FundPage() {
       }
   }
 
-  const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+  const totalExpenses = expenses?.reduce((acc, exp) => acc + exp.amount, 0) ?? 0;
 
   return (
     <div className="space-y-8">
@@ -238,7 +238,8 @@ export default function FundPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {expenses.map((expense) => (
+                {expensesLoading && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Loading expenses...</TableCell></TableRow>}
+                {!expensesLoading && expenses && expenses.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell className='font-medium'>{expense.description}</TableCell>
                     <TableCell><Badge variant="secondary">{expense.category}</Badge></TableCell>
@@ -250,7 +251,7 @@ export default function FundPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                 {expenses.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No expenses logged yet.</TableCell></TableRow>}
+                 {!expensesLoading && expenses?.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No expenses logged yet.</TableCell></TableRow>}
               </TableBody>
             </Table>
           </CardContent>
@@ -259,3 +260,5 @@ export default function FundPage() {
     </div>
   );
 }
+
+    

@@ -9,24 +9,22 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query);
+  const queryRef = useRef(query ? JSON.stringify(query) : null);
 
   useEffect(() => {
-    // Prevent re-running the effect if the query object itself is just a new instance
-    // but logically the same. A better implementation might involve deep-comparing queries.
-    // For now, we'll assume developers will use useMemo for dynamic queries.
-    if (queryRef.current === query) {
+    const newQueryJson = query ? JSON.stringify(query) : null;
+    
+    if (queryRef.current === newQueryJson) {
       return;
     }
-    queryRef.current = query;
+    queryRef.current = newQueryJson;
 
     if (!query) {
-      setData([]);
+      setData(null);
       setLoading(false);
       return;
     }
     
-    // Set loading to true when a new query is provided
     setLoading(true);
 
     const unsubscribe = onSnapshot(
@@ -41,7 +39,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
         setError(null);
       },
       (err) => {
-        console.error(err);
+        console.error("useCollection error:", err);
         setError(err);
         setLoading(false);
       }
@@ -52,3 +50,5 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
 
   return { data, loading, error };
 }
+
+    
