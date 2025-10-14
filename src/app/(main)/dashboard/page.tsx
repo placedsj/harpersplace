@@ -10,9 +10,8 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 
@@ -22,15 +21,16 @@ const harper_dob = new Date("2024-11-12T00:00:00Z");
 // --- Infant Dashboard Component (0-24 months) ---
 const InfantDashboard = () => {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const [isClient, setIsClient] = useState(false);
     
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
-        user ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
+        user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
     );
     const latestStory = journalEntries?.[0];
 
     const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
-        user ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
     );
 
     const getLatestLog = (type: string) => logs?.find(log => log.type === type);

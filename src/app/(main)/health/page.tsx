@@ -28,8 +28,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
-import { db } from '@/lib/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 
 const eventSchema = z.object({
@@ -60,8 +59,9 @@ const iconMap: Record<HealthEvent['type'], React.ElementType> = {
 
 export default function HealthPage() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { data: events, loading } = useCollection<HealthEvent>(
-        user ? query(collection(db, `users/${user.uid}/health-events`), orderBy('date', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/health-events`), orderBy('date', 'desc')) : null
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -79,7 +79,7 @@ export default function HealthPage() {
     });
 
     async function onSubmit(values: z.infer<typeof eventSchema>) {
-        if (!user) {
+        if (!user || !db) {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }

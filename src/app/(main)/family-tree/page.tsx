@@ -1,11 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
 import { familyMembers } from '@/lib/family-data';
 
-export const metadata: Metadata = {
-  title: "Family Tree | Harper's Home",
-};
 
 type FamilyMember = {
     name: string;

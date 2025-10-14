@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot, SnapshotOptions } from 'firebase/firestore';
+import { useState, useEffect, useRef } from 'react';
+import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,12 +9,23 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const queryRef = useRef(query ? JSON.stringify(query) : null);
+
   useEffect(() => {
+    const newQueryJson = query ? JSON.stringify(query) : null;
+    
+    if (queryRef.current === newQueryJson) {
+      return;
+    }
+    queryRef.current = newQueryJson;
+
     if (!query) {
-      setData([]);
+      setData(null);
       setLoading(false);
       return;
     }
+    
+    setLoading(true);
 
     const unsubscribe = onSnapshot(
       query,
@@ -25,9 +36,10 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
         });
         setData(result);
         setLoading(false);
+        setError(null);
       },
       (err) => {
-        console.error(err);
+        console.error("useCollection error:", err);
         setError(err);
         setLoading(false);
       }
@@ -38,3 +50,5 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
 
   return { data, loading, error };
 }
+
+    

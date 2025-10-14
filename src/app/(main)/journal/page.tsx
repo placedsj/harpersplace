@@ -28,8 +28,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection } from '@/firebase';
-import { db } from '@/lib/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 
@@ -44,8 +43,9 @@ const entrySchema = z.object({
 
 export default function JournalPage() {
     const { user } = useAuth();
+    const { db } = useFirestore();
     const { data: entries, loading } = useCollection<JournalEntry>(
-        user ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc')) : null
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -63,7 +63,7 @@ export default function JournalPage() {
     });
 
     async function onSubmit(values: z.infer<typeof entrySchema>) {
-        if (!user) {
+        if (!user || !db) {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }

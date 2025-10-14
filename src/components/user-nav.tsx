@@ -60,6 +60,9 @@ export function UserNav() {
           <DropdownMenuItem onClick={() => router.push('/profile')}>
             Profile
           </DropdownMenuItem>
+           <DropdownMenuItem onClick={() => router.push('/transition-summary')}>
+            Transition Summary
+          </DropdownMenuItem>
            <DropdownMenuItem onClick={() => router.push('/preview')}>
             Features Preview
           </DropdownMenuItem>

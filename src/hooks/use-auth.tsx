@@ -8,17 +8,18 @@ import {
   signOut,
   updateProfile
 } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
-import { useUser, type AuthContextType } from '@/firebase';
+import { useUser, type AuthContextType, useFirebase } from '@/firebase';
 
 const AuthContext = createContext<Omit<AuthContextType, 'user' | 'loading'> | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.React.Node }) {
   const router = useRouter();
+  const { auth, db } = useFirebase();
 
   const signUp = async (firstName: string, lastName: string, email: string, password: string) => {
+    if (!auth || !db) throw new Error("Firebase not initialized");
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const currentUser = userCredential.user;
     
@@ -39,12 +40,14 @@ export function AuthProvider({ children }: { children: React.React.Node }) {
   };
 
   const logIn = async (email: string, password: string) => {
+    if (!auth) throw new Error("Firebase not initialized");
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     router.push('/dashboard');
     return userCredential;
   };
 
   const logOut = async () => {
+    if (!auth) throw new Error("Firebase not initialized");
     await signOut(auth);
     router.push('/login');
   };

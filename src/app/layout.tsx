@@ -31,11 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased ${openSans.variable} ${montserrat.variable}`}>
-        <AuthProvider>
-            <FirebaseProvider>
-              {children}
-            </FirebaseProvider>
-        </AuthProvider>
+        <FirebaseProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </FirebaseProvider>
         <Toaster />
       </body>
     </html>
