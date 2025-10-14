@@ -9,12 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Clipboard, ClipboardCheck, X, Image as ImageIcon, Upload } from 'lucide-react';
-import { run, runFlow } from '@genkit-ai/flow';
-import { generateTransitionSummaryFlow } from '@/ai/flows/generate-transition-summary';
-import { getStorageUploadUrlFlow } from '@/ai/flows/get-storage-upload-url';
+import { Loader2, Clipboard, ClipboardCheck, X, Upload } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import Image from 'next/image';
+import { generateSummaryAction, getSignedUrlAction } from './actions';
 
 const formSchema = z.object({
   ramble: z.string().min(10, 'Please provide a bit more detail about your day.'),
@@ -46,6 +44,11 @@ export default function TransitionSummaryPage() {
     resolver: zodResolver(formSchema),
     defaultValues: { ramble: '' },
   });
+  
+  const removeImage = (index: number) => {
+    setFilePreviews(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) {
@@ -60,11 +63,7 @@ export default function TransitionSummaryPage() {
 
     const uploadPromises = files.map(async file => {
         try {
-            const { signedUrl, publicUrl } = await runFlow(getStorageUploadUrlFlow, {
-                fileName: file.name,
-                contentType: file.type,
-                userId: user.uid,
-            });
+            const { signedUrl, publicUrl } = await getSignedUrlAction(file.name, file.type, user.uid);
 
             await fetch(signedUrl, {
                 method: 'PUT',
@@ -88,13 +87,7 @@ export default function TransitionSummaryPage() {
     setIsLoading(true);
     setSummary(null);
     try {
-      let prompt = values.ramble;
-      if (uploadedFiles.length > 0) {
-        prompt += `\n\n The user has uploaded the following images related to the day. Briefly mention them in the summary where relevant: ${uploadedFiles.join(', ')}`;
-      }
-
-      const result = await run(generateTransitionSummaryFlow, prompt);
-      result.mediaUrls = uploadedFiles; // Attach media URLs to the summary object
+      const result = await generateSummaryAction(values.ramble, uploadedFiles);
       setSummary(result);
     } catch (error) {
       console.error('Failed to generate summary:', error);
@@ -128,11 +121,6 @@ ${summary.fullSummary}
     setHasCopied(true);
     toast({ title: 'Copied to Clipboard!' });
     setTimeout(() => setHasCopied(false), 2000);
-  }
-
-  const removeImage = (index: number) => {
-    setFilePreviews(prev => prev.filter((_, i) => i !== index));
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   }
 
   return (

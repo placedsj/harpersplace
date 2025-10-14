@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { defineFlow, action } from '@genkit-ai/flow';
 import { googleAI } from '@genkit-ai/googleai';
-import { geminiPro } from 'genkitx-googleai';
 
 const TransitionSummarySchema = z.object({
   title: z.string().describe('A concise, neutral title for the summary (e.g., "Transition Summary for [Date]").'),
@@ -26,7 +25,7 @@ export const generateTransitionSummaryFlow = defineFlow(
             outputSchema: TransitionSummarySchema,
         },
         async (prompt) => {
-            const llm = googleAI({ model: geminiPro });
+            const llm = googleAI({ model: 'gemini-pro' });
             const result = await llm.generate({
                 prompt: `
                     You are a helpful assistant for co-parents.
