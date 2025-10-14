@@ -4,9 +4,33 @@ import { defineFlow, action } from '@genkit-ai/flow';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin SDK if not already initialized
+// Check for the environment variable, which should contain the JSON string
+const adminCredentialsString = process.env.FIREBASE_ADMIN_CREDENTIALS;
+
+if (!adminCredentialsString) {
+  // CRITICAL: Fail fast if the secret is missing.
+  console.error("FATAL: FIREBASE_ADMIN_CREDENTIALS environment variable is not set.");
+  // Throwing an error prevents server code from running without credentials.
+  throw new Error("Admin credentials missing. Cannot initialize Firebase Admin SDK.");
+}
+
+// Check if an Admin SDK instance has already been initialized (prevents re-initialization errors in Next.js/serverless)
 if (!admin.apps.length) {
-  admin.initializeApp();
+  try {
+    // 1. Parse the JSON string from the Replit secret into an object
+    const credentials = JSON.parse(adminCredentialsString);
+    
+    // 2. Initialize the Admin SDK using the Certificate (private key)
+    admin.initializeApp({
+      credential: admin.credential.cert(credentials)
+    });
+    
+    console.log("Firebase Admin SDK initialized successfully.");
+
+  } catch (error) {
+    console.error("Error initializing Firebase Admin SDK:", error);
+    throw new Error("Failed to parse or initialize Firebase Admin SDK.");
+  }
 }
 
 const storage = admin.storage();
