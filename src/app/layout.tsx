@@ -6,8 +6,20 @@ import { Montserrat, Open_Sans } from 'next/font/google';
 import { FirebaseProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: "Harper's Home",
-  description: 'A collaborative space for modern co-parenting.',
+  title: "Harper's Place - Modern Co-Parenting & Family Management",
+  description: 'A comprehensive family management platform for New Brunswick families. Track custody schedules, milestones, finances, and more with secure, collaborative tools.',
+  keywords: ['co-parenting', 'family management', 'New Brunswick', 'custody calendar', 'child development', 'parenting app'],
+  authors: [{ name: "Harper's Place Team" }],
+  openGraph: {
+    title: "Harper's Place",
+    description: 'Modern co-parenting and family management platform',
+    type: 'website',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 const montserrat = Montserrat({

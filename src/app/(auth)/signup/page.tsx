@@ -16,10 +16,23 @@ import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
-  email: z.string().email('Invalid email address.'),
-  password: z.string().min(6, 'Password must be at least 6 characters.'),
+  firstName: z.string()
+    .min(1, 'First name is required.')
+    .max(50, 'First name is too long.')
+    .regex(/^[a-zA-Z\s-']+$/, 'First name can only contain letters, spaces, hyphens, and apostrophes.'),
+  lastName: z.string()
+    .min(1, 'Last name is required.')
+    .max(50, 'Last name is too long.')
+    .regex(/^[a-zA-Z\s-']+$/, 'Last name can only contain letters, spaces, hyphens, and apostrophes.'),
+  email: z.string()
+    .email('Invalid email address.')
+    .max(254, 'Email address is too long.'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters.')
+    .max(128, 'Password is too long.')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter.')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter.')
+    .regex(/[0-9]/, 'Password must contain at least one number.'),
 });
 
 export default function SignUpPage() {
@@ -77,7 +90,11 @@ export default function SignUpPage() {
                                         <FormItem>
                                             <FormLabel>First name</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Max" {...field} />
+                                                <Input 
+                                                    placeholder="Max" 
+                                                    autoComplete="given-name"
+                                                    {...field} 
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -90,7 +107,11 @@ export default function SignUpPage() {
                                         <FormItem>
                                             <FormLabel>Last name</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Robinson" {...field} />
+                                                <Input 
+                                                    placeholder="Robinson" 
+                                                    autoComplete="family-name"
+                                                    {...field} 
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -104,7 +125,12 @@ export default function SignUpPage() {
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="m@example.com" {...field} />
+                                            <Input 
+                                                type="email"
+                                                placeholder="m@example.com" 
+                                                autoComplete="email"
+                                                {...field} 
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -117,8 +143,16 @@ export default function SignUpPage() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input type="password" {...field} />
+                                            <Input 
+                                                type="password" 
+                                                autoComplete="new-password"
+                                                aria-describedby="password-requirements"
+                                                {...field} 
+                                            />
                                         </FormControl>
+                                        <p id="password-requirements" className="text-xs text-muted-foreground mt-1">
+                                            Must be 8+ characters with uppercase, lowercase, and number
+                                        </p>
                                         <FormMessage />
                                     </FormItem>
                                 )}
