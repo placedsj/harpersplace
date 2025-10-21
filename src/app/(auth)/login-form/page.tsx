@@ -15,8 +15,11 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
-  email: z.string().email('Invalid email address.'),
-  password: z.string().min(6, 'Password must be at least 6 characters.'),
+  email: z.string()
+    .email('Invalid email address.')
+    .max(254, 'Email address is too long.'),
+  password: z.string()
+    .min(1, 'Password is required.'),
 });
 
 export default function LoginFormPage() {
@@ -70,7 +73,12 @@ export default function LoginFormPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m@example.com" {...field} />
+                      <Input 
+                        type="email"
+                        placeholder="m@example.com" 
+                        autoComplete="email"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,7 +99,11 @@ export default function LoginFormPage() {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input 
+                        type="password" 
+                        autoComplete="current-password"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

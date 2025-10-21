@@ -1,4 +1,3 @@
-'''
 import { defineFlow, action } from '@genkit-ai/flow';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
@@ -67,4 +66,3 @@ export const getStorageUploadUrlFlow = defineFlow(
     return { signedUrl, publicUrl };
   }
 );
-'''
