@@ -14,12 +14,17 @@ export default function AppLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-        <header className="border-b bg-card sticky top-0 z-40 shadow-sm">
+        <header className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
           <div className="flex h-16 items-center px-4 container mx-auto">
-             <h1 className="text-2xl font-headline font-extra-bold tracking-tight mr-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Harper's Home
-            </h1>
-            <MainNav className="mx-6" />
+            <MainNav />
+            <div className="flex items-center space-x-3 flex-1">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-primary-foreground">H</span>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent hidden sm:block">
+                Harper's Place
+              </h1>
+            </div>
             <div className="ml-auto flex items-center space-x-4">
               <UserNav />
             </div>

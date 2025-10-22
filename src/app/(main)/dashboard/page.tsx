@@ -18,8 +18,8 @@ import type { DailyLog } from '@/app/(main)/log/page';
 // --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
 const harper_dob = new Date("2024-11-12T00:00:00Z");
 
-// --- Infant Dashboard Component (0-24 months) ---
-const InfantDashboard = () => {
+// --- Main Dashboard Component ---
+const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
     const [isClient, setIsClient] = useState(false);
@@ -46,87 +46,111 @@ const InfantDashboard = () => {
     return (
         <div className="space-y-8">
            <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Welcome to Harper's Home!</h1>
-            <p className="text-muted-foreground mt-2">Your one-stop dashboard for our amazing gal.</p>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Welcome to Harper's Place</h1>
+            <p className="text-muted-foreground mt-2">Where every decision, every conversation, and every action puts your child's best interests and emotional well-being first.</p>
            </div>
 
-            <Card className="bg-gradient-to-br from-primary to-primary-dark text-primary-foreground shadow-lg">
+            <Card className="bg-gradient-to-br from-primary/10 to-purple-100 dark:from-primary/20 dark:to-purple-900/20 border border-primary/20">
                 <CardHeader>
-                    <CardTitle>Harper's Now: At-a-Glance</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                        <span className="text-2xl">👶</span>
+                        Child-Centered Actions
+                    </CardTitle>
+                    <CardDescription>Tools that prioritize your child's needs and well-being</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST FEED</p>
-                        <p className="text-2xl font-bold">{latestFeed ? format(parse(latestFeed.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestFeed?.details}</p>
-                    </div>
-                     <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST NAP</p>
-                        <p className="text-2xl font-bold">{latestNap ? format(parse(latestNap.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestNap?.details}</p>
-                    </div>
-                     <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST DIAPER</p>
-                        <p className="text-2xl font-bold">{latestDiaper ? format(parse(latestDiaper.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestDiaper?.details}</p>
-                    </div>
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <Button asChild variant="default" className="h-auto p-4 flex-col gap-2">
+                        <Link href="/log">
+                            <Utensils className="w-6 h-6" />
+                            <span className="font-semibold">Child's Daily Care</span>
+                            <span className="text-xs opacity-80">Monitor well-being</span>
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                        <Link href="/communication">
+                            <span className="text-xl">�</span>
+                            <span className="font-semibold">Safe Communication</span>
+                            <span className="text-xs opacity-80">Child-focused messaging</span>
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                        <Link href="/fund">
+                            <span className="text-xl">💰</span>
+                            <span className="font-semibold">Child's Fund</span>
+                            <span className="text-xs opacity-80">Transparent support</span>
+                        </Link>
+                    </Button>
                 </CardContent>
             </Card>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Up Next</CardTitle>
-                        <CardDescription>What's coming up for Harper.</CardDescription>
+                        <CardTitle>Recent Activity</CardTitle>
+                        <CardDescription>Latest entries and updates.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                       <div className="flex items-center gap-4">
-                           <div className="p-3 bg-accent/20 rounded-lg">
-                             <Utensils className="w-6 h-6 text-accent"/>
+                       {logs && logs.length > 0 ? (
+                         logs.slice(0, 3).map((log, index) => (
+                           <div key={index} className="flex items-center gap-4">
+                               <div className="p-3 bg-accent/20 rounded-lg">
+                                 {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-accent"/>}
+                                 {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-accent"/>}
+                                 {log.type === 'Diaper' && <Baby className="w-5 h-5 text-accent"/>}
+                               </div>
+                               <div className="flex-1">
+                                   <p className="font-semibold">{log.type}</p>
+                                   <p className="text-muted-foreground text-sm">
+                                     {log.time} - {log.details}
+                                   </p>
+                               </div>
                            </div>
-                           <div>
-                               <p className="font-semibold">Next Feeding</p>
-                               <p className="text-muted-foreground text-sm">Around 11:00 AM</p>
-                           </div>
-                       </div>
-                       <div className="flex items-center gap-4">
-                           <div className="p-3 bg-accent/20 rounded-lg">
-                            <BedDouble className="w-6 h-6 text-accent"/>
-                           </div>
-                           <div>
-                               <p className="font-semibold">Next Nap</p>
-                               <p className="text-muted-foreground text-sm">Around 11:30 AM</p>
-                           </div>
-                       </div>
+                         ))
+                       ) : (
+                         <div className="text-center text-muted-foreground py-4">
+                           <p>No recent activity</p>
+                           <Button asChild variant="outline" size="sm" className="mt-2">
+                             <Link href="/log">Add First Entry</Link>
+                           </Button>
+                         </div>
+                       )}
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Harper's Profile</CardTitle>
-                        <CardDescription>Quick details about our star.</CardDescription>
+                        <CardTitle>Family Overview</CardTitle>
+                        <CardDescription>Your Harper's Place stats.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center text-center">
-                        <Avatar className="w-20 h-20 mb-4 border-4 border-accent/50">
-                            <AvatarImage src="https://images.unsplash.com/photo-1637878314356-9f3b0338bc7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsZCUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTEwNzg4MHww&ixlib=rb-4.1.0&q=80&w=1080" data-ai-hint="child portrait" />
-                            <AvatarFallback>H</AvatarFallback>
-                        </Avatar>
-                        <p className="font-semibold text-lg">Harper Ryan</p>
-                        <div className="h-4 text-sm text-muted-foreground">
-                            {isClient && <p>{differenceInMonths(new Date(), harper_dob)} months old</p>}
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                            <div className="p-3 bg-muted/50 rounded-lg">
+                                <p className="text-2xl font-bold text-primary">{logs?.length || 0}</p>
+                                <p className="text-xs text-muted-foreground">Log Entries</p>
+                            </div>
+                            <div className="p-3 bg-muted/50 rounded-lg">
+                                <p className="text-2xl font-bold text-primary">{journalEntries?.length || 0}</p>
+                                <p className="text-xs text-muted-foreground">Journal Stories</p>
+                            </div>
                         </div>
-                        <div className="h-3.5 text-xs text-muted-foreground">
-                            {isClient && <p>{format(harper_dob, "MMMM d, yyyy")}</p>}
+                        <div className="text-center">
+                            <Button asChild variant="outline" size="sm">
+                                <Link href="/profile">Manage Profile</Link>
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader>
-                        <CardTitle>Latest Story</CardTitle>
-                        {latestStory && <CardDescription>{format(latestStory.date.toDate(), 'PPP')}</CardDescription>}
+                        <CardTitle>Memory Journal</CardTitle>
+                        <CardDescription>Latest memories and milestones</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col">
-                        {journalLoading && <p>Loading story...</p>}
-                        {latestStory ? (
+                        {journalLoading ? (
+                            <div className="space-y-3">
+                                <div className="h-4 bg-muted rounded animate-pulse"></div>
+                                <div className="h-4 bg-muted rounded animate-pulse w-2/3"></div>
+                            </div>
+                        ) : latestStory ? (
                             <>
                                 {latestStory.image && (
                                 <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-md object-cover w-full aspect-video mb-4" />
@@ -134,41 +158,69 @@ const InfantDashboard = () => {
                                 <h3 className="font-semibold mb-1">{latestStory.title}</h3>
                                 <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{latestStory.content}</p>
                                 <Button asChild variant="outline" size="sm">
-                                    <Link href="/journal">Read More</Link>
+                                    <Link href="/journal">View All Memories</Link>
                                 </Button>
                             </>
                         ) : (
-                           !journalLoading && <p className="text-sm text-muted-foreground">No stories yet.</p>
+                           <div className="text-center text-muted-foreground py-4">
+                               <p className="mb-2">No memories captured yet</p>
+                               <Button asChild variant="outline" size="sm">
+                                   <Link href="/journal">Create First Memory</Link>
+                               </Button>
+                           </div>
                         )}
                     </CardContent>
                 </Card>
             </div>
+
+            {/* AI Features Showcase */}
+            <Card className="border-dashed border-2 border-primary/20">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <span className="text-2xl">🤖</span>
+                        Child-First AI Tools
+                    </CardTitle>
+                    <CardDescription>
+                        Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                            <Link href="/communication">
+                                <span className="text-xl">�</span>
+                                <span className="font-semibold text-sm">Child-Safe Communication</span>
+                                <span className="text-xs text-center opacity-70">Protect emotional well-being</span>
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                            <Link href="/fund">
+                                <span className="text-xl">🏷️</span>
+                                <span className="font-semibold text-sm">Child-Need Tracking</span>
+                                <span className="text-xs text-center opacity-70">Prioritize child expenses</span>
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                            <Link href="/document-analyzer">
+                                <span className="text-xl">📄</span>
+                                <span className="font-semibold text-sm">Child Safety Analysis</span>
+                                <span className="text-xs text-center opacity-70">Protect best interests</span>
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="h-auto p-4 flex-col gap-2">
+                            <Link href="/communication-platform">
+                                <span className="text-xl">🚀</span>
+                                <span className="font-semibold text-sm">Child-First Platform</span>
+                                <span className="text-xs text-center opacity-70">Protect their future</span>
+                            </Link>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
 
-// --- School-Age Dashboard Component (Placeholder for future) ---
-const SchoolAgeDashboard = () => (
-    <Card>
-        <CardHeader>
-            <CardTitle>School-Age Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p>This dashboard will show custody schedules, school events, shared funds, etc.</p>
-        </CardContent>
-    </Card>
-);
-
-
 export default function DashboardPage() {
-    const ageInMonths = differenceInMonths(new Date("2025-09-06T00:00:00Z"), harper_dob);
-    
-    let DashboardComponent;
-    if (ageInMonths <= 24) {
-        DashboardComponent = InfantDashboard;
-    } else {
-        DashboardComponent = SchoolAgeDashboard;
-    }
-
-    return <DashboardComponent />;
+    return <MainDashboard />;
 }
