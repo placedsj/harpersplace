@@ -1,8 +1,14 @@
 # Harper's Place 🏡
 
-**Modern Co-Parenting & Family Management Platform for New Brunswick Families**
+**Child-Centered Co-Parenting & Family Management Platform**
 
-Harper's Place is a comprehensive, secure web application designed to help families navigate co-parenting and child development tracking. Built with Next.js, Firebase, and AI-powered features, it provides everything families need to stay organized, connected, and focused on what matters most - their children.
+Harper's Place is a comprehensive, secure web application that puts your child's emotional well-being and best interests at the center of every co-parenting decision. Built with Next.js, Firebase, and AI-powered features, it provides court-ready documentation, professional communication tools, and child-focused family management.
+
+## 🌟 **Live Preview**
+🚀 **[View Harper's Place Live](https://harpersplace.vercel.app)** *(Deploying soon)*
+
+## 👶 **Child-First Approach**
+Every feature is designed to prioritize your child's emotional safety, stability, and well-being above all else.
 
 ## ✨ Key Features
 
@@ -45,6 +51,45 @@ Harper's Place is a comprehensive, secure web application designed to help famil
 - Communication improvement
 - Sleep schedule suggestions
 - Document analysis
+
+## 🚀 **Quick Start & Deployment**
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Open http://localhost:5000
+```
+
+### Deploy to Vercel (Recommended)
+1. Push to GitHub (already done! ✅)
+2. Visit [vercel.com](https://vercel.com)
+3. Import your GitHub repository
+4. Deploy automatically!
+
+### Deploy to Netlify
+1. Visit [netlify.com](https://netlify.com)
+2. Connect your GitHub repository
+3. Build command: `npm run build`
+4. Publish directory: `.next`
+
+## 🎯 **Interactive Features**
+
+### **📱 Communication Platform Demo**
+- Live cost calculator with sliders
+- Functional video call simulator  
+- Child welfare metrics dashboard
+- Development timeline visualization
+
+### **🤖 AI-Powered Child Protection**
+- Communication tone analysis for child safety
+- Expense categorization prioritizing child needs
+- Document analysis for child-relevant information
+- Conflict resolution and emotional safety features
 
 ### 🔒 Enterprise-Grade Security
 - Bank-level encryption
