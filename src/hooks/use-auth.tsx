@@ -1,7 +1,7 @@
 // src/hooks/use-auth.tsx
 'use client';
 
-import { createContext, useContext } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -10,11 +10,17 @@ import {
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
-import { useUser, type AuthContextType, useFirebase } from '@/firebase';
+import { useUser, useFirebase } from '@/firebase';
 
-const AuthContext = createContext<Omit<AuthContextType, 'user' | 'loading'> | undefined>(undefined);
+type AuthMethodsType = {
+  signUp: (firstName: string, lastName: string, email: string, password: string) => Promise<any>;
+  logIn: (email: string, password: string) => Promise<any>;
+  logOut: () => Promise<void>;
+};
 
-export function AuthProvider({ children }: { children: React.React.Node }) {
+const AuthContext = createContext<AuthMethodsType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { auth, db } = useFirebase();
 

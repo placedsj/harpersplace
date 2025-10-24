@@ -13,24 +13,36 @@ export default function AppLayout({
 }) {
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-        <header className="border-b bg-card/95 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
-          <div className="flex h-16 items-center px-4 container mx-auto">
-            <MainNav />
-            <div className="flex items-center space-x-3 flex-1">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-sm font-bold text-primary-foreground">H</span>
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100 dark:bg-gray-900/95 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              
+              {/* LEFT SIDE: Logo and Navigation */}
+              <div className="flex items-center space-x-8">
+                {/* Harper's Place Logo */}
+                <div className="flex items-center space-x-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-lg font-bold text-white">H</span>
+                  </div>
+                  <h1 className="text-xl font-extrabold tracking-tight">
+                    <span className="text-purple-600 dark:text-purple-400">Harper</span>
+                    <span className="text-gray-800 dark:text-white">'s Place</span>
+                  </h1>
+                </div>
+
+                {/* Desktop Navigation */}
+                <MainNav />
               </div>
-              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent hidden sm:block">
-                Harper's Place
-              </h1>
-            </div>
-            <div className="ml-auto flex items-center space-x-4">
-              <UserNav />
+
+              {/* RIGHT SIDE: User Navigation */}
+              <div className="ml-auto flex items-center space-x-4">
+                <UserNav />
+              </div>
             </div>
           </div>
         </header>
-        <main className="flex-1 space-y-4 p-8 pt-6 container mx-auto">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           {children}
           <div className="pt-8">
             <CoParentingTip />
