@@ -101,140 +101,137 @@ const MainDashboard = () => {
                 </div>
             </DashboardCard>
 
+            {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="shadow-md hover:shadow-lg transition-shadow">
-                    <CardHeader className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20">
-                        <CardTitle className="text-xl">Recent Activity</CardTitle>
-                        <CardDescription>Latest entries and updates.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 pt-6">
-                       {logs && logs.length > 0 ? (
-                         logs.slice(0, 3).map((log, index) => (
-                           <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                               <div className="p-3 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-lg">
-                                 {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-primary"/>}
-                                 {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-primary"/>}
-                                 {log.type === 'Diaper' && <Baby className="w-5 h-5 text-primary"/>}
-                               </div>
-                               <div className="flex-1">
-                                   <p className="font-semibold text-foreground">{log.type}</p>
-                                   <p className="text-muted-foreground text-sm">
-                                     {log.time} - {log.details}
-                                   </p>
-                               </div>
-                           </div>
-                         ))
-                       ) : (
-                         <div className="text-center text-muted-foreground py-8">
-                           <p className="mb-3">No recent activity</p>
-                           <Button asChild variant="default" size="sm" className="shadow-md">
-                             <Link href="/log">Add First Entry</Link>
-                           </Button>
-                         </div>
-                       )}
-                    </CardContent>
-                </Card>
-                <Card className="shadow-md hover:shadow-lg transition-shadow">
-                    <CardHeader className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-                        <CardTitle className="text-xl">Family Overview</CardTitle>
-                        <CardDescription>Your Harper's Place stats.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6 pt-6">
-                        <div className="grid grid-cols-2 gap-4 text-center">
-                            <div className="p-4 bg-gradient-to-br from-primary/10 to-purple-500/10 rounded-xl border border-primary/20">
-                                <p className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">{logs?.length || 0}</p>
-                                <p className="text-xs text-muted-foreground mt-1">Log Entries</p>
-                            </div>
-                            <div className="p-4 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-xl border border-pink-500/20">
-                                <p className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">{journalEntries?.length || 0}</p>
-                                <p className="text-xs text-muted-foreground mt-1">Journal Stories</p>
-                            </div>
+                <DashboardCard title="Recent Activity" description="Latest entries and updates.">
+                    {logs && logs.length > 0 ? (
+                        <div className="space-y-3">
+                            {logs.slice(0, 3).map((log, index) => (
+                                <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
+                                        {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                        {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                        {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {log.time} - {log.details}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="text-center">
-                            <Button asChild variant="outline" size="sm" className="shadow-sm hover:shadow-md transition-shadow">
-                                <Link href="/profile">Manage Profile</Link>
+                    ) : (
+                        <div className="text-center py-12">
+                            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                            <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
+                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                <Link href="/log">
+                                    <Clock className="h-4 w-4 mr-2" />
+                                    Add First Entry
+                                </Link>
                             </Button>
                         </div>
-                    </CardContent>
-                </Card>
-                 <Card className="shadow-md hover:shadow-lg transition-shadow">
-                    <CardHeader className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20">
-                        <CardTitle className="text-xl">Memory Journal</CardTitle>
-                        <CardDescription>Latest memories and milestones</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col">
-                        {journalLoading ? (
-                            <div className="space-y-3">
-                                <div className="h-4 bg-muted rounded animate-pulse"></div>
-                                <div className="h-4 bg-muted rounded animate-pulse w-2/3"></div>
-                            </div>
-                        ) : latestStory ? (
-                            <>
-                                {latestStory.image && (
-                                <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-sm" />
-                                )}
-                                <h3 className="font-semibold text-lg mb-2">{latestStory.title}</h3>
-                                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{latestStory.content}</p>
-                                <Button asChild variant="default" size="sm" className="w-full shadow-sm">
-                                    <Link href="/journal">View All Memories</Link>
-                                </Button>
-                            </>
-                        ) : (
-                           <div className="text-center text-muted-foreground py-8">
-                               <p className="mb-3">No memories captured yet</p>
-                               <Button asChild variant="default" size="sm" className="shadow-md">
-                                   <Link href="/journal">Create First Memory</Link>
-                               </Button>
-                           </div>
-                        )}
-                    </CardContent>
-                </Card>
+                    )}
+                </DashboardCard>
+
+                {/* Family Overview */}
+                <DashboardCard title="Family Overview" description="Your Harper's Place stats.">
+                    <div className="flex justify-around items-center mb-6">
+                        <div className="text-center">
+                            <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                                {logs?.length || 0}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                                {journalEntries?.length || 0}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
+                        </div>
+                    </div>
+                    <Button asChild variant="outline" className="w-full hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-700 transition">
+                        <Link href="/profile">Manage Profile</Link>
+                    </Button>
+                </DashboardCard>
+
+                {/* Memory Journal */}
+                <DashboardCard title="Memory Journal" description="Latest memories and milestones">
+                    {journalLoading ? (
+                        <div className="space-y-3">
+                            <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-2/3"></div>
+                        </div>
+                    ) : latestStory ? (
+                        <>
+                            {latestStory.image && (
+                                <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
+                            )}
+                            <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">{latestStory.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{latestStory.content}</p>
+                            <Button asChild variant="default" size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                                <Link href="/journal">View All Memories</Link>
+                            </Button>
+                        </>
+                    ) : (
+                        <div className="text-center py-12">
+                            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                            <p className="text-gray-400 dark:text-gray-500 mb-4">No memories captured yet</p>
+                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                <Link href="/journal">Create First Memory</Link>
+                            </Button>
+                        </div>
+                    )}
+                </DashboardCard>
             </div>
 
-            {/* AI Features Showcase */}
-            <Card className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-indigo-50/50 via-purple-50/50 to-pink-50/50 dark:from-indigo-900/10 dark:via-purple-900/10 dark:to-pink-900/10 shadow-lg">
-                <CardHeader className="text-center">
-                    <CardTitle className="flex items-center justify-center gap-3 text-2xl">
-                        <span className="text-3xl">🤖</span>
-                        Child-First AI Tools
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                        Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Button asChild variant="outline" className="h-auto p-6 flex-col gap-3 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900/20 dark:hover:to-cyan-900/20 hover:border-blue-400 transition-all shadow-sm hover:shadow-md">
-                            <Link href="/communication">
-                                <span className="text-3xl">🛡</span>
-                                <span className="font-bold text-sm">Child-Safe Communication</span>
-                                <span className="text-xs text-center text-muted-foreground">Protect emotional well-being</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto p-6 flex-col gap-3 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 hover:border-purple-400 transition-all shadow-sm hover:shadow-md">
-                            <Link href="/fund">
-                                <span className="text-3xl">🏷️</span>
-                                <span className="font-bold text-sm">Child-Need Tracking</span>
-                                <span className="text-xs text-center text-muted-foreground">Prioritize child expenses</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto p-6 flex-col gap-3 hover:bg-gradient-to-br hover:from-amber-50 hover:to-orange-50 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20 hover:border-amber-400 transition-all shadow-sm hover:shadow-md">
-                            <Link href="/document-analyzer">
-                                <span className="text-3xl">📄</span>
-                                <span className="font-bold text-sm">Child Safety Analysis</span>
-                                <span className="text-xs text-center text-muted-foreground">Protect best interests</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto p-6 flex-col gap-3 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 dark:hover:from-green-900/20 dark:hover:to-emerald-900/20 hover:border-green-400 transition-all shadow-sm hover:shadow-md">
-                            <Link href="/communication-platform">
-                                <span className="text-3xl">🚀</span>
-                                <span className="font-bold text-sm">Child-First Platform</span>
-                                <span className="text-xs text-center text-muted-foreground">Protect their future</span>
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* 4. AI TOOLS SHOWCASE */}
+            <div className="p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-l-4 border-purple-600 dark:border-purple-400 rounded-r-xl shadow-xl">
+                <div className="flex items-center mb-4">
+                    <Sparkles className="h-7 w-7 text-purple-600 dark:text-purple-400 mr-3" />
+                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white">Child-First AI Tools</h4>
+                </div>
+                <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
+                    Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision.
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Link href="/communication" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Safe Communication</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect emotional well-being</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/fund" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Tag className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Need Tracking</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Prioritize child expenses</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/document-analyzer" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <FileText className="h-8 w-8 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child Safety Analysis</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect best interests</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/communication-platform" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-First Platform</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect their future</p>
+                        </div>
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }
