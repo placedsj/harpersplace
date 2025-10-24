@@ -71,7 +71,8 @@ export default function JournalPage() {
         try {
             const newEntry = {
               ...values,
-              image: values.image || `https://picsum.photos/seed/${Math.random()}/400/200`,
+              image: values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`,
+              dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
               timestamp: serverTimestamp(),
             };
@@ -170,14 +171,16 @@ export default function JournalPage() {
                   )}
                 />
                 <FormItem>
-                    <FormLabel>Photo</FormLabel>
-                    <div className="flex items-center gap-4">
-                        <div className="w-24 h-24 bg-muted rounded-md flex items-center justify-center">
-                            <ImageUp className="text-muted-foreground" />
-                        </div>
+                    <FormLabel>Photo (Optional)</FormLabel>
+                    <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center bg-muted/10">
+                        <ImageUp className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
                         <div className="space-y-2">
-                           <Button type="button" variant="outline">Upload Image</Button>
-                           <p className="text-xs text-muted-foreground">For now, a placeholder image will be used.</p>
+                            <Button type="button" variant="outline" disabled className="cursor-not-allowed">
+                                Upload Image
+                            </Button>
+                            <p className="text-xs text-muted-foreground">
+                                Photo uploads coming soon. For now, entries will use a beautiful placeholder image.
+                            </p>
                         </div>
                     </div>
                 </FormItem>
