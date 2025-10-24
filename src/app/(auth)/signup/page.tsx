@@ -13,7 +13,6 @@ import { useAuth } from '@/hooks/use-auth';
 import Link from "next/link";
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   firstName: z.string()
@@ -65,10 +64,6 @@ export default function SignUpPage() {
             setIsLoading(false);
         }
     }
-    
-    const handleGuestMode = () => {
-        router.push('/dashboard');
-    };
 
     return (
         <div className="flex items-center justify-center min-h-screen">
@@ -163,10 +158,6 @@ export default function SignUpPage() {
                             </Button>
                         </form>
                     </Form>
-                     <Separator className="my-4" />
-                    <Button variant="secondary" className="w-full" onClick={handleGuestMode}>
-                            Continue as Guest
-                    </Button>
                     <div className="mt-4 text-center text-sm">
                         Already have an account?{" "}
                         <Link href="/login-form" className="text-primary/80 hover:text-primary font-semibold">
