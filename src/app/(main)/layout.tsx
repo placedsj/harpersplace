@@ -25,9 +25,9 @@ export default function AppLayout({
                   <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-lg font-bold text-white">H</span>
                   </div>
-                  <h1 className="text-xl font-extrabold tracking-tight">
-                    <span className="text-purple-600 dark:text-purple-400">Harper</span>
-                    <span className="text-gray-800 dark:text-white">'s Place</span>
+                  <h1 className="text-xl font-extrabold tracking-tight uppercase font-montserrat">
+                    <span className="text-purple-600 dark:text-purple-400">HARPER</span>
+                    <span className="text-gray-800 dark:text-white">'S PLACE</span>
                   </h1>
                 </div>
 
