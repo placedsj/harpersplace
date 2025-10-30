@@ -1,14 +1,10 @@
-import type {Metadata} from 'next';
+'use client';
+
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from '@/hooks/use-auth';
 import { Montserrat, Open_Sans } from 'next/font/google';
-import { FirebaseProvider } from '@/firebase';
-
-export const metadata: Metadata = {
-  title: "Harper's Home",
-  description: 'A collaborative space for modern co-parenting.',
-};
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -22,7 +18,6 @@ const openSans = Open_Sans({
   weight: ['400', '600'],
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,11 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased ${openSans.variable} ${montserrat.variable}`}>
-        <FirebaseProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </FirebaseProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
         <Toaster />
       </body>
     </html>
