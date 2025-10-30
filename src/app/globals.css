@@ -74,17 +74,24 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-open-sans), sans-serif;
-  }
-  h1, h2, h3, h4, h5, h6 {
-      font-family: var(--font-montserrat), sans-serif;
-      @apply font-extrabold text-foreground;
-  }
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-open-sans), sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-montserrat), sans-serif;
+            @apply font-extrabold text-foreground;
+    }
+    .font-montserrat {
+        font-family: 'Montserrat', sans-serif;
+    }
+    .font-bebas {
+        font-family: 'Bebas Neue', cursive, sans-serif;
+        letter-spacing: 0.05em;
+    }
 }
 
 

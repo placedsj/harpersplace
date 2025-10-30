@@ -108,15 +108,15 @@ function CommunicationPageInternal() {
   return (
     <div className="space-y-8">
         <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Communication Hub</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">COMMUNICATION HUB</h1>
+            <p className="text-lg font-montserrat text-accent mt-1 tracking-wide">
                 A secure, AI-mediated channel for all co-parenting communication.
             </p>
         </div>
-        <Card>
+        <Card className="shadow-lg border-2 border-primary/40">
             <CardHeader>
-                <CardTitle>Conversation with Emma</CardTitle>
-                <CardDescription>All messages are timestamped and analyzed by the AI Mediator to suggest actions.</CardDescription>
+                <CardTitle className="font-bebas uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
+                <CardDescription className="font-montserrat text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col h-[65vh]">
                 <div className="flex-grow space-y-6 overflow-y-auto p-4 border rounded-md bg-muted/20">

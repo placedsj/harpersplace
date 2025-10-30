@@ -1,5 +1,6 @@
 'use client';
 
+import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Montserrat, Open_Sans } from 'next/font/google';

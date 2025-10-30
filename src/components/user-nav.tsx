@@ -24,12 +24,22 @@ export function UserNav() {
     const router = useRouter();
 
     const getInitials = (name: string | null | undefined) => {
-        if (!name) return '...';
+        if (!name) return 'G'; // Guest mode
         const names = name.split(' ');
         if (names.length > 1) {
             return names[0][0] + names[names.length - 1][0];
         }
         return name[0];
+    }
+
+    const getDisplayName = () => {
+        if (!user) return 'Guest User';
+        return user.displayName || 'User';
+    }
+
+    const getDisplayEmail = () => {
+        if (!user) return 'guest@harpersplace.app';
+        return user.email || '';
     }
 
     if (loading) {
@@ -41,39 +51,50 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.photoURL ?? undefined} alt="@shadcn" />
-            <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
+            <AvatarImage src={user?.photoURL ?? undefined} alt="User avatar" />
+            <AvatarFallback className={!user ? "bg-muted" : ""}>{getInitials(user?.displayName)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.displayName}</p>
+            <p className="text-sm font-medium leading-none">{getDisplayName()}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
+              {getDisplayEmail()}
             </p>
+            {!user && (
+              <p className="text-xs text-accent-foreground bg-accent/10 px-2 py-1 rounded mt-1">
+                Guest Mode
+              </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => router.push('/profile')}>
-            Profile
+            👤 Profile
           </DropdownMenuItem>
-           <DropdownMenuItem onClick={() => router.push('/transition-summary')}>
-            Transition Summary
+           <DropdownMenuItem onClick={() => router.push('/blueprint')}>
+            📋 Stability Blueprint
           </DropdownMenuItem>
-           <DropdownMenuItem onClick={() => router.push('/preview')}>
-            Features Preview
+           <DropdownMenuItem onClick={() => router.push('/about')}>
+            ℹ️ About Harper's Place
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push('/emergency')}>
-            Emergency
+            🚨 Emergency Contacts
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logOut}>
-          Log out
-        </DropdownMenuItem>
+        {user ? (
+          <DropdownMenuItem onClick={logOut}>
+            🚪 Log out
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => router.push('/login')}>
+            🔐 Sign In
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -1,70 +1,83 @@
-'''
+'use server';
+
 import { defineFlow, action } from '@genkit-ai/flow';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
-import { getApp, getApps, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 
-// Initialize Firebase Admin SDK if not already initialized
-if (!getApps().length) {
-  initializeApp();
+// Check for the environment variable, which should contain the JSON string
+const adminCredentialsString = process.env.FIREBASE_ADMIN_CREDENTIALS;
+
+if (!adminCredentialsString) {
+  // CRITICAL: Fail fast if the secret is missing.
+  console.error("FATAL: FIREBASE_ADMIN_CREDENTIALS environment variable is not set.");
+  // Throwing an error prevents server code from running without credentials.
+  throw new Error("Admin credentials missing. Cannot initialize Firebase Admin SDK.");
 }
 
-const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-
-// 1. Define the input schema
-const inputSchema = z.object({
-  fileName: z.string().describe("The name of the file to be uploaded."),
-  contentType: z.string().describe("The MIME type of the file (e.g., 'image/png')."),
-  userId: z.string().describe("The UID of the user uploading the file.")
-});
-
-// 2. Define the output schema
-const outputSchema = z.object({
-  signedUrl: z.string().describe("A secure, short-lived URL to which the client can upload the file."),
-  publicUrl: z.string().describe("The permanent public URL of the file after upload.")
-});
-
-// 3. Define the Genkit flow
-export const getStorageUploadUrlFlow = defineFlow(
-  {
-    name: 'getStorageUploadUrlFlow',
-    inputSchema,
-    outputSchema,
-    authPolicy: (auth, input) => {
-      // Enforce that the user ID in the token matches the user ID in the input
-      if (!auth) {
-          throw new Error("Authorization required.");
-      }
-      if (auth.uid !== input.userId) {
-          throw new Error("User ID does not match authenticated user.");
-      }
-    },
-  },
-  async (input) => {
-    if (!bucketName) {
-        throw new Error('Firebase Storage bucket name is not configured. Please set NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET environment variable.');
-    }
-
-    const { fileName, contentType, userId } = input;
-    const bucket = admin.storage().bucket(bucketName);
-
-    const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `transition-summaries/${userId}/${Date.now()}-${safeFileName}`;
-    const file = bucket.file(filePath);
-
-    // 4. Generate a signed URL for PUT request
-    const [signedUrl] = await file.getSignedUrl({
-      version: 'v4',
-      action: 'write',
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-      contentType: contentType,
+// Check if an Admin SDK instance has already been initialized (prevents re-initialization errors in Next.js/serverless)
+if (!admin.apps.length) {
+  try {
+    // 1. Parse the JSON string from the Replit secret into an object
+    const credentials = JSON.parse(adminCredentialsString);
+    
+    // 2. Initialize the Admin SDK using the Certificate (private key)
+    admin.initializeApp({
+      credential: admin.credential.cert(credentials)
     });
+    
+    console.log("Firebase Admin SDK initialized successfully.");
 
-    // 5. Construct the public URL
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
-
-    return { signedUrl, publicUrl };
+  } catch (error) {
+    console.error("Error initializing Firebase Admin SDK:", error);
+    throw new Error("Failed to parse or initialize Firebase Admin SDK.");
   }
+}
+
+const storage = admin.storage();
+
+const inputSchema = z.object({
+    fileName: z.string(),
+    contentType: z.string(),
+    userId: z.string(),
+});
+
+const outputSchema = z.object({
+    signedUrl: z.string(),
+    publicUrl: z.string(),
+});
+
+export const getStorageUploadUrlFlow = defineFlow(
+    {
+        name: 'getStorageUploadUrlFlow',
+        inputSchema,
+        outputSchema,
+    },
+    async (input) => {
+        return await action(
+            { 
+                name: 'generateSignedUrl', 
+                inputSchema, 
+                outputSchema 
+            },
+            async ({ fileName, contentType, userId }) => {
+                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+                if (!bucketName) {
+                    throw new Error("Firebase Storage bucket name is not configured.");
+                }
+                const bucket = storage.bucket(bucketName);
+                const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
+                const file = bucket.file(filePath);
+
+                const [signedUrl] = await file.getSignedUrl({
+                    action: 'write',
+                    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+                    contentType,
+                });
+
+                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+
+                return { signedUrl, publicUrl };
+            }
+        )(input);
+    }
 );
-'''

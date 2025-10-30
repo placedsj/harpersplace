@@ -119,30 +119,30 @@ export default function CalendarPage() {
 
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Family Calendar</h1>
-        <p className="text-muted-foreground mt-1">
-          Coordinate schedules, events, and memories based on the current plan.
-        </p>
-      </div>
-      <div className="grid gap-8 md:grid-cols-3">
-        <Card className="md:col-span-2">
-          <CardContent className="p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="p-4"
-              modifiers={modifiers}
-              modifiersClassNames={modifiersClassNames}
-            />
-          </CardContent>
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">FAMILY CALENDAR</h1>
+                <p className="text-lg font-montserrat text-accent mt-1 tracking-wide">
+                    Coordinate schedules, events, and memories based on the current plan.
+                </p>
+            </div>
+            <div className="grid gap-8 md:grid-cols-3">
+                <Card className="md:col-span-2 shadow-lg border-2 border-primary/40">
+                    <CardContent className="p-0">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            className="p-4"
+                            modifiers={modifiers}
+                            modifiersClassNames={modifiersClassNames}
+                        />
+                    </CardContent>
         </Card>
         <div className="space-y-6">
-            <Card>
+            <Card className="shadow-md border-l-4 border-accent">
                 <CardHeader>
-                    <CardTitle>Schedule Key</CardTitle>
+                    <CardTitle className="font-bebas uppercase text-accent tracking-widest">SCHEDULE KEY</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -165,10 +165,10 @@ export default function CalendarPage() {
                     </div>
                 </CardContent>
             </Card>
-             <Card>
+            <Card className="shadow-md border-l-4 border-primary">
                 <CardHeader>
-                    <CardTitle>
-                        {date ? format(date, 'MMMM do, yyyy') : 'Select a date'}
+                    <CardTitle className="font-bebas uppercase text-primary tracking-widest">
+                        {date ? format(date, 'MMMM do, yyyy').toUpperCase() : 'SELECT A DATE'}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

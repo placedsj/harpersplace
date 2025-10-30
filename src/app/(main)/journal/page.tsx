@@ -71,7 +71,8 @@ export default function JournalPage() {
         try {
             const newEntry = {
               ...values,
-              image: values.image || `https://picsum.photos/seed/${Math.random()}/400/200`,
+              image: values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`,
+              dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
               timestamp: serverTimestamp(),
             };
@@ -98,8 +99,8 @@ export default function JournalPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Family Journal</h1>
-          <p className="text-muted-foreground mt-1">Share precious moments and milestones.</p>
+          <h1 className="text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">FAMILY JOURNAL</h1>
+          <p className="text-lg font-montserrat text-accent mt-1 tracking-wide">Share precious moments and milestones.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -170,14 +171,16 @@ export default function JournalPage() {
                   )}
                 />
                 <FormItem>
-                    <FormLabel>Photo</FormLabel>
-                    <div className="flex items-center gap-4">
-                        <div className="w-24 h-24 bg-muted rounded-md flex items-center justify-center">
-                            <ImageUp className="text-muted-foreground" />
-                        </div>
+                    <FormLabel>Photo (Optional)</FormLabel>
+                    <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center bg-muted/10">
+                        <ImageUp className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
                         <div className="space-y-2">
-                           <Button type="button" variant="outline">Upload Image</Button>
-                           <p className="text-xs text-muted-foreground">For now, a placeholder image will be used.</p>
+                            <Button type="button" variant="outline" disabled className="cursor-not-allowed">
+                                Upload Image
+                            </Button>
+                            <p className="text-xs text-muted-foreground">
+                                Photo uploads coming soon. For now, entries will use a beautiful placeholder image.
+                            </p>
                         </div>
                     </div>
                 </FormItem>
@@ -208,14 +211,14 @@ export default function JournalPage() {
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <p>Loading entries...</p>}
         {entries && entries.map((entry) => (
-          <Card key={entry.id} className="overflow-hidden">
+          <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
             <CardHeader>
-              <CardTitle>{entry.title}</CardTitle>
-              <CardDescription>{format(entry.date.toDate(), 'PPP')}</CardDescription>
+              <CardTitle className="font-bebas uppercase text-primary tracking-widest">{entry.title.toUpperCase()}</CardTitle>
+              <CardDescription className="font-montserrat text-accent">{format(entry.date.toDate(), 'PPP')}</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="text-muted-foreground">{entry.content}</p>
+                <p className="text-muted-foreground font-montserrat">{entry.content}</p>
             </CardContent>
           </Card>
         ))}

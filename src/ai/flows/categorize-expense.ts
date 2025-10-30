@@ -2,7 +2,6 @@
 import { z } from 'zod';
 import { defineFlow, action } from '@genkit-ai/flow';
 import { googleAI } from '@genkit-ai/googleai';
-import { geminiPro } from 'genkitx-googleai';
 
 // Define the expected output format for the AI
 const ExpenseCategorySchema = z.object({
@@ -34,7 +33,7 @@ export const categorizeExpenseFlow = defineFlow(
             outputSchema: ExpenseCategorySchema,
         },
         async (prompt) => {
-            const llm = googleAI({ model: geminiPro });
+            const llm = googleAI({ model: 'gemini-pro' });
             const result = await llm.generate({
                 prompt: `
                     You are an expert at parsing and categorizing expenses for co-parents.

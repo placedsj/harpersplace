@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Utensils, BedDouble, Baby } from 'lucide-react';
+import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,12 +14,13 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+import DashboardCard from '@/components/dashboard-card';
 
 // --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
 const harper_dob = new Date("2024-11-12T00:00:00Z");
 
-// --- Infant Dashboard Component (0-24 months) ---
-const InfantDashboard = () => {
+// --- Main Dashboard Component ---
+const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
     const [isClient, setIsClient] = useState(false);
@@ -43,132 +44,198 @@ const InfantDashboard = () => {
         setIsClient(true);
     }, []);
 
+    // Reusable button style for main action cards
+    const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
+
     return (
-        <div className="space-y-8">
-           <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Welcome to Harper's Home!</h1>
-            <p className="text-muted-foreground mt-2">Your one-stop dashboard for our amazing gal.</p>
+        <div className="space-y-8 pb-8">
+           {/* 1. WELCOME BANNER */}
+           <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                <div className="mb-8 px-4 py-6 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10 shadow-md">
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="text-2xl">🧒</span>
+                        <h1 className="text-3xl sm:text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">CHILD-CENTERED ACTIONS</h1>
+                    </div>
+                    <p className="text-base sm:text-lg font-montserrat text-muted-foreground tracking-wide">TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING</p>
+                </div>
            </div>
 
-            <Card className="bg-gradient-to-br from-primary to-primary-dark text-primary-foreground shadow-lg">
-                <CardHeader>
-                    <CardTitle>Harper's Now: At-a-Glance</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST FEED</p>
-                        <p className="text-2xl font-bold">{latestFeed ? format(parse(latestFeed.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestFeed?.details}</p>
-                    </div>
-                     <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST NAP</p>
-                        <p className="text-2xl font-bold">{latestNap ? format(parse(latestNap.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestNap?.details}</p>
-                    </div>
-                     <div className="text-center">
-                        <p className="text-sm font-semibold uppercase tracking-wider">LAST DIAPER</p>
-                        <p className="text-2xl font-bold">{latestDiaper ? format(parse(latestDiaper.time, 'HH:mm', new Date()), 'p') : 'N/A'}</p>
-                        <p className="text-xs opacity-80">{latestDiaper?.details}</p>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* 2. CHILD-CENTERED ACTIONS - THE STUNNING GRADIENT BLOCK */}
+            <DashboardCard
+                title="👶 CHILD-CENTERED ACTIONS"
+                description="TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING"
+                className="col-span-12 p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-2 border-purple-200 dark:border-purple-700 shadow-2xl font-montserrat"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    
+                    {/* Child's Daily Care - THE PURPLE GRADIENT */}
+                    <Link href="/log" className="block">
+                        <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <BookOpen className="h-10 w-10 mx-auto mb-3" />
+                            <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
+                        </button>
+                    </Link>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Up Next</CardTitle>
-                        <CardDescription>What's coming up for Harper.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex items-center gap-4">
-                           <div className="p-3 bg-accent/20 rounded-lg">
-                             <Utensils className="w-6 h-6 text-accent"/>
-                           </div>
-                           <div>
-                               <p className="font-semibold">Next Feeding</p>
-                               <p className="text-muted-foreground text-sm">Around 11:00 AM</p>
-                           </div>
-                       </div>
-                       <div className="flex items-center gap-4">
-                           <div className="p-3 bg-accent/20 rounded-lg">
-                            <BedDouble className="w-6 h-6 text-accent"/>
-                           </div>
-                           <div>
-                               <p className="font-semibold">Next Nap</p>
-                               <p className="text-muted-foreground text-sm">Around 11:30 AM</p>
-                           </div>
-                       </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Harper's Profile</CardTitle>
-                        <CardDescription>Quick details about our star.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center text-center">
-                        <Avatar className="w-20 h-20 mb-4 border-4 border-accent/50">
-                            <AvatarImage src="https://images.unsplash.com/photo-1637878314356-9f3b0338bc7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGlsZCUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTEwNzg4MHww&ixlib=rb-4.1.0&q=80&w=1080" data-ai-hint="child portrait" />
-                            <AvatarFallback>H</AvatarFallback>
-                        </Avatar>
-                        <p className="font-semibold text-lg">Harper Ryan</p>
-                        <div className="h-4 text-sm text-muted-foreground">
-                            {isClient && <p>{differenceInMonths(new Date(), harper_dob)} months old</p>}
+                    {/* Safe Communication */}
+                    <Link href="/communication" className="block">
+                        <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <MessageSquare className="h-10 w-10 mx-auto mb-3" />
+                            <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
+                        </button>
+                    </Link>
+
+                    {/* Child's Fund */}
+                    <Link href="/fund" className="block">
+                        <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <DollarSign className="h-10 w-10 mx-auto mb-3" />
+                            <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
+                        </button>
+                    </Link>
+
+                </div>
+            </DashboardCard>
+
+            {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
+                    {logs && logs.length > 0 ? (
+                        <div className="space-y-3">
+                            {logs.slice(0, 3).map((log, index) => (
+                                <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
+                                        {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                        {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                        {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {log.time} - {log.details}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="h-3.5 text-xs text-muted-foreground">
-                            {isClient && <p>{format(harper_dob, "MMMM d, yyyy")}</p>}
+                    ) : (
+                        <div className="text-center py-12">
+                            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                            <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
+                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                <Link href="/log">
+                                    <Clock className="h-4 w-4 mr-2" />
+                                    Add First Entry
+                                </Link>
+                            </Button>
                         </div>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Latest Story</CardTitle>
-                        {latestStory && <CardDescription>{format(latestStory.date.toDate(), 'PPP')}</CardDescription>}
-                    </CardHeader>
-                    <CardContent className="flex flex-col">
-                        {journalLoading && <p>Loading story...</p>}
-                        {latestStory ? (
-                            <>
-                                {latestStory.image && (
-                                <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-md object-cover w-full aspect-video mb-4" />
-                                )}
-                                <h3 className="font-semibold mb-1">{latestStory.title}</h3>
-                                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{latestStory.content}</p>
-                                <Button asChild variant="outline" size="sm">
-                                    <Link href="/journal">Read More</Link>
-                                </Button>
-                            </>
-                        ) : (
-                           !journalLoading && <p className="text-sm text-muted-foreground">No stories yet.</p>
-                        )}
-                    </CardContent>
-                </Card>
+                    )}
+                </DashboardCard>
+
+                {/* Family Overview */}
+                <DashboardCard title="FAMILY OVERVIEW" description="YOUR HARPER'S PLACE STATS.">
+                    <div className="flex justify-around items-center mb-6">
+                        <div className="text-center">
+                            <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                                {logs?.length || 0}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                                {journalEntries?.length || 0}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
+                        </div>
+                    </div>
+                    <Button asChild variant="outline" className="w-full hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-700 transition">
+                        <Link href="/profile">Manage Profile</Link>
+                    </Button>
+                </DashboardCard>
+
+                {/* Memory Journal */}
+                <DashboardCard title="MEMORY JOURNAL" description="LATEST MEMORIES AND MILESTONES">
+                    {journalLoading ? (
+                        <div className="space-y-3">
+                            <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
+                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-2/3"></div>
+                        </div>
+                    ) : latestStory ? (
+                        <>
+                            {latestStory.image && (
+                                <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
+                            )}
+                            <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white uppercase font-bebas">{latestStory.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{latestStory.content}</p>
+                            <Button asChild variant="default" size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                                <Link href="/journal">View All Memories</Link>
+                            </Button>
+                        </>
+                    ) : (
+                        <div className="text-center py-12">
+                            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                            <p className="text-gray-400 dark:text-gray-500 mb-4">No memories captured yet</p>
+                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                <Link href="/journal">Create First Memory</Link>
+                            </Button>
+                        </div>
+                    )}
+                </DashboardCard>
+            </div>
+
+            {/* 4. AI TOOLS SHOWCASE */}
+            <div className="p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-l-4 border-purple-600 dark:border-purple-400 rounded-r-xl shadow-xl">
+                <div className="flex items-center mb-4">
+                    <Sparkles className="h-7 w-7 text-purple-600 dark:text-purple-400 mr-3" />
+                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white uppercase font-montserrat tracking-widest">CHILD-FIRST AI TOOLS</h4>
+                </div>
+                <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
+                    Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision.
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Link href="/communication" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Safe Communication</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect emotional well-being</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/fund" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Tag className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Need Tracking</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Prioritize child expenses</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/document-analyzer" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <FileText className="h-8 w-8 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child Safety Analysis</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect best interests</p>
+                        </div>
+                    </Link>
+                    
+                    <Link href="/communication-platform" className="block group">
+                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
+                            <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-First Platform</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect their future</p>
+                        </div>
+                    </Link>
+                </div>
             </div>
         </div>
     );
 }
 
-// --- School-Age Dashboard Component (Placeholder for future) ---
-const SchoolAgeDashboard = () => (
-    <Card>
-        <CardHeader>
-            <CardTitle>School-Age Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p>This dashboard will show custody schedules, school events, shared funds, etc.</p>
-        </CardContent>
-    </Card>
-);
-
-
 export default function DashboardPage() {
-    const ageInMonths = differenceInMonths(new Date("2025-09-06T00:00:00Z"), harper_dob);
-    
-    let DashboardComponent;
-    if (ageInMonths <= 24) {
-        DashboardComponent = InfantDashboard;
-    } else {
-        DashboardComponent = SchoolAgeDashboard;
-    }
-
-    return <DashboardComponent />;
+    return <MainDashboard />;
 }
