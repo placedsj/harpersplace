@@ -51,8 +51,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <div className="text-center space-y-4">
-            <h1 className="text-5xl font-extrabold tracking-tight font-headline uppercase">Harper's Safe Place</h1>
-            <p className="text-xl font-semibold">Make this place your home.</p>
+            <h1 className="text-6xl font-extrabold tracking-tight font-headline uppercase">PLACED</h1>
+            <p className="text-xl font-semibold">Your team, our home</p>
             <p className="text-muted-foreground">Welcome to your legal place. Your data's home. Let us worry about the data, you just worry about their best interest.</p>
         </div>
         <div className="space-y-4 pt-4">
