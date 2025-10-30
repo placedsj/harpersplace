@@ -22,11 +22,11 @@ app.prepare().then(async () => {
 
   const httpServer = await registerRoutes(server);
 
-  server.all('*', (req, res) => {
+  server.use((req, res) => {
     return handle(req, res);
   });
 
-  httpServer.listen(PORT, () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`> Server ready on http://0.0.0.0:${PORT}`);
   });
 });
