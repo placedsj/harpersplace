@@ -1,26 +1,27 @@
-# Familyverse - Next.js Application
+# PLACED - Next.js Co-Parenting Application
 
 ## Overview
-A Next.js 15 family management application with Firebase authentication and AI-powered features. Successfully migrated from Vercel to Replit on October 8, 2025.
+"Your team, our home" - A Next.js 15 co-parenting application with Replit Auth and AI-powered features. Successfully migrated from Vercel to Replit on October 8, 2025, and from Firebase to Replit Auth on October 30, 2025.
 
 ## Project Architecture
 
 ### Tech Stack
-- **Framework**: Next.js 15.3.3 (App Router)
+- **Framework**: Next.js 15.3.3 (App Router) + Express backend
 - **UI**: React 18 with Radix UI components
 - **Styling**: Tailwind CSS
-- **Authentication**: Firebase Auth
-- **Database**: Firebase Firestore
+- **Authentication**: Replit Auth (OpenID Connect)
+- **Database**: PostgreSQL (Neon-backed) via Drizzle ORM
 - **AI**: Google Genkit integration
 - **Package Manager**: npm
 
 ### Directory Structure
 - `src/app/` - Next.js App Router pages and layouts
 - `src/components/` - React components and UI elements
-- `src/firebase/` - Firebase configuration and hooks
-- `src/hooks/` - Custom React hooks
+- `src/hooks/` - Custom React hooks (including useAuth for Replit Auth)
 - `src/lib/` - Utility functions and shared logic
 - `src/ai/` - AI/Genkit integration
+- `server/` - Express backend with authentication routes
+- `shared/` - Shared types and database schema (Drizzle ORM)
 
 ## Development Configuration
 
@@ -32,13 +33,10 @@ A Next.js 15 family management application with Firebase authentication and AI-p
   - `npm run start` - Production server on port 5000
 
 ### Environment Variables
-Required Firebase configuration (stored in .env.local):
-- NEXT_PUBLIC_FIREBASE_API_KEY
-- NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-- NEXT_PUBLIC_FIREBASE_PROJECT_ID
-- NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-- NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-- NEXT_PUBLIC_FIREBASE_APP_ID
+Required configuration:
+- DATABASE_URL - PostgreSQL connection string (automatically provided by Replit)
+- SESSION_SECRET - Secret key for session encryption (automatically generated)
+- REPLIT_DEPLOYMENT - Set to '1' in production
 
 ### Replit-Specific Configuration
 - **Cross-Origin Handling**: Configured `allowedDevOrigins` in next.config.ts to handle Replit's iframe-based development environment
@@ -50,10 +48,17 @@ Required Firebase configuration (stored in .env.local):
 - **Start**: `npm run start`
 
 ## Recent Changes
+- **October 30, 2025**: Migrated from Firebase to Replit Auth
+  - Replaced Firebase Auth with Replit's OpenID Connect authentication
+  - Added Express backend to serve Next.js and handle authentication routes
+  - Set up PostgreSQL database with Drizzle ORM for users and sessions
+  - Implemented secure session management with CSRF protection (sameSite cookies)
+  - Updated useAuth hook to work with React Query and server-side auth
+  - Rebranded from "Familyverse" to "PLACED" with new gradient design
+  
 - **October 8, 2025**: Migrated from Vercel to Replit
   - Configured ports for Replit environment (5000, bound to 0.0.0.0)
   - Added allowedDevOrigins for cross-origin request handling
-  - Set up Firebase environment variables
   - Configured deployment for production
 
 ## Features
