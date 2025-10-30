@@ -48,11 +48,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md space-y-8 text-center">
-        <div className="text-center">
-            <h1 className="text-5xl font-extrabold tracking-tight font-headline uppercase">Harper's Home</h1>
-            <p className="text-muted-foreground mt-2">Please select your access type to continue.</p>
+        <div className="text-center space-y-4">
+            <h1 className="text-5xl font-extrabold tracking-tight font-headline uppercase">Harper's Safe Place</h1>
+            <p className="text-xl font-semibold">Make this place your home.</p>
+            <p className="text-muted-foreground">Welcome to your legal place. Your data's home. Let us worry about the data, you just worry about their best interest.</p>
         </div>
         <div className="space-y-4 pt-4">
           <Button onClick={() => router.push('/login-form')} size="lg" className="w-full">
