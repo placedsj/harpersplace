@@ -18,7 +18,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-open-sans)', 'sans-serif'],
-        headline: ['var(--font-montserrat)', 'sans-serif'],
+        headline: ['var(--font-bebas-neue)', 'var(--font-montserrat)', 'sans-serif'],
       },
       fontWeight: {
         'extrabold': '800',

@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 'use server';
 
-=======
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
 import { defineFlow, action } from '@genkit-ai/flow';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
@@ -34,7 +31,6 @@ if (!admin.apps.length) {
     console.error("Error initializing Firebase Admin SDK:", error);
     throw new Error("Failed to parse or initialize Firebase Admin SDK.");
   }
-<<<<<<< HEAD
 }
 
 const storage = admin.storage();
@@ -85,6 +81,3 @@ export const getStorageUploadUrlFlow = defineFlow(
         )(input);
     }
 );
-=======
-);
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
