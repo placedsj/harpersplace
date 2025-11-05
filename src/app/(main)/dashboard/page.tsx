@@ -51,20 +51,20 @@ const MainDashboard = () => {
         <div className="space-y-8 pb-8">
            {/* 1. WELCOME BANNER */}
            <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3 flex items-center gap-3">
-                WELCOME TO HARPER'S PLACE 
-                <span className="text-3xl">🏡</span>
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-                Where every decision, every conversation, and every action puts your child's best interests and emotional well-being first.
-            </p>
+                <div className="mb-8 px-4 py-6 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10 shadow-md">
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="text-2xl">🧒</span>
+                        <h1 className="text-3xl sm:text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">CHILD-CENTERED ACTIONS</h1>
+                    </div>
+                    <p className="text-base sm:text-lg font-montserrat text-muted-foreground tracking-wide">TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING</p>
+                </div>
            </div>
 
             {/* 2. CHILD-CENTERED ACTIONS - THE STUNNING GRADIENT BLOCK */}
             <DashboardCard
-                title="👶 Child-Centered Actions"
-                description="Tools that prioritize your child's needs and well-being"
-                className="col-span-12 p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-2 border-purple-200 dark:border-purple-700 shadow-2xl"
+                title="👶 CHILD-CENTERED ACTIONS"
+                description="TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING"
+                className="col-span-12 p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-2 border-purple-200 dark:border-purple-700 shadow-2xl font-montserrat"
             >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                     
@@ -73,8 +73,8 @@ const MainDashboard = () => {
                         <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                             <BookOpen className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">Child's Daily Care</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90">Monitor well-being & milestones</span>
+                            <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
                         </button>
                     </Link>
 
@@ -83,8 +83,8 @@ const MainDashboard = () => {
                         <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                             <MessageSquare className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">Safe Communication</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90">Child-focused messaging & AI Coach</span>
+                            <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
                         </button>
                     </Link>
 
@@ -93,8 +93,8 @@ const MainDashboard = () => {
                         <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                             <DollarSign className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">Child's Fund</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90">Transparent support & expense tracking</span>
+                            <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
+                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
                         </button>
                     </Link>
 
@@ -103,7 +103,7 @@ const MainDashboard = () => {
 
             {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                <DashboardCard title="Recent Activity" description="Latest entries and updates.">
+                <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
                     {logs && logs.length > 0 ? (
                         <div className="space-y-3">
                             {logs.slice(0, 3).map((log, index) => (
@@ -137,7 +137,7 @@ const MainDashboard = () => {
                 </DashboardCard>
 
                 {/* Family Overview */}
-                <DashboardCard title="Family Overview" description="Your Harper's Place stats.">
+                <DashboardCard title="FAMILY OVERVIEW" description="YOUR HARPER'S PLACE STATS.">
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -158,7 +158,7 @@ const MainDashboard = () => {
                 </DashboardCard>
 
                 {/* Memory Journal */}
-                <DashboardCard title="Memory Journal" description="Latest memories and milestones">
+                <DashboardCard title="MEMORY JOURNAL" description="LATEST MEMORIES AND MILESTONES">
                     {journalLoading ? (
                         <div className="space-y-3">
                             <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse"></div>
@@ -170,7 +170,7 @@ const MainDashboard = () => {
                             {latestStory.image && (
                                 <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
                             )}
-                            <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">{latestStory.title}</h3>
+                            <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white uppercase font-bebas">{latestStory.title}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{latestStory.content}</p>
                             <Button asChild variant="default" size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
                                 <Link href="/journal">View All Memories</Link>
@@ -192,7 +192,7 @@ const MainDashboard = () => {
             <div className="p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-l-4 border-purple-600 dark:border-purple-400 rounded-r-xl shadow-xl">
                 <div className="flex items-center mb-4">
                     <Sparkles className="h-7 w-7 text-purple-600 dark:text-purple-400 mr-3" />
-                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white">Child-First AI Tools</h4>
+                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white uppercase font-montserrat tracking-widest">CHILD-FIRST AI TOOLS</h4>
                 </div>
                 <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
                     Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision.
