@@ -5,17 +5,17 @@ export default function AboutPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">OUR MISSION</h1>
-        <p className="mt-2 text-lg font-montserrat text-accent tracking-wide">
+        <h1 className="text-5xl font-headline uppercase tracking-tight text-primary drop-shadow-md">OUR MISSION</h1>
+        <p className="mt-2 text-lg font-sans text-accent tracking-wide">
           Transforming crisis into stability for parents and their children.
         </p>
       </div>
 
       <Card className="shadow-lg border-2 border-primary/40">
         <CardHeader>
-          <CardTitle className="font-bebas uppercase text-primary tracking-widest">THE ELEVATOR PITCH</CardTitle>
+          <CardTitle className="font-headline uppercase text-primary tracking-widest">THE ELEVATOR PITCH</CardTitle>
         </CardHeader>
-        <CardContent className="text-lg font-montserrat text-foreground">
+        <CardContent className="text-lg font-sans text-foreground">
           <p>
             Harper&apos;s Place provides essential structure and strategy for
             parents navigating high-conflict separation. We are a resource hub
@@ -30,9 +30,9 @@ export default function AboutPage() {
 
       <Card className="shadow-lg border-2 border-accent/40">
         <CardHeader>
-          <CardTitle className="font-bebas uppercase text-accent tracking-widest">THE FOUNDER&apos;S COMMITMENT</CardTitle>
+          <CardTitle className="font-headline uppercase text-accent tracking-widest">THE FOUNDER&apos;S COMMITMENT</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-lg font-montserrat text-foreground">
+        <CardContent className="space-y-4 text-lg font-sans text-foreground">
           <h3 className="font-semibold text-primary">WHY HARPER&apos;S PLACE?</h3>
           <p>
             This organization was founded on the belief that a child&apos;s right

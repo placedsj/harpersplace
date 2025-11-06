@@ -79,18 +79,18 @@
     }
     body {
         @apply bg-background text-foreground;
-        font-family: var(--font-open-sans), sans-serif;
+        font-family: var(--font-sans), sans-serif;
     }
     h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-montserrat), sans-serif;
-            @apply font-extrabold text-foreground;
+            font-family: var(--font-headline), sans-serif;
+            @apply font-bold text-foreground uppercase;
     }
-    .font-montserrat {
-        font-family: 'Montserrat', sans-serif;
+    .font-sans {
+        font-family: 'Open Sans', sans-serif;
     }
-    .font-bebas {
-        font-family: 'Bebas Neue', cursive, sans-serif;
-        letter-spacing: 0.05em;
+    .font-headline {
+        font-family: 'Fredoka One', cursive, sans-serif;
+        letter-spacing: 0.025em;
     }
 }
 
@@ -160,7 +160,7 @@
     }
     
     .btn-primary {
-        @apply bg-primary text-primary-foreground font-semibold text-lg py-3 px-6 rounded-lg;
+        @apply bg-primary text-primary-foreground font-semibold text-lg py-3 px-6 rounded-lg uppercase font-headline;
     }
      .btn-primary:hover {
         @apply bg-primary-dark;

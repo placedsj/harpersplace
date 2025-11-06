@@ -121,8 +121,8 @@ export default function CalendarPage() {
   return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">FAMILY CALENDAR</h1>
-                <p className="text-lg font-montserrat text-accent mt-1 tracking-wide">
+                <h1 className="text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">FAMILY CALENDAR</h1>
+                <p className="text-lg font-sans text-accent mt-1 tracking-wide">
                     Coordinate schedules, events, and memories based on the current plan.
                 </p>
             </div>
@@ -142,7 +142,7 @@ export default function CalendarPage() {
         <div className="space-y-6">
             <Card className="shadow-md border-l-4 border-accent">
                 <CardHeader>
-                    <CardTitle className="font-bebas uppercase text-accent tracking-widest">SCHEDULE KEY</CardTitle>
+                    <CardTitle className="font-headline uppercase text-accent tracking-widest">SCHEDULE KEY</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export default function CalendarPage() {
             </Card>
             <Card className="shadow-md border-l-4 border-primary">
                 <CardHeader>
-                    <CardTitle className="font-bebas uppercase text-primary tracking-widest">
+                    <CardTitle className="font-headline uppercase text-primary tracking-widest">
                         {date ? format(date, 'MMMM do, yyyy').toUpperCase() : 'SELECT A DATE'}
                     </CardTitle>
                 </CardHeader>

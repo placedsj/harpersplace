@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-open-sans)', 'sans-serif'],
-        headline: ['var(--font-bebas-neue)', 'var(--font-montserrat)', 'sans-serif'],
+        sans: ['Open Sans', 'sans-serif'],
+        headline: ['Fredoka One', 'cursive'],
       },
       fontWeight: {
         'extrabold': '800',

@@ -23,7 +23,7 @@ export default function AppLayout({
               <div className="flex items-center space-x-8">
                 {/* Harper's Place Logo */}
                 <div className="flex items-center">
-                  <h1 className="text-2xl font-extrabold tracking-tight uppercase font-montserrat bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-headline tracking-wider uppercase bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                     Harper's Place
                   </h1>
                 </div>
