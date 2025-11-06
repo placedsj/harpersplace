@@ -29,13 +29,13 @@ export function CoParentingTip() {
   }
 
   return (
-    <Card className="bg-accent/50 border-accent">
+    <Card className="bg-accent border-accent/50">
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-2">
         <Lightbulb className="w-5 h-5 text-accent-foreground" />
-        <CardTitle className="text-base font-semibold text-accent-foreground">Co-Parenting Tip</CardTitle>
+        <CardTitle className="font-headline uppercase text-accent-foreground tracking-widest">Co-Parenting Tip</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-accent-foreground/80">
+        <p className="text-sm font-sans text-accent-foreground/80">
           {tip}
         </p>
       </CardContent>
