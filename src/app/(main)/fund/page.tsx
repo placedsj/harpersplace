@@ -108,8 +108,157 @@ export default function FundPage() {
         amount: 0,
         category: 'Other',
       });
-    } catch (error)_mod
-{
-  "message": "Of course. I see the build error, and I understand the problem. Thank you for providing the detailed report from Next.js.\n\nThe error `Module not found: Can't resolve 'net'` is happening because the `firebase-admin` package, which is designed to run only on a server, is being imported into our client-side code. The `net` module is a Node.js-only library, and it cannot be bundled for the browser.\n\nThis is happening in the `get-storage-upload-url.ts` flow, which is then imported by the \"Transition Summary\" page. While Genkit flows run on the server, importing them directly into a client component (`'use client'`) can cause Next.js to try and bundle server-only code for the client.\n\nTo fix this, I will add the `'use server';` directive to the top of the `get-storage-upload-url.ts` file. This directive explicitly tells Next.js and React that this module contains server-side logic that should not be sent to the browser, resolving the build error while allowing our client component to call the server-side flow correctly.\n\nHere is the change.",
-  "status": "success"
+    } catch (error) {
+        console.error("Error submitting expense:", error);
+        toast({
+            variant: "destructive",
+            title: "Submission Error",
+            description: "Could not save the expense. Please try again.",
+        });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Harper's Fund</h1>
+        <p className="text-muted-foreground mt-1">
+          A transparent and shared ledger for all of Harper's expenses.
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>{editId ? 'Edit Expense' : 'Log New Expense'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Fall soccer registration" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="button" variant="outline" size="sm" onClick={handleAiCategorize} disabled={isAiLoading}>
+                    {isAiLoading ? <Loader2 className="animate-spin" /> : null}
+                    Categorize with AI
+                  </Button>
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Amount (CAD)</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="50.00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Health">Health</SelectItem>
+                            <SelectItem value="Education">Education</SelectItem>
+                            <SelectItem value="Extracurricular">Extracurricular</SelectItem>
+                            <SelectItem value="Clothing">Clothing</SelectItem>
+                            <SelectItem value="Childcare">Childcare</SelectItem>
+                            <SelectItem value="Travel">Travel</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex gap-2">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading && <Loader2 className="animate-spin" />}
+                      {editId ? 'Update Expense' : 'Log Expense'}
+                    </Button>
+                    {editId && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setEditId(null);
+                          form.reset({ description: '', amount: 0, category: 'Other' });
+                        }}
+                      >
+                        <X />
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Expense History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {expensesLoading && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {expenses &&
+                    expenses.map((expense) => (
+                      <TableRow key={expense.id}>
+                        <TableCell className="font-medium">{expense.description}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{expense.category}</Badge>
+                        </TableCell>
+                        <TableCell>${expense.amount.toFixed(2)}</TableCell>
+                        <TableCell>{expense.timestamp?.toDate().toLocaleDateString()}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
 }
