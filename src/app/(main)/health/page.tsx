@@ -135,7 +135,7 @@ export default function HealthPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
          <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Health Hub</h1>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">HEALTH HUB</h1>
             <p className="text-muted-foreground mt-1">
                 Track appointments, immunizations, and medical notes for Harper.
             </p>
@@ -270,7 +270,7 @@ export default function HealthPage() {
        <div className="grid gap-6 lg:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Upcoming Appointments</CardTitle>
+                    <CardTitle className="font-headline uppercase">Upcoming Appointments</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     {loading && <p className="p-4 text-sm text-muted-foreground">Loading...</p>}
@@ -283,7 +283,7 @@ export default function HealthPage() {
             </Card>
              <Card>
                 <CardHeader>
-                    <CardTitle>Immunization Record</CardTitle>
+                    <CardTitle className="font-headline uppercase">Immunization Record</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 max-h-96 overflow-y-auto">
                     {loading && <p className="p-4 text-sm text-muted-foreground">Loading...</p>}
@@ -297,7 +297,7 @@ export default function HealthPage() {
        </div>
        <Card>
             <CardHeader>
-                <CardTitle>Health History</CardTitle>
+                <CardTitle className="font-headline uppercase">Health History</CardTitle>
                 <CardDescription>A reverse chronological log of past appointments and notes.</CardDescription>
             </CardHeader>
             <CardContent className="p-0 max-h-[60vh] overflow-y-auto">

@@ -131,14 +131,14 @@ function EvidenceLogPageInternal() {
     return (
     <div className="space-y-8">
         <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Evidence Log</h1>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">EVIDENCE LOG</h1>
             <p className="text-muted-foreground mt-1">A secure and chronological record of co-parenting events.</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-1">
                 <CardHeader>
-                    <CardTitle>Log New Event</CardTitle>
+                    <CardTitle className="font-headline uppercase">Log New Event</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -234,7 +234,7 @@ function EvidenceLogPageInternal() {
             <div className="lg:col-span-2 space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Event History</CardTitle>
+                        <CardTitle className="font-headline uppercase">Event History</CardTitle>
                         <p className="text-muted-foreground">A chronological record of events</p>
                     </CardHeader>
                      <CardContent>
@@ -250,7 +250,7 @@ function EvidenceLogPageInternal() {
                             <CardHeader>
                                 <div className="flex justify-between items-start">
                                     <div>
-                                      <CardTitle className="text-lg">{event.category}</CardTitle>
+                                      <CardTitle className="text-lg font-headline uppercase">{event.category}</CardTitle>
                                        <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
                                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
                                              {event.timestamp?.toDate && (

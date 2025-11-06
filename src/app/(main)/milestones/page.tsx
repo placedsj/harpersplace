@@ -110,7 +110,7 @@ export default function MilestonesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
          <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Developmental Milestones</h1>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">DEVELOPMENTAL MILESTONES</h1>
             <p className="text-muted-foreground mt-1">
                 A living record of Harper's growth and achievements.
             </p>
@@ -238,7 +238,7 @@ export default function MilestonesPage() {
                     <CardHeader>
                         <div className="flex items-start justify-between">
                             <div>
-                                <CardTitle>{milestone.title}</CardTitle>
+                                <CardTitle className="font-headline uppercase">{milestone.title}</CardTitle>
                                 <CardDescription>{format(milestone.date.toDate(), 'PPP')}</CardDescription>
                             </div>
                             <div className="p-3 bg-primary/10 rounded-lg">

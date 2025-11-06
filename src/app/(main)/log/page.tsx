@@ -104,7 +104,7 @@ export default function LogPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Harper's Log</h1>
+            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">HARPER'S LOG</h1>
             <p className="text-muted-foreground mt-1">
                 A real-time log of feedings, sleep, and diaper changes.
             </p>
@@ -187,7 +187,7 @@ export default function LogPage() {
         <div className="lg:col-span-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Today's Log</CardTitle>
+                    <CardTitle className="font-headline uppercase">Today's Log</CardTitle>
                     <CardDescription>{format(new Date(), 'PPPP')}</CardDescription>
                 </CardHeader>
                 <CardContent>
