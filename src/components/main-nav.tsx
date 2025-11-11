@@ -17,12 +17,6 @@ const navItems = [
     { href: '/communication', label: 'Chat' },
 ];
 
-const legalEvidenceItems = [
-    { href: '/evidence-log', label: 'Evidence Log' },
-    { href: '/evidence-ai', label: 'Evidence AI Assistant' },
-    { href: '/document-analyzer', label: 'Document Analyzer' },
-];
-
 const aiToolsItems = [
     { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
     { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
@@ -76,8 +70,6 @@ const MobileNav = () => {
         ...navItems,
         { href: '/divider1', label: '--- Child-Focused ---', isHeader: true },
         ...childFocusedItems,
-        { href: '/divider2', label: '--- Legal & Evidence ---', isHeader: true },
-        ...legalEvidenceItems,
         { href: '/divider3', label: '--- AI Tools ---', isHeader: true },
         ...aiToolsItems,
     ];
@@ -149,7 +141,6 @@ export function MainNav({
           </Link>
         ))}
         <NavDropdown label="Child-Focused" items={childFocusedItems} />
-        <NavDropdown label="Legal & Evidence" items={legalEvidenceItems} />
         <NavDropdown label="AI Tools" items={aiToolsItems} />
       </nav>
     </>

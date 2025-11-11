@@ -26,22 +26,6 @@
       },
       "required": ["uid", "displayName", "email", "createdAt"]
     },
-    "evidence": {
-        "title": "Evidence Log",
-        "description": "An entry in the evidence log.",
-        "type": "object",
-        "properties": {
-            "eventDate": { "type": "string", "format": "date" },
-            "category": { "type": "string" },
-            "description": { "type": "string" },
-            "partiesInvolved": { "type": "string" },
-            "yourResponse": { "type": "string" },
-            "loggedBy": { "type": "string" },
-            "userId": { "type": "string" },
-            "timestamp": { "type": "string", "format": "date-time" }
-        },
-        "required": ["eventDate", "category", "description", "loggedBy", "userId", "timestamp"]
-    },
     "journalEntry": {
         "title": "Journal Entry",
         "description": "A single entry in the family journal.",
@@ -119,10 +103,6 @@
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/userProfile" },
       "description": "Stores public profiles for users."
-    },
-    "/users/{userId}/evidence": {
-        "schema": { "$ref": "#/entities/evidence" },
-        "description": "Stores evidence logs for a user."
     },
     "/users/{userId}/journal": {
         "schema": { "$ref": "#/entities/journalEntry" },

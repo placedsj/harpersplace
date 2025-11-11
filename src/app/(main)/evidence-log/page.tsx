@@ -1,289 +1,128 @@
-// src/app/(main)/evidence-log/page.tsx
-'use client';
-
-import React from 'react';
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collection, addDoc, query, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { format } from 'date-fns';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, CalendarIcon } from 'lucide-react';
-import { useFirestore, useCollection } from '@/firebase';
-
-const logSchema = z.object({
-  eventDate: z.string().min(1, 'Date is required.'),
-  category: z.string().min(1, 'Category is required.'),
-  description: z.string().min(1, 'Description is required.'),
-  partiesInvolved: z.string().optional(),
-  yourResponse: z.string().optional(),
-});
-
-type LogFormValues = z.infer<typeof logSchema>;
-
-interface Event {
-    id: string;
-    eventDate: string;
-    category: string;
-    description: string;
-    partiesInvolved?: string;
-    response?: string;
-    loggedBy: string;
-    userId: string;
-    timestamp?: Timestamp
-}
-
-
-function EvidenceLogPageInternal() {
-    const { user } = useAuth();
-    const { db } = useFirestore();
-    const { toast } = useToast();
-    const searchParams = useSearchParams();
-    const [isLoading, setIsLoading] = useState(false);
-
-    const evidenceQuery = useMemo(() => {
-        if (!user || !db) return null;
-        return query(collection(db, `users/${user.uid}/evidence`), orderBy('timestamp', 'desc'));
-    }, [user, db]);
-
-    const { data: events, loading: eventsLoading } = useCollection<Event>(evidenceQuery);
-
-    const form = useForm<LogFormValues>({
-        resolver: zodResolver(logSchema),
-        defaultValues: {
-            eventDate: format(new Date(), 'yyyy-MM-dd'),
-            category: 'Communication',
-            description: '',
-            partiesInvolved: '',
-            yourResponse: '',
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
         },
-    });
-     
-    useEffect(() => {
-        const category = searchParams.get('category');
-        const description = searchParams.get('description');
-        const evidence = searchParams.get('evidence');
-
-        if (category || description || evidence) {
-            form.reset({
-                eventDate: format(new Date(), 'yyyy-MM-dd'),
-                category: category || 'Communication',
-                description: description || evidence || '',
-                partiesInvolved: '',
-                yourResponse: '',
-            });
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time the user was created."
         }
-    }, [searchParams, form]);
-
-
-    const handleLogEvent = async (values: LogFormValues) => {
-        if (!user || !db) {
-            toast({
-                variant: 'destructive',
-                title: 'Not authenticated',
-                description: 'You must be logged in to log an event.',
-            });
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            const evidenceCollectionRef = collection(db, `users/${user.uid}/evidence`);
-            await addDoc(evidenceCollectionRef, {
-                ...values,
-                loggedBy: user.displayName || 'Unknown User',
-                userId: user.uid,
-                timestamp: serverTimestamp()
-            });
-            toast({
-                title: 'Event Logged',
-                description: 'Your event has been securely saved.',
-            });
-            form.reset({
-                eventDate: format(new Date(), 'yyyy-MM-dd'),
-                category: 'Communication',
-                description: '',
-                partiesInvolved: '',
-                yourResponse: '',
-            });
-        } catch (error) {
-            console.error("Error adding document: ", error);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'There was a problem logging your event.',
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-    <div className="space-y-8">
-        <div>
-            <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">EVIDENCE LOG</h1>
-            <p className="text-muted-foreground mt-1">A secure and chronological record of co-parenting events.</p>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-1">
-                <CardHeader>
-                    <CardTitle className="font-headline uppercase">Log New Event</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleLogEvent)} className="space-y-6">
-                             <FormField
-                                control={form.control}
-                                name="eventDate"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Date of Event</FormLabel>
-                                         <div className="relative">
-                                            <FormControl>
-                                                <Input type="date" {...field} className="pr-10" />
-                                            </FormControl>
-                                             <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="category"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Category</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a category" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Communication">Communication</SelectItem>
-                                                <SelectItem value="Custody Exchange">Custody Exchange</SelectItem>
-                                                <SelectItem value="Financial">Financial</SelectItem>
-                                                <SelectItem value="Health">Health</SelectItem>
-                                                <SelectItem value="Safety Concern">Safety Concern</SelectItem>
-                                                <SelectItem value="Other">Other</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Factual Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="Describe the event in factual, objective detail..." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="partiesInvolved"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Parties Involved (Optional)</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="e.g., Jane Doe, Officer Smith" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name="yourResponse"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Your Response (Optional)</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="How you responded to the event..." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="animate-spin" /> : 'Log Event'}
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-
-            <div className="lg:col-span-2 space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline uppercase">Event History</CardTitle>
-                        <p className="text-muted-foreground">A chronological record of events</p>
-                    </CardHeader>
-                     <CardContent>
-                        {/* Filters could be added here later */}
-                     </CardContent>
-                </Card>
-
-                <div className="space-y-4">
-                    {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
-                    {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
-                    {events && events.map(event => (
-                        <Card key={event.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                      <CardTitle className="text-lg font-headline uppercase">{event.category}</CardTitle>
-                                       <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                            <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
-                                             {event.timestamp?.toDate && (
-                                                <>
-                                                 <span>&bull;</span>
-                                                 <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
-                                                </>
-                                             )}
-                                             <span>&bull;</span>
-                                             <span>by {event.loggedBy}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{event.description}</p>
-                                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.yourResponse && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.yourResponse}</p>}
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
-        </div>
-    </div>
-  );
-}
-
-// Wrap the component in a Suspense boundary to use useSearchParams
-export default function EvidenceLogPage() {
-    return (
-        <React.Suspense fallback={<div className="flex h-screen w-screen items-center justify-center"><Loader2 className="animate-spin" /></div>}>
-            <EvidenceLogPageInternal />
-        </React.Suspense>
-    );
+      },
+      "required": ["uid", "displayName", "email", "createdAt"]
+    },
+    "journalEntry": {
+        "title": "Journal Entry",
+        "description": "A single entry in the family journal.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "content": { "type": "string" },
+            "image": { "type": "string", "format": "uri" },
+            "dataAiHint": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "content", "userId", "timestamp"]
+    },
+    "healthEvent": {
+        "title": "Health Event",
+        "description": "A health-related event for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "details": { "type": "string" },
+            "type": { "type": "string", "enum": ["Appointment", "Immunization", "Note"] },
+            "doctor": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "details", "type", "userId", "timestamp"]
+    },
+    "milestone": {
+        "title": "Milestone",
+        "description": "A developmental milestone for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "description": { "type": "string" },
+            "category": { "type": "string", "enum": ["Achievement", "Health", "Growth"] },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "description", "category", "userId", "timestamp"]
+    },
+    "dailyLog": {
+        "title": "Daily Log",
+        "description": "A log entry for daily care (feeding, diaper, sleep).",
+        "type": "object",
+        "properties": {
+            "time": { "type": "string" },
+            "type": { "type": "string", "enum": ["Feeding", "Diaper", "Sleep"] },
+            "details": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["time", "type", "details", "userId", "timestamp"]
+    },
+    "groceryItem": {
+        "title": "Grocery Item",
+        "description": "An item on the shared grocery list.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "checked": { "type": "boolean" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "checked", "userId", "timestamp"]
+    }
+  },
+  "auth": {
+    "providers": ["email_password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/userProfile" },
+      "description": "Stores public profiles for users."
+    },
+    "/users/{userId}/journal": {
+        "schema": { "$ref": "#/entities/journalEntry" },
+        "description": "Stores journal entries for a user."
+    },
+    "/users/{userId}/health-events": {
+        "schema": { "$ref": "#/entities/healthEvent" },
+        "description": "Stores health events for a user."
+    },
+    "/users/{userId}/milestones": {
+        "schema": { "$ref": "#/entities/milestone" },
+        "description": "Stores milestones for a user."
+    },
+    "/users/{userId}/daily-logs": {
+        "schema": { "$ref": "#/entities/dailyLog" },
+        "description": "Stores daily care logs for a user."
+    },
+    "/users/{userId}/groceries": {
+        "schema": { "$ref": "#/entities/groceryItem" },
+        "description": "Stores grocery list items for a user."
+    }
+  }
 }

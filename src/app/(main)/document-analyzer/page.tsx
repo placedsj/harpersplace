@@ -1,137 +1,128 @@
-// src/app/(main)/document-analyzer/page.tsx
-'use client';
-
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, Wand2, FilePlus, FileText } from 'lucide-react';
-import { processEvidenceText, ProcessEvidenceTextOutput } from '@/ai/flows/process-evidence-text';
-import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-
-export default function DocumentAnalyzerPage() {
-  const [text, setText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<ProcessEvidenceTextOutput | null>(null);
-  const { toast } = useToast();
-  const router = useRouter();
-
-  const handleAnalyze = async () => {
-    if (text.trim().length < 20) {
-      toast({
-        variant: 'destructive',
-        title: 'Text is too short',
-        description: 'Please paste more content to analyze effectively.',
-      });
-      return;
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time the user was created."
+        }
+      },
+      "required": ["uid", "displayName", "email", "createdAt"]
+    },
+    "journalEntry": {
+        "title": "Journal Entry",
+        "description": "A single entry in the family journal.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "content": { "type": "string" },
+            "image": { "type": "string", "format": "uri" },
+            "dataAiHint": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "content", "userId", "timestamp"]
+    },
+    "healthEvent": {
+        "title": "Health Event",
+        "description": "A health-related event for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "details": { "type": "string" },
+            "type": { "type": "string", "enum": ["Appointment", "Immunization", "Note"] },
+            "doctor": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "details", "type", "userId", "timestamp"]
+    },
+    "milestone": {
+        "title": "Milestone",
+        "description": "A developmental milestone for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "description": { "type": "string" },
+            "category": { "type": "string", "enum": ["Achievement", "Health", "Growth"] },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "description", "category", "userId", "timestamp"]
+    },
+    "dailyLog": {
+        "title": "Daily Log",
+        "description": "A log entry for daily care (feeding, diaper, sleep).",
+        "type": "object",
+        "properties": {
+            "time": { "type": "string" },
+            "type": { "type": "string", "enum": ["Feeding", "Diaper", "Sleep"] },
+            "details": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["time", "type", "details", "userId", "timestamp"]
+    },
+    "groceryItem": {
+        "title": "Grocery Item",
+        "description": "An item on the shared grocery list.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "checked": { "type": "boolean" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "checked", "userId", "timestamp"]
     }
-
-    setIsLoading(true);
-    setResult(null);
-
-    try {
-      const output = await processEvidenceText({ textContent: text });
-      setResult(output);
-    } catch (error) {
-      console.error('Error processing evidence text:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Analysis Failed',
-        description: 'There was an error analyzing the text. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
+  },
+  "auth": {
+    "providers": ["email_password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/userProfile" },
+      "description": "Stores public profiles for users."
+    },
+    "/users/{userId}/journal": {
+        "schema": { "$ref": "#/entities/journalEntry" },
+        "description": "Stores journal entries for a user."
+    },
+    "/users/{userId}/health-events": {
+        "schema": { "$ref": "#/entities/healthEvent" },
+        "description": "Stores health events for a user."
+    },
+    "/users/{userId}/milestones": {
+        "schema": { "$ref": "#/entities/milestone" },
+        "description": "Stores milestones for a user."
+    },
+    "/users/{userId}/daily-logs": {
+        "schema": { "$ref": "#/entities/dailyLog" },
+        "description": "Stores daily care logs for a user."
+    },
+    "/users/{userId}/groceries": {
+        "schema": { "$ref": "#/entities/groceryItem" },
+        "description": "Stores grocery list items for a user."
     }
-  };
-  
-  const handleAddToLog = () => {
-    if (!result) return;
-    const query = new URLSearchParams({
-        category: result.suggestedCategory,
-        description: result.summary,
-        evidence: `AI analysis of pasted text: "${result.suggestedTitle}"`,
-    });
-    router.push(`/evidence-log?${query.toString()}`);
-  };
-
-  return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Document Analyzer</h1>
-        <p className="text-muted-foreground mt-1">
-          Paste text from emails, PDFs, or other documents to automatically extract key info and categorize it.
-        </p>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Paste Document Text</CardTitle>
-            <CardDescription>Copy the text from your source and paste it below.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid w-full gap-1.5">
-              <Label htmlFor="message-2">Your Text</Label>
-              <Textarea 
-                placeholder="Paste your text content here..." 
-                id="message-2" 
-                rows={15}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">
-                The AI will analyze this text to suggest a title, category, and summary.
-              </p>
-            </div>
-            <Button onClick={handleAnalyze} disabled={isLoading || !text} className="w-full">
-              {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 />}
-              <span>Analyze Text</span>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className={!result && !isLoading ? 'flex items-center justify-center' : ''}>
-          <CardHeader>
-            <CardTitle>AI Analysis</CardTitle>
-            <CardDescription>Review the AI's analysis before adding to your log.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="animate-spin" />
-                <span>Analyzing text...</span>
-              </div>
-            )}
-            {!result && !isLoading && (
-              <div className="text-center text-muted-foreground py-10">
-                <FileText className="mx-auto h-12 w-12" />
-                <p>Your analysis will appear here.</p>
-              </div>
-            )}
-            {result && (
-              <div className="space-y-6">
-                <div>
-                    <h3 className="font-semibold mb-2">Suggested Title</h3>
-                    <p className="p-3 bg-muted rounded-md text-sm">{result.suggestedTitle}</p>
-                </div>
-                <div>
-                    <h3 className="font-semibold mb-2">Suggested Category</h3>
-                    <p className="p-3 bg-muted rounded-md text-sm">{result.suggestedCategory}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Summary</h3>
-                  <p className="p-3 bg-muted rounded-md text-sm">{result.summary}</p>
-                </div>
-                <Button onClick={handleAddToLog} className="w-full">
-                    <FilePlus />
-                    <span>Add to Evidence Log</span>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  }
 }

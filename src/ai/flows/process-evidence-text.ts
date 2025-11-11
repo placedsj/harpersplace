@@ -1,61 +1,128 @@
-'use server';
-
-/**
- * @fileOverview An AI agent for processing text-based evidence from documents or emails.
- *
- * - processEvidenceText - A function that analyzes text content and suggests a title, summary, and category.
- * - ProcessEvidenceTextInput - The input type for the processEvidenceText function.
- * - ProcessEvidenceTextOutput - The return type for the processEvidenceText function.
- */
-
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-
-const ProcessEvidenceTextInputSchema = z.object({
-  textContent: z
-    .string()
-    .describe(
-      "The full text content copied from a document, email, or other text-based source."
-    ),
-});
-export type ProcessEvidenceTextInput = z.infer<typeof ProcessEvidenceTextInputSchema>;
-
-const ProcessEvidenceTextOutputSchema = z.object({
-  summary: z.string().describe('A brief, factual summary of the text content, highlighting key points, dates, and names.'),
-  suggestedTitle: z.string().describe('A concise, descriptive title for the evidence log entry based on the text.'),
-  suggestedCategory: z.enum(['Communication', 'Custody Exchange', 'Financial', 'Health', 'Other']).describe('The most relevant category for this piece of evidence.'),
-});
-export type ProcessEvidenceTextOutput = z.infer<typeof ProcessEvidenceTextOutputSchema>;
-
-export async function processEvidenceText(input: ProcessEvidenceTextInput): Promise<ProcessEvidenceTextOutput> {
-  return processEvidenceTextFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'processEvidenceTextPrompt',
-  input: { schema: ProcessEvidenceTextInputSchema },
-  output: { schema: ProcessEvidenceTextOutputSchema },
-  prompt: `You are an AI assistant for a co-parenting app. Your task is to analyze pasted text content that will be used as evidence in a legal context. Be objective, factual, and concise. The text is from a document, email, or a transcribed conversation.
-
-The user has pasted the following text:
----
-{{{textContent}}}
----
-
-Your tasks are:
-1.  **Summarize Content:** Write a short, neutral summary of the text. Identify and include key points, names, dates, and any resolutions or conflicts mentioned.
-2.  **Suggest Title:** Create a short, descriptive title for the evidence log. For example, "Email regarding school event" or "Text conversation about medical appointment."
-3.  **Suggest Category:** Classify the evidence into one of the following categories: 'Communication', 'Custody Exchange', 'Financial', 'Health', 'Other'. Base your classification on the primary subject of the text.`,
-});
-
-const processEvidenceTextFlow = ai.defineFlow(
-  {
-    name: 'processEvidenceTextFlow',
-    inputSchema: ProcessEvidenceTextInputSchema,
-    outputSchema: ProcessEvidenceTextOutputSchema,
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date and time the user was created."
+        }
+      },
+      "required": ["uid", "displayName", "email", "createdAt"]
+    },
+    "journalEntry": {
+        "title": "Journal Entry",
+        "description": "A single entry in the family journal.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "content": { "type": "string" },
+            "image": { "type": "string", "format": "uri" },
+            "dataAiHint": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "content", "userId", "timestamp"]
+    },
+    "healthEvent": {
+        "title": "Health Event",
+        "description": "A health-related event for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "details": { "type": "string" },
+            "type": { "type": "string", "enum": ["Appointment", "Immunization", "Note"] },
+            "doctor": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "details", "type", "userId", "timestamp"]
+    },
+    "milestone": {
+        "title": "Milestone",
+        "description": "A developmental milestone for the child.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "date": { "type": "string", "format": "date-time" },
+            "description": { "type": "string" },
+            "category": { "type": "string", "enum": ["Achievement", "Health", "Growth"] },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["title", "date", "description", "category", "userId", "timestamp"]
+    },
+    "dailyLog": {
+        "title": "Daily Log",
+        "description": "A log entry for daily care (feeding, diaper, sleep).",
+        "type": "object",
+        "properties": {
+            "time": { "type": "string" },
+            "type": { "type": "string", "enum": ["Feeding", "Diaper", "Sleep"] },
+            "details": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["time", "type", "details", "userId", "timestamp"]
+    },
+    "groceryItem": {
+        "title": "Grocery Item",
+        "description": "An item on the shared grocery list.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "checked": { "type": "boolean" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "checked", "userId", "timestamp"]
+    }
   },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  "auth": {
+    "providers": ["email_password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/userProfile" },
+      "description": "Stores public profiles for users."
+    },
+    "/users/{userId}/journal": {
+        "schema": { "$ref": "#/entities/journalEntry" },
+        "description": "Stores journal entries for a user."
+    },
+    "/users/{userId}/health-events": {
+        "schema": { "$ref": "#/entities/healthEvent" },
+        "description": "Stores health events for a user."
+    },
+    "/users/{userId}/milestones": {
+        "schema": { "$ref": "#/entities/milestone" },
+        "description": "Stores milestones for a user."
+    },
+    "/users/{userId}/daily-logs": {
+        "schema": { "$ref": "#/entities/dailyLog" },
+        "description": "Stores daily care logs for a user."
+    },
+    "/users/{userId}/groceries": {
+        "schema": { "$ref": "#/entities/groceryItem" },
+        "description": "Stores grocery list items for a user."
+    }
   }
-);
+}

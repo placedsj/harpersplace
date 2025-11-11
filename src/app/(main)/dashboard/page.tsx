@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
+import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -198,7 +198,7 @@ const MainDashboard = () => {
                     Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision.
                 </p>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <Link href="/communication" className="block group">
                         <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
                             <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
@@ -214,15 +214,7 @@ const MainDashboard = () => {
                             <p className="text-xs text-center text-gray-500 dark:text-gray-400">Prioritize child expenses</p>
                         </div>
                     </Link>
-                    
-                    <Link href="/document-analyzer" className="block group">
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                            <FileText className="h-8 w-8 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child Safety Analysis</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect best interests</p>
-                        </div>
-                    </Link>
-                    
+                                        
                     <Link href="/communication-platform" className="block group">
                         <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
                             <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
