@@ -1,0 +1,8 @@
+.gcloudignore
+node_modules
+
+# Python script, not part of the Next.js app
+*.py
+
+# Documentation
+/docs/
