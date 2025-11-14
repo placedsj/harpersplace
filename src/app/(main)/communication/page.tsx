@@ -11,6 +11,15 @@ import { Wand2, Send, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { coParentingActions, CoParentingActionsOutput } from '@/ai/flows/co-parenting-actions';
+import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 type Message = {
     id: number;
@@ -41,11 +50,65 @@ const initialMessages: Message[] = [
     },
 ];
 
+function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSuggestion: (suggestion: string) => void }) {
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [result, setResult] = React.useState<ImproveCommunicationOutput | null>(null);
+
+    React.useEffect(() => {
+        const getSuggestion = async () => {
+            setIsLoading(true);
+            try {
+                const output = await improveCommunication({ message });
+                setResult(output);
+            } catch (error) {
+                console.error("AI Coach error:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        getSuggestion();
+    }, [message]);
+
+    return (
+        <DialogContent className="max-w-2xl">
+            <DialogHeader>
+                <DialogTitle>AI Communication Coach</DialogTitle>
+                <DialogDescription>
+                    Here's a more collaborative and child-focused version of your message.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+                {isLoading ? (
+                    <div className="flex items-center justify-center h-40">
+                        <Loader2 className="animate-spin" />
+                    </div>
+                ) : result ? (
+                    <>
+                        <div>
+                            <h3 className="font-semibold mb-2 text-sm">Your Original Message</h3>
+                            <p className="p-3 bg-muted rounded-md text-sm border">{message}</p>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold mb-2 text-sm text-primary">AI's Suggested Revision</h3>
+                            <p className="p-3 bg-primary/10 rounded-md text-sm border border-primary/20">{result.revisedMessage}</p>
+                        </div>
+                        <Button onClick={() => onUseSuggestion(result.revisedMessage)} className="w-full">
+                            Use This Suggestion
+                        </Button>
+                    </>
+                ) : (
+                    <p>Could not get a suggestion.</p>
+                )}
+            </div>
+        </DialogContent>
+    );
+}
 
 function CommunicationPageInternal() {
     const [messages, setMessages] = React.useState<Message[]>(initialMessages);
     const [newMessage, setNewMessage] = React.useState('');
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isSending, setIsSending] = React.useState(false);
+    const [isCoachOpen, setIsCoachOpen] = React.useState(false);
     const { toast } = useToast();
     const searchParams = useSearchParams();
 
@@ -58,7 +121,7 @@ function CommunicationPageInternal() {
 
     const handleSendMessage = async () => {
         if (newMessage.trim() === '') return;
-        setIsLoading(true);
+        setIsSending(true);
 
         const userMessage: Message = {
             id: messages.length + 1,
@@ -92,7 +155,7 @@ function CommunicationPageInternal() {
                 description: 'Could not get a response from the AI mediator.'
             });
         } finally {
-            setIsLoading(false);
+            setIsSending(false);
         }
     };
     
@@ -102,6 +165,11 @@ function CommunicationPageInternal() {
             description: `Your proposal '${args.title}' has been officially logged.`
         });
     }
+    
+    const handleUseSuggestion = (suggestion: string) => {
+        setNewMessage(suggestion);
+        setIsCoachOpen(false);
+    };
 
     const currentUser = 'Dad'; // For styling purposes
 
@@ -116,7 +184,7 @@ function CommunicationPageInternal() {
         <Card className="shadow-lg border-2 border-primary/40">
             <CardHeader>
                 <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
-                <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions.</CardDescription>
+                <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col h-[65vh]">
                 <div className="flex-grow space-y-6 overflow-y-auto p-4 border rounded-md bg-muted/20">
@@ -161,7 +229,7 @@ function CommunicationPageInternal() {
                             )}
                         </div>
                     ))}
-                     {isLoading && (
+                     {isSending && (
                         <div className="flex items-end gap-3 justify-start">
                              <Avatar className="h-8 w-8">
                                 <AvatarFallback>AI</AvatarFallback>
@@ -181,10 +249,18 @@ function CommunicationPageInternal() {
                         className="flex-grow"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-                        disabled={isLoading}
+                        onKeyDown={(e) => e.key === 'Enter' && !isSending && handleSendMessage()}
+                        disabled={isSending}
                     />
-                    <Button size="icon" onClick={handleSendMessage} aria-label="Send Message" disabled={isLoading}>
+                    <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="icon" aria-label="AI Coach" disabled={newMessage.trim().length < 10}>
+                                <Wand2 />
+                            </Button>
+                        </DialogTrigger>
+                        {isCoachOpen && <AiCoachDialog message={newMessage} onUseSuggestion={handleUseSuggestion} />}
+                    </Dialog>
+                    <Button size="icon" onClick={handleSendMessage} aria-label="Send Message" disabled={isSending}>
                         <Send />
                     </Button>
                 </div>
