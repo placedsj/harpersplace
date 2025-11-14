@@ -16,12 +16,12 @@ export default function LoginPage() {
           {/* Header Section */}
           <div className="text-center space-y-4">
             <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
-              <span className="text-2xl font-bold text-primary-foreground">H</span>
+              <span className="text-2xl font-bold font-headline text-primary-foreground">H</span>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent font-headline uppercase">
               Harper's Place
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg font-sans">
               Where every decision puts your child's best interests and emotional well-being first
             </p>
           </div>
@@ -37,7 +37,7 @@ export default function LoginPage() {
               </Button>
             </div>
             
-            <div className="text-center text-sm text-muted-foreground/70 space-y-1 pt-4">
+            <div className="text-center text-sm text-muted-foreground/70 space-y-1 pt-4 font-sans">
               <p>Create an account to securely save and manage your family's information.</p>
               <p className="text-xs">Your data is encrypted and private.</p>
             </div>

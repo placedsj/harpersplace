@@ -52,14 +52,14 @@ export default function LoginFormPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="mx-auto max-w-sm">
-        <CardHeader className="relative">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Card className="mx-auto max-w-sm w-full">
+        <CardHeader className="relative text-center">
            <Button variant="ghost" size="sm" className="absolute left-2 top-2" onClick={() => router.back()}>
              &larr; Back
           </Button>
-          <CardTitle className="text-2xl pt-8 text-center">Parent Login</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-2xl pt-8">Parent Login</CardTitle>
+          <CardDescription>
             Enter your email below to login to your account.
           </CardDescription>
         </CardHeader>
@@ -110,8 +110,7 @@ export default function LoginFormPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="animate-spin" />}
-                <span>Login</span>
+                {isLoading ? <Loader2 className="animate-spin" /> : <span>Login</span>}
               </Button>
             </form>
           </Form>

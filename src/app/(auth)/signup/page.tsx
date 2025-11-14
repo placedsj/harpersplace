@@ -66,8 +66,8 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen">
-            <Card className="mx-auto max-w-sm">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Card className="mx-auto max-w-sm w-full">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Create an Account</CardTitle>
                     <CardDescription>
@@ -153,8 +153,7 @@ export default function SignUpPage() {
                                 )}
                             />
                             <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading && <Loader2 className="animate-spin" />}
-                                <span>Create an account</span>
+                                {isLoading ? <Loader2 className="animate-spin" /> : <span>Create an account</span>}
                             </Button>
                         </form>
                     </Form>
