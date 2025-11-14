@@ -15,6 +15,7 @@ const navItems = [
     { href: '/log', label: 'Daily Care' },
     { href: '/calendar', label: 'Calendar' },
     { href: '/communication', label: 'Chat' },
+    { href: '/blog', label: 'Blog' },
 ];
 
 const aiToolsItems = [

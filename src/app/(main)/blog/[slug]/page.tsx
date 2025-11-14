@@ -1,0 +1,81 @@
+// src/app/(main)/blog/[slug]/page.tsx
+import { getPostBySlug, getallPosts } from '@/lib/blog-data';
+import { notFound } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { format } from 'date-fns';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+
+// Generate static pages for each blog post
+export async function generateStaticParams() {
+  const posts = getallPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = getPostBySlug(params.slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8">
+       <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+            <ArrowLeft />
+            Back to Blog
+        </Link>
+      <article>
+        <header className="mb-8">
+          <Badge variant="secondary" className="mb-2">{post.category}</Badge>
+          <h1 className="text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">{post.title}</h1>
+          <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <span>{post.author.name}</span>
+            </div>
+            <span>•</span>
+            <time dateTime={post.date}>{format(new Date(post.date), 'PPP')}</time>
+          </div>
+        </header>
+
+        {post.audioUrl && (
+          <Card className="mb-8 bg-muted/30">
+            <CardContent className="p-4 flex items-center gap-4">
+                <h3 className="font-headline uppercase text-lg">Listen to this post:</h3>
+                 <audio controls className="w-full">
+                    <source src={post.audioUrl} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                </audio>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="prose dark:prose-invert prose-lg max-w-none font-sans" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+      </article>
+
+      <Card>
+        <CardHeader>
+            <CardTitle className="font-headline uppercase">About the Author</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+                <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-lg">{post.author.name}</h3>
+                <p className="text-muted-foreground">{post.author.bio}</p>
+              </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
