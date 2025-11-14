@@ -1,0 +1,44 @@
+[debug] [2025-11-12T03:20:02.798Z] ----------------------------------------------------------------------
+[debug] [2025-11-12T03:20:02.801Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/f77kilzcw5hh2gidh22k6pj8cp7pxp7h-firebase-tools-14.22.0/lib/node_modules/firebase-tools/lib/bin/firebase.js init hosting
+[debug] [2025-11-12T03:20:02.802Z] CLI Version:   14.22.0
+[debug] [2025-11-12T03:20:02.802Z] Platform:      linux
+[debug] [2025-11-12T03:20:02.803Z] Node Version:  v20.19.1
+[debug] [2025-11-12T03:20:02.803Z] Time:          Wed Nov 12 2025 03:20:02 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-11-12T03:20:02.803Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-12T03:20:02.806Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-11-12T03:20:02.861Z] No OAuth tokens found
+[debug] [2025-11-12T03:20:02.862Z] No OAuth tokens found
+[error] Failed to fetch Firebase Project from current Studio Workspace: Unable to refresh auth: not yet authenticated.
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/user/harpersplace
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-11-12T03:20:02.874Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-12T03:20:02.948Z] Running auto auth
+[debug] [2025-11-12T03:20:02.969Z] No OAuth tokens found
+[debug] [2025-11-12T03:20:02.970Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/familyverse-yt5vs [none]
+[debug] [2025-11-12T03:20:02.979Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-11-12T03:20:02.979Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-11-12T03:20:03.240Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/familyverse-yt5vs 403
+[debug] [2025-11-12T03:20:03.241Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/familyverse-yt5vs {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-11-12T03:20:03.243Z] Request to https://firebase.googleapis.com/v1beta1/projects/familyverse-yt5vs had HTTP Error: 403, The caller does not have permission
+[debug] [2025-11-12T03:20:03.245Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/familyverse-yt5vs had HTTP Error: 403, The caller does not have permission
+    at responseToError (/nix/store/f77kilzcw5hh2gidh22k6pj8cp7pxp7h-firebase-tools-14.22.0/lib/node_modules/firebase-tools/lib/responseToError.js:53:12)
+    at RetryOperation._fn (/nix/store/f77kilzcw5hh2gidh22k6pj8cp7pxp7h-firebase-tools-14.22.0/lib/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to get Firebase project familyverse-yt5vs. Please make sure the project exists and your account has permission to access it.
