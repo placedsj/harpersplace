@@ -34,8 +34,8 @@
     --ring: 271 76% 53%;
     --radius: 0.75rem;
 
-    --mom-day: 330 80% 65%; /* Vibrant Pink/Red */
-    --dad-day: 210 80% 60%; /* Bright Blue */
+    --mom: 330 80% 65%; /* Vibrant Pink/Red */
+    --dad: 210 80% 60%; /* Bright Blue */
   }
 
   .dark {
@@ -68,8 +68,8 @@
     --input: 240 10% 20%;
     --ring: 271 76% 63%;
     
-    --mom-day: 330 80% 65%;
-    --dad-day: 210 80% 60%;
+    --mom: 330 80% 65%;
+    --dad: 210 80% 60%;
   }
 }
 
@@ -79,7 +79,6 @@
     }
     body {
         @apply bg-background text-foreground;
-        font-family: var(--font-sans), sans-serif;
     }
     h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-headline), sans-serif;

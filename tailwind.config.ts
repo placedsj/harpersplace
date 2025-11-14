@@ -58,8 +58,8 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        mom: 'hsl(var(--mom-day))',
-        dad: 'hsl(var(--dad-day))',
+        mom: 'hsl(var(--mom))',
+        dad: 'hsl(var(--dad))',
       },
       borderRadius: {
         lg: 'var(--radius)',
