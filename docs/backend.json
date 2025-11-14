@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "userProfile": {
@@ -64,7 +65,7 @@
             "title": { "type": "string" },
             "date": { "type": "string", "format": "date-time" },
             "description": { "type": "string" },
-            "category": { "type": "string", "enum": ["Achievement", "Health", "Growth"] },
+            "category": { "type": "string", "enum": ["Cognitive", "Social & Emotional", "Language & Communication", "Motor Skills"] },
             "userId": { "type": "string" },
             "timestamp": { "type": "string", "format": "date-time" }
         },
