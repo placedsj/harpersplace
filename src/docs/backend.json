@@ -109,6 +109,21 @@
             "timestamp": { "type": "string", "format": "date-time" }
         },
         "required": ["name", "checked", "userId", "timestamp"]
+    },
+    "evidenceEntry": {
+        "title": "Evidence Entry",
+        "description": "A single entry in the court-ready evidence log.",
+        "type": "object",
+        "properties": {
+            "date": { "type": "string", "format": "date-time" },
+            "category": { "type": "string", "enum": ["Communication", "Custody Exchange", "Financial", "Health", "Other"] },
+            "description": { "type": "string" },
+            "evidence": { "type": "string" },
+            "loggedBy": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["date", "category", "description", "evidence", "loggedBy", "userId", "timestamp"]
     }
   },
   "auth": {
@@ -142,6 +157,10 @@
     "/users/{userId}/groceries": {
         "schema": { "$ref": "#/entities/groceryItem" },
         "description": "Stores grocery list items for a user."
+    },
+    "/users/{userId}/evidence": {
+        "schema": { "$ref": "#/entities/evidenceEntry" },
+        "description": "Stores evidence log entries for a user."
     }
   }
 }
