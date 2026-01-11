@@ -115,7 +115,7 @@
         "description": "A single entry in the court-ready evidence log.",
         "type": "object",
         "properties": {
-            "date": { "type": "string", "format": "date-time" },
+            "date": { "type": "string", "format": "date" },
             "category": { "type": "string", "enum": ["Communication", "Custody Exchange", "Financial", "Health", "Other"] },
             "description": { "type": "string" },
             "evidence": { "type": "string" },

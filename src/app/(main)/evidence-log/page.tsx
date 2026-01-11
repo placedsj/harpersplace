@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { Loader2, PlusCircle, BookLock } from 'lucide-react';
+import { Loader2, BookLock } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 
 const evidenceSchema = z.object({
