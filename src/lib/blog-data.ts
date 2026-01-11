@@ -1,3 +1,4 @@
+
 // src/lib/blog-data.ts
 
 type Post = {
@@ -34,13 +35,13 @@ const posts: Post[] = [
         contentHtml: `
             <p>The moment of exchange—when a child transitions from one parent to the other—is one of the most emotionally charged moments in co-parenting. For a child, this brief interaction can be filled with anxiety and loyalty conflicts. Your number one job is to make it boring, predictable, and safe. Here are 7 things to absolutely avoid.</p>
             <ol class="list-decimal list-inside space-y-3 my-4">
-                <li><strong>Don't discuss adult topics.</strong> The exchange is not the time to talk about child support, legal matters, or your personal grievances. Keep conversation limited to pleasantries and essential, child-related logistics for the next 24 hours.</li>
-                <li><strong>Don't use the child as a messenger.</strong> "Tell your mother she needs to call me." This puts the child in the middle and forces them to manage adult responsibilities. Communicate directly through the proper channels, like the Harper's Place app.</li>
-                <li><strong>Don't linger.</strong> A long, drawn-out goodbye can increase a child's anxiety. The goal is a quick, warm, and confident transition. A hug, a loving "I'll see you on Friday!" and a wave is perfect.</li>
-                <li><strong>Don't display negative body language.</strong> Eye-rolling, sighing, or refusing to make eye contact with the other parent sends a clear signal of conflict to your child, making them feel unsafe.</li>
-                <li><strong>Don't interrogate the child.</strong> "Did you have fun? What did you do? Did you eat your vegetables?" Let your child decompress and share information on their own time. The handover should not feel like an inspection.</li>
-                <li><strong>Don't be late.</strong> Punctuality is a sign of respect and, more importantly, it provides the predictability children need. If you are going to be late, communicate that as early as possible.</li>
-                <li><strong>Don't make it about you.</strong> The exchange is about the child's successful transition between their two homes. Your feelings of sadness or frustration must be managed privately, away from the child.</li>
+                <li><strong>Don\'t discuss adult topics.</strong> The exchange is not the time to talk about child support, legal matters, or your personal grievances. Keep conversation limited to pleasantries and essential, child-related logistics for the next 24 hours.</li>
+                <li><strong>Don\'t use the child as a messenger.</strong> "Tell your mother she needs to call me." This puts the child in the middle and forces them to manage adult responsibilities. Communicate directly through the proper channels, like the Harper\'s Place app.</li>
+                <li><strong>Don\'t linger.</strong> A long, drawn-out goodbye can increase a child\'s anxiety. The goal is a quick, warm, and confident transition. A hug, a loving "I\'ll see you on Friday!" and a wave is perfect.</li>
+                <li><strong>Don\'t display negative body language.</strong> Eye-rolling, sighing, or refusing to make eye contact with the other parent sends a clear signal of conflict to your child, making them feel unsafe.</li>
+                <li><strong>Don\'t interrogate the child.</strong> "Did you have fun? What did you do? Did you eat your vegetables?" Let your child decompress and share information on their own time. The handover should not feel like an inspection.</li>
+                <li><strong>Don\'t be late.</strong> Punctuality is a sign of respect and, more importantly, it provides the predictability children need. If you are going to be late, communicate that as early as possible.</li>
+                <li><strong>Don\'t make it about you.</strong> The exchange is about the child\'s successful transition between their two homes. Your feelings of sadness or frustration must be managed privately, away from the child.</li>
             </ol>
             <p>By keeping exchanges brief, business-like, and friendly, you fulfill your duty to protect your child from conflict and create the emotional stability they need to thrive.</p>
         `,
@@ -55,10 +56,10 @@ const posts: Post[] = [
         contentHtml: `
             <p>Anxiety in children, especially during a family separation, often looks like anger, defiance, or withdrawal. Their world feels unpredictable, and they lack the tools to express their big feelings. Your role is to be their safe harbor—the calm, predictable anchor in their emotional storm. Here are five practical ways to help.</p>
             <ol class="list-decimal list-inside space-y-3 my-4">
-                <li><strong>Name the Feeling (and Validate It).</strong> Don't say, "Don't be sad." Instead, say, "It looks like you're feeling sad right now. It's okay to feel sad. I'm here with you." Giving a name to their emotion helps them understand it, and validating it tells them their feelings are acceptable.</li>
-                <li><strong>Create Predictable Routines.</strong> Anxiety thrives in uncertainty. A consistent routine for mornings, evenings, and especially handovers provides a sense of control and safety. The <strong>Smart Calendar</strong> in Harper's Place is a perfect tool for establishing and sharing these routines.</li>
-                <li><strong>Focus on What Stays the Same.</strong> While much is changing, many things are not. Remind them: "Even though you'll be sleeping at Dad's house tonight, you'll still have your favorite teddy bear. And I will still be here to talk to on the phone before bed."</li>
-                <li><strong>Practice "Externalizing" the Worry.</strong> For slightly older children, give the anxiety a silly name, like "Mr. Worry Monster." You can say, "Is Mr. Worry Monster telling you silly stories again? What's he saying this time?" This separates the child from their anxiety and turns it into a manageable, external thing they can confront.</li>
+                <li><strong>Name the Feeling (and Validate It).</strong> Don\'t say, "Don\'t be sad." Instead, say, "It looks like you\'re feeling sad right now. It\'s okay to feel sad. I\'m here with you." Giving a name to their emotion helps them understand it, and validating it tells them their feelings are acceptable.</li>
+                <li><strong>Create Predictable Routines.</strong> Anxiety thrives in uncertainty. A consistent routine for mornings, evenings, and especially handovers provides a sense of control and safety. The <strong>Smart Calendar</strong> in Harper\'s Place is a perfect tool for establishing and sharing these routines.</li>
+                <li><strong>Focus on What Stays the Same.</strong> While much is changing, many things are not. Remind them: "Even though you\'ll be sleeping at Dad\'s house tonight, you\'ll still have your favorite teddy bear. And I will still be here to talk to on the phone before bed."</li>
+                <li><strong>Practice "Externalizing" the Worry.</strong> For slightly older children, give the anxiety a silly name, like "Mr. Worry Monster." You can say, "Is Mr. Worry Monster telling you silly stories again? What\'s he saying this time?" This separates the child from their anxiety and turns it into a manageable, external thing they can confront.</li>
                 <li><strong>Model Calm Yourself.</strong> Your child takes their emotional cues from you. If you are anxious, they will be too. It is essential to manage your own stress and model calm, confident behavior, especially during exchanges. Our <strong>AI Communication Coach</strong> can help ensure your written communications are also calm and reassuring.</li>
             </ol>
             <p>By providing consistency, validation, and a calm presence, you teach your child that while feelings of anxiety are normal, they are also manageable. You are building their resilience for life.</p>
@@ -367,7 +368,7 @@ const posts: Post[] = [
                 <li><strong>Start Early:</strong> You can start reading to your child from birth. Even newborns benefit from the sound of your voice and the rhythm of the language.</li>
                 <li><strong>Make it Fun:</strong> Use different voices for different characters. Ask questions and talk about the pictures.</li>
                 <li><strong>Let Them Choose:</strong> Let your child choose the book sometimes. This gives them a sense of ownership and makes reading more enjoyable.</li>
-                <li><strong>Don't Stop When They Can Read on Their Own:</strong> Continuing to read aloud to older children allows them to enjoy books that are above their reading level, and it provides a great opportunity for connection and conversation.</li>
+                <li><strong>Don\'t Stop When They Can Read on Their Own:</strong> Continuing to read aloud to older children allows them to enjoy books that are above their reading level, and it provides a great opportunity for connection and conversation.</li>
             </ul>
             <p>The <strong>Daily Care Log</strong> in Harper\'s Place can be a great way to track the books you have read with your child. This can be a fun way to look back on all the stories you have shared and can be a great way to ensure that both parents are involved in this important activity.</p>
         `,
