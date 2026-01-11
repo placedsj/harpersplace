@@ -1,3 +1,4 @@
+
 // src/components/main-nav.tsx
 'use client';
 
@@ -34,6 +35,7 @@ const aiToolsItems = [
     { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
     { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
     { href: '/transition-summary', label: 'Transition Summary AI' },
+    { href: '/evidence-ai', label: 'Evidence AI Assistant' },
 ];
 
 const NavDropdown = ({ label, items }: { label: string, items: {href: string, label: string}[] }) => {
