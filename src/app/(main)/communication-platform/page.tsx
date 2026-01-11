@@ -1,7 +1,7 @@
 // src/app/(main)/communication-platform/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,18 +28,41 @@ import {
   MicOff,
   VideoOff
 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CommunicationPlatformPage() {
   const [activeDemo, setActiveDemo] = useState<string>('messaging');
   const [isCallActive, setIsCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [costCalculation, setCostCalculation] = useState({
-    users: 2,
-    monthlyMessages: 100,
-    monthlyCalls: 10,
-    callDuration: 15
-  });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isCameraOff, setIsCameraOff] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      if (typeof window !== 'undefined' && navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          setHasCameraPermission(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions to see the full video demo.',
+          });
+        }
+      }
+    };
+    getCameraPermission();
+  }, [toast]);
 
   // Simulate call timer
   useEffect(() => {
@@ -57,9 +80,25 @@ export default function CommunicationPlatformPage() {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+  
+  const toggleMute = () => setIsMuted(!isMuted);
+  const toggleCamera = () => setIsCameraOff(!isCameraOff);
+
+  const startCall = () => {
+    setIsCallActive(true);
+    setCallDuration(0);
+  };
+  const endCall = () => setIsCallActive(false);
+
+  const costCalculation = {
+    users: 2,
+    monthlyMessages: 100,
+    monthlyCalls: 10,
+    callDuration: 15
+  };
 
   const calculateCost = () => {
-    const baseCost = 15000; // Base development cost
+    const baseCost = 15000;
     const userMultiplier = costCalculation.users * 500;
     const complexityMultiplier = 
       (costCalculation.monthlyMessages > 500 ? 5000 : 0) +
@@ -168,7 +207,7 @@ export default function CommunicationPlatformPage() {
                         <div className="bg-purple-100 dark:bg-purple-900/20 rounded-lg p-3 max-w-xs ml-auto">
                           <p className="text-sm">Absolutely! I'll be there by 3:30. Should I take Harper to soccer practice so she doesn't miss it? I know how much she loves it.</p>
                           <div className="flex items-center gap-2 mt-1 justify-end">
-                            <Badge variant="outline" className="text-xs">� Child-focused</Badge>
+                            <Badge variant="outline" className="text-xs">👶 Child-focused</Badge>
                             <span className="text-xs text-muted-foreground">2:16 PM</span>
                           </div>
                         </div>
@@ -197,64 +236,53 @@ export default function CommunicationPlatformPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Mock video call interface */}
-                <div className="bg-black rounded-lg aspect-video flex items-center justify-center relative overflow-hidden">
-                  {isCallActive ? (
+                <div className="bg-black rounded-lg aspect-video flex flex-col items-center justify-center relative overflow-hidden">
+                  <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+
+                  {isCallActive && (
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
                       <div className="absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
                         🔴 Recording • {formatTime(callDuration)}
                       </div>
-                      <div className="flex items-center justify-center h-full">
-                        <div className="grid grid-cols-2 gap-4 w-full max-w-2xl px-8">
-                          <div className="bg-blue-500/30 rounded-lg p-8 text-center text-white">
-                            <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">D</div>
-                            <p className="text-sm">Dad</p>
-                          </div>
-                          <div className="bg-purple-500/30 rounded-lg p-8 text-center text-white">
-                            <div className="w-16 h-16 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">M</div>
-                            <p className="text-sm">Mom</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center text-white">
-                      <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg">Video Call Ready</p>
-                      <p className="text-sm opacity-70">Click start to begin secure call</p>
                     </div>
                   )}
+
+                  {!isCallActive && (
+                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="text-center text-white">
+                            <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                            <p className="text-lg">Video Call Ready</p>
+                            <p className="text-sm opacity-70">Click start to begin a secure call</p>
+                        </div>
+                    </div>
+                  )}
+
+                   {/* Other Person's Video (Picture-in-Picture) */}
+                  <div className="absolute top-4 right-4 w-1/4 h-1/4 bg-purple-500/30 rounded-lg border-2 border-white/20 flex items-center justify-center text-white">
+                      <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-2xl">M</div>
+                  </div>
                 </div>
 
                 {/* Call controls */}
                 <div className="flex items-center justify-center gap-4">
-                  <Button
-                    variant={isCallActive ? "destructive" : "default"}
-                    onClick={() => {
-                      setIsCallActive(!isCallActive);
-                      if (!isCallActive) setCallDuration(0);
-                    }}
-                    className="gap-2"
-                  >
-                    {isCallActive ? <Phone className="w-4 h-4" /> : <Video className="w-4 h-4" />}
-                    {isCallActive ? 'End Call' : 'Start Call'}
-                  </Button>
-                  
-                  <Button variant="outline" size="icon" disabled={!isCallActive}>
-                    <Mic className="w-4 h-4" />
-                  </Button>
-                  
-                  <Button variant="outline" size="icon" disabled={!isCallActive}>
-                    <Camera className="w-4 h-4" />
-                  </Button>
+                    <Button variant={isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}><MicOff className="w-4 h-4" /></Button>
+                    <Button
+                        variant={isCallActive ? "destructive" : "default"}
+                        onClick={isCallActive ? endCall : startCall}
+                        className="gap-2 w-32"
+                    >
+                        {isCallActive ? <Phone className="w-4 h-4" /> : <Video className="w-4 h-4" />}
+                        {isCallActive ? 'End Call' : 'Start Call'}
+                    </Button>
+                    <Button variant={isCameraOff ? 'destructive' : 'outline'} size="icon" onClick={toggleCamera} disabled={!isCallActive}><VideoOff className="w-4 h-4" /></Button>
                 </div>
 
-                {isCallActive && (
-                  <Alert>
-                    <Clock className="h-4 w-4" />
-                    <AlertDescription>
-                      Recording with consent to ensure child safety discussions are documented. All conversations are analyzed for child-focused content and emotional safety.
-                    </AlertDescription>
+                {!hasCameraPermission && (
+                  <Alert variant="destructive">
+                      <AlertTitle>Camera Access Required</AlertTitle>
+                      <AlertDescription>
+                        Please allow camera access to use this feature.
+                      </AlertDescription>
                   </Alert>
                 )}
               </div>
@@ -390,8 +418,7 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Family Members (Parents & Guardians)</Label>
                 <Slider
-                  value={[costCalculation.users]}
-                  onValueChange={(value) => setCostCalculation(prev => ({ ...prev, users: value[0] }))}
+                  defaultValue={[costCalculation.users]}
                   max={10}
                   min={2}
                   step={1}
@@ -407,8 +434,7 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Monthly Child-Focused Messages</Label>
                 <Slider
-                  value={[costCalculation.monthlyMessages]}
-                  onValueChange={(value) => setCostCalculation(prev => ({ ...prev, monthlyMessages: value[0] }))}
+                  defaultValue={[costCalculation.monthlyMessages]}
                   max={1000}
                   min={50}
                   step={50}
@@ -424,8 +450,7 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Monthly Child Planning Calls</Label>
                 <Slider
-                  value={[costCalculation.monthlyCalls]}
-                  onValueChange={(value) => setCostCalculation(prev => ({ ...prev, monthlyCalls: value[0] }))}
+                  defaultValue={[costCalculation.monthlyCalls]}
                   max={100}
                   min={5}
                   step={5}
@@ -441,8 +466,7 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Average Call Duration (minutes)</Label>
                 <Slider
-                  value={[costCalculation.callDuration]}
-                  onValueChange={(value) => setCostCalculation(prev => ({ ...prev, callDuration: value[0] }))}
+                  defaultValue={[costCalculation.callDuration]}
                   max={60}
                   min={5}
                   step={5}
@@ -493,8 +517,8 @@ export default function CommunicationPlatformPage() {
               </div>
 
               <div className="text-sm text-muted-foreground space-y-2">
-                <p>� <strong>Child Impact:</strong> Reduced conflict means better emotional stability for your child</p>
-                <p>�💡 <strong>ROI:</strong> Avoiding one contentious court hearing ($10k-20k) pays for the entire platform</p>
+                <p>👶 <strong>Child Impact:</strong> Reduced conflict means better emotional stability for your child</p>
+                <p>💡 <strong>ROI:</strong> Avoiding one contentious court hearing ($10k-20k) pays for the entire platform</p>
                 <p>⚡ <strong>Timeline:</strong> 12-16 weeks total development</p>
                 <p>🔒 <strong>Includes:</strong> Child safety audits, legal compliance, 1-year family support</p>
               </div>
@@ -570,7 +594,7 @@ export default function CommunicationPlatformPage() {
           </div>
           
           <div className="text-sm text-muted-foreground">
-            <p>� Child-first design principles • �🚀 First phase ready in 3 weeks • � Emotional safety guaranteed</p>
+            <p>👶 Child-first design principles • 🚀 First phase ready in 3 weeks • 💝 Emotional safety guaranteed</p>
           </div>
         </CardContent>
       </Card>
