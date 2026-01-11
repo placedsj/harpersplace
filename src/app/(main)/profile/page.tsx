@@ -1,7 +1,8 @@
+
 // src/app/(main)/profile/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,8 +17,10 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth, useFirestore, useDoc } from '@/firebase';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
-const formSchema = z.object({
+const profileSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
   dob: z.date({
     required_error: "A date of birth is required.",
@@ -29,33 +32,76 @@ const formSchema = z.object({
   hairColor: z.string().optional(),
 });
 
+type ProfileFormValues = z.infer<typeof profileSchema>;
+
+export interface Profile extends Omit<ProfileFormValues, 'dob'> {
+    dob: Timestamp;
+}
+
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { db } = useFirestore();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const profileRef = user && db ? doc(db, `users/${user.uid}/profile`, 'main') : null;
+  const { data: profile, loading: profileLoading } = useDoc<Profile>(profileRef);
+
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
       name: "Harper Ryan",
       dob: new Date("2024-11-12"),
-      weightLb: 20,
-      weightOz: 5,
-      height: 28,
-      eyeColor: "Blue",
-      hairColor: "Blonde",
+      weightLb: undefined,
+      weightOz: undefined,
+      height: undefined,
+      eyeColor: "",
+      hairColor: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+          ...profile,
+          dob: profile.dob.toDate(),
+      });
+    }
+  }, [profile, form]);
+
+
+  async function onSubmit(values: ProfileFormValues) {
+    if (!profileRef) return;
     setIsLoading(true);
-    console.log(values);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast({
-        title: "Profile Saved",
-        description: "Harper's information has been updated.",
-    });
-    setIsLoading(false);
+    
+    try {
+        const dataToSave = {
+            ...values,
+            dob: Timestamp.fromDate(values.dob),
+        };
+        await setDoc(profileRef, dataToSave, { merge: true });
+        toast({
+            title: "Profile Saved",
+            description: "Harper's information has been updated.",
+        });
+    } catch (error) {
+        console.error("Failed to save profile", error);
+        toast({
+            variant: 'destructive',
+            title: "Save Failed",
+            description: "Could not update profile information.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+  
+  if (profileLoading) {
+      return (
+          <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+      );
   }
 
   return (
@@ -138,7 +184,7 @@ export default function ProfilePage() {
                       render={({ field }) => (
                         <FormControl>
                           <div className="relative">
-                            <Input type="number" placeholder="lbs" {...field} />
+                            <Input type="number" placeholder="lbs" {...field} value={field.value ?? ''} />
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">lbs</span>
                           </div>
                         </FormControl>
@@ -150,7 +196,7 @@ export default function ProfilePage() {
                       render={({ field }) => (
                          <FormControl>
                           <div className="relative">
-                            <Input type="number" placeholder="oz" {...field} />
+                            <Input type="number" placeholder="oz" {...field} value={field.value ?? ''} />
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">oz</span>
                           </div>
                         </FormControl>
@@ -166,7 +212,7 @@ export default function ProfilePage() {
                       <FormLabel>Height</FormLabel>
                        <FormControl>
                           <div className="relative">
-                            <Input type="number" placeholder="inches" {...field} />
+                            <Input type="number" placeholder="inches" {...field} value={field.value ?? ''} />
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">in</span>
                           </div>
                         </FormControl>
@@ -182,7 +228,7 @@ export default function ProfilePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Eye Color</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select eye color" />
@@ -205,7 +251,7 @@ export default function ProfilePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Hair Color</FormLabel>
-                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select hair color" />

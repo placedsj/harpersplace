@@ -156,6 +156,21 @@
             "medicalConditions": { "type": "string" },
             "currentMedications": { "type": "string" }
         }
+    },
+    "profile": {
+        "title": "Child Profile",
+        "description": "The profile information for the child.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "dob": { "type": "string", "format": "date-time" },
+            "weightLb": { "type": "number" },
+            "weightOz": { "type": "number" },
+            "height": { "type": "number" },
+            "eyeColor": { "type": "string" },
+            "hairColor": { "type": "string" }
+        },
+        "required": ["name", "dob"]
     }
   },
   "auth": {
@@ -205,6 +220,10 @@
     "/users/{userId}/medicalNotes": {
         "schema": { "$ref": "#/entities/medicalNotes" },
         "description": "Stores medical notes for a user's child."
+    },
+    "/users/{userId}/profile/main": {
+        "schema": { "$ref": "#/entities/profile" },
+        "description": "Stores the child's profile information for a user."
     }
   }
 }
