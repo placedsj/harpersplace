@@ -37,6 +37,7 @@ const aiToolsItems = [
     { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker' },
     { href: '/transition-summary', label: 'Transition Summary AI' },
     { href: '/evidence-ai', label: 'Evidence AI Assistant' },
+    { href: '/communication-platform', label: 'Communication Platform Vision' },
 ];
 
 const NavDropdown = ({ label, items }: { label: string, items: {href: string, label: string}[] }) => {
