@@ -10,14 +10,13 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { useCollection, useFirestore, useDoc } from '@/firebase';
+import { collection, query, orderBy, limit, doc } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+import type { Profile } from '@/app/(main)/profile/page';
 import DashboardCard from '@/components/dashboard-card';
-
-// --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
-const harper_dob = new Date("2024-11-12T00:00:00Z");
+import { Skeleton } from '@/components/ui/skeleton';
 
 // --- Main Dashboard Component ---
 const MainDashboard = () => {
@@ -25,118 +24,144 @@ const MainDashboard = () => {
     const { db } = useFirestore();
     const [isClient, setIsClient] = useState(false);
     
+    // --- Data Fetching ---
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
         user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
     );
     const latestStory = journalEntries?.[0];
 
     const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
-        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(3)) : null
     );
 
-    const getLatestLog = (type: string) => logs?.find(log => log.type === type);
+    const { data: profile, loading: profileLoading } = useDoc<Profile>(
+        user && db ? doc(db, `users/${user.uid}/profile`, 'main') : null
+    );
 
-    const latestFeed = getLatestLog('Feeding');
-    const latestNap = getLatestLog('Sleep');
-    const latestDiaper = getLatestLog('Diaper');
-    
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    // Reusable button style for main action cards
+    const harperAgeInMonths = isClient && profile?.dob ? differenceInMonths(new Date(), profile.dob.toDate()) : 0;
+    
+    // --- UI Components ---
     const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden uppercase font-headline";
+
+    const ActivitySkeleton = () => (
+        <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+                 <div key={i} className="flex items-center gap-4 p-3">
+                    <Skeleton className="h-12 w-12 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+    
+    const JournalSkeleton = () => (
+        <div className="space-y-3">
+            <Skeleton className="h-32 w-full rounded-lg" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-2/3" />
+        </div>
+    );
 
     return (
         <div className="space-y-8 pb-8">
            {/* 1. WELCOME BANNER */}
            <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-                <div className="mb-8 px-4 py-6 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10 shadow-md">
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">🧒</span>
-                        <h1 className="text-3xl sm:text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">CHILD-CENTERED ACTIONS</h1>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-2xl">🧒</span>
+                            <h1 className="text-3xl sm:text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">
+                                {profileLoading ? <Skeleton className="h-10 w-64" /> : `${profile?.name || "Harper's"} Dashboard`}
+                            </h1>
+                        </div>
+                        <p className="text-base sm:text-lg font-sans text-muted-foreground tracking-wide">
+                            {profileLoading ? <Skeleton className="h-6 w-48 mt-1" /> : `A central hub for Harper, age ${harperAgeInMonths} months.`}
+                        </p>
                     </div>
-                    <p className="text-base sm:text-lg font-sans text-muted-foreground tracking-wide">TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING</p>
+                     <Avatar className="h-16 w-16 hidden sm:flex">
+                        <AvatarImage src="/harper-avatar.png" alt="Harper's avatar" />
+                        <AvatarFallback>H</AvatarFallback>
+                    </Avatar>
                 </div>
            </div>
 
-            {/* 2. CHILD-CENTERED ACTIONS - THE STUNNING GRADIENT BLOCK */}
-            <DashboardCard
-                title="👶 CHILD-CENTERED ACTIONS"
-                description="TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING"
-                className="col-span-12 p-8 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-2 border-purple-200 dark:border-purple-700 font-sans"
-            >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                    
-                    {/* Child's Daily Care - THE PURPLE GRADIENT */}
-                    <Link href="/log" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <BookOpen className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">CHILD'S DAILY CARE</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 font-sans">MONITOR WELL-BEING & MILESTONES</span>
-                        </button>
-                    </Link>
+            {/* 2. CHILD-CENTERED ACTIONS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Link href="/log" className="block">
+                    <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <BookOpen className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl">CHILD'S DAILY CARE</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 font-sans">MONITOR WELL-BEING & MILESTONES</span>
+                    </button>
+                </Link>
 
-                    {/* Safe Communication */}
-                    <Link href="/communication" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <MessageSquare className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">SAFE COMMUNICATION</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 font-sans">CHILD-FOCUSED MESSAGING & AI COACH</span>
-                        </button>
-                    </Link>
+                <Link href="/communication" className="block">
+                    <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <MessageSquare className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl">SAFE COMMUNICATION</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 font-sans">CHILD-FOCUSED MESSAGING & AI COACH</span>
+                    </button>
+                </Link>
 
-                    {/* Child's Fund */}
-                    <Link href="/fund" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <DollarSign className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl">CHILD'S FUND</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 font-sans">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
-                        </button>
-                    </Link>
-
-                </div>
-            </DashboardCard>
+                <Link href="/fund" className="block">
+                    <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <DollarSign className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl">CHILD'S FUND</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 font-sans">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
+                    </button>
+                </Link>
+            </div>
 
             {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
-                    {logs && logs.length > 0 ? (
-                        <div className="space-y-3">
-                            {logs.slice(0, 3).map((log, index) => (
-                                <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
-                                        {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
-                                        {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
-                                        {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            {log.time} - {log.details}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                            <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
-                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
-                                <Link href="/log">
-                                    <Clock className="h-4 w-4 mr-2" />
-                                    Add First Entry
-                                </Link>
-                            </Button>
-                        </div>
+                    {logsLoading ? <ActivitySkeleton /> : (
+                        logs && logs.length > 0 ? (
+                            <div className="space-y-3">
+                                {logs.map((log) => {
+                                    const parsedTime = log.time ? parse(log.time, 'HH:mm', new Date()) : null;
+                                    return(
+                                        <div key={log.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                            <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
+                                                {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                                {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                                {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    {parsedTime ? format(parsedTime, 'p') : log.time} - {log.details}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                                <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
+                                <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                    <Link href="/log">
+                                        <Clock className="h-4 w-4 mr-2" />
+                                        Add First Entry
+                                    </Link>
+                                </Button>
+                            </div>
+                        )
                     )}
                 </DashboardCard>
 
-                {/* Family Overview */}
                 <DashboardCard title="FAMILY OVERVIEW" description="YOUR PLACED.CA STATS.">
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
@@ -157,15 +182,8 @@ const MainDashboard = () => {
                     </Button>
                 </DashboardCard>
 
-                {/* Memory Journal */}
                 <DashboardCard title="MEMORY JOURNAL" description="LATEST MEMORIES AND MILESTONES">
-                    {journalLoading ? (
-                        <div className="space-y-3">
-                            <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-3/4"></div>
-                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-2/3"></div>
-                        </div>
-                    ) : latestStory ? (
+                    {journalLoading ? <JournalSkeleton /> : latestStory ? (
                         <>
                             {latestStory.image && (
                                 <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
