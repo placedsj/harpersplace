@@ -22,7 +22,7 @@ export type SuggestSleepScheduleInput = z.infer<typeof SuggestSleepScheduleInput
 const SuggestSleepScheduleOutputSchema = z.object({
   nextNapTime: z.string().describe("The suggested time for the next nap."),
   nextFeedTime: z.string().describe("An estimate for the next feeding time based on the logs."),
-  suggestedSchedule: z.string().describe("A detailed suggested sleep schedule for the day, including nap windows and bedtime."),
+  suggestedSchedule: z.string().describe("A detailed suggested sleep schedule for the day, including nap windows and a final bedtime."),
   sleepTips: z.string().describe("Actionable tips to help the child sleep better, such as quiet down routines."),
   reasoning: z.string().describe("The AI's reasoning for the suggested schedule, based on the child's age and recent patterns."),
 });
