@@ -16,9 +16,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
-import { Loader2, Trash2, Edit, X } from 'lucide-react';
-import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense';
-import { runFlow } from '@genkit-ai/flow';
+import { Loader2, Trash2, Edit, X, Wand2 } from 'lucide-react';
+import { categorizeExpense } from '@/ai/flows/categorize-expense';
 
 const expenseSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
@@ -56,7 +55,7 @@ export default function FundPage() {
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       description: '',
-      amount: 0,
+      amount: undefined,
       category: 'Other',
     },
   });
@@ -69,7 +68,7 @@ export default function FundPage() {
     }
     setIsAiLoading(true);
     try {
-      const result = await runFlow(categorizeExpenseFlow, description);
+      const result = await categorizeExpense(description);
       if (result.category) {
         form.setValue('category', result.category);
         toast({ title: 'AI Suggestion Applied', description: `Category set to ${result.category}` });
@@ -105,7 +104,7 @@ export default function FundPage() {
       }
       form.reset({
         description: '',
-        amount: 0,
+        amount: undefined,
         category: 'Other',
       });
     } catch (error) {
@@ -120,14 +119,30 @@ export default function FundPage() {
     }
   };
 
+  const totalExpenses = useMemo(() => {
+    return expenses?.reduce((acc, expense) => acc + expense.amount, 0) || 0;
+  }, [expenses]);
+
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Harper's Fund</h1>
+        <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">HARPER'S FUND</h1>
         <p className="text-muted-foreground mt-1">
           A transparent and shared ledger for all of Harper's expenses.
         </p>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle>Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-4xl font-bold text-primary">${totalExpenses.toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground">Total expenses logged</p>
+        </CardContent>
+      </Card>
+
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
@@ -151,10 +166,12 @@ export default function FundPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="button" variant="outline" size="sm" onClick={handleAiCategorize} disabled={isAiLoading}>
-                    {isAiLoading ? <Loader2 className="animate-spin" /> : null}
-                    Categorize with AI
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button type="button" variant="ghost" size="sm" onClick={handleAiCategorize} disabled={isAiLoading} className="text-xs">
+                      {isAiLoading ? <Loader2 className="animate-spin h-3 w-3 mr-1" /> : <Wand2 className="h-3 w-3 mr-1" />}
+                      Categorize with AI
+                    </Button>
+                  </div>
                   <FormField
                     control={form.control}
                     name="amount"
@@ -206,7 +223,7 @@ export default function FundPage() {
                         size="icon"
                         onClick={() => {
                           setEditId(null);
-                          form.reset({ description: '', amount: 0, category: 'Other' });
+                          form.reset({ description: '', amount: undefined, category: 'Other' });
                         }}
                       >
                         <X />
@@ -230,15 +247,22 @@ export default function FundPage() {
                   <TableRow>
                     <TableHead>Description</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead>Amount</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Date</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {expensesLoading && (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">
-                        Loading...
+                      <TableCell colSpan={4} className="text-center h-24">
+                        <Loader2 className="mx-auto animate-spin" />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                   {!expensesLoading && expenses?.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                        No expenses logged yet.
                       </TableCell>
                     </TableRow>
                   )}
@@ -249,7 +273,7 @@ export default function FundPage() {
                         <TableCell>
                           <Badge variant="outline">{expense.category}</Badge>
                         </TableCell>
-                        <TableCell>${expense.amount.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">${expense.amount.toFixed(2)}</TableCell>
                         <TableCell>{expense.timestamp?.toDate().toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))}

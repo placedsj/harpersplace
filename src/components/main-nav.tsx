@@ -12,26 +12,29 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui
 
 const navItems = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/log', label: 'Daily Care' },
     { href: '/calendar', label: 'Calendar' },
     { href: '/communication', label: 'Chat' },
     { href: '/blog', label: 'Blog' },
 ];
 
-const aiToolsItems = [
-    { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
-    { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
-    { href: '/communication-platform', label: '🚀 Communication Platform' },
-];
-
-const childFocusedItems = [
-    { href: '/journal', label: 'Journal' },
-    { href: '/fund', label: 'Fund' },
+const careItems = [
+    { href: '/log', label: 'Daily Log' },
     { href: '/health', label: 'Health Hub' },
     { href: '/milestones', label: 'Milestones' },
+];
+
+const planningItems = [
+    { href: '/journal', label: 'Journal' },
+    { href: '/fund', label: 'Fund' },
     { href: '/shared-lists', label: 'Shared Lists' },
     { href: '/family-tree', label: 'Family Tree' },
 ]
+
+const aiToolsItems = [
+    { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
+    { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
+    { href: '/transition-summary', label: 'Transition Summary AI' },
+];
 
 const NavDropdown = ({ label, items }: { label: string, items: {href: string, label: string}[] }) => {
     const pathname = usePathname();
@@ -69,8 +72,10 @@ const MobileNav = () => {
 
     const allItems: Array<{ href: string; label: string; isHeader?: boolean }> = [
         ...navItems,
-        { href: '/divider1', label: '--- Child-Focused ---', isHeader: true },
-        ...childFocusedItems,
+        { href: '/divider1', label: '--- Daily Care ---', isHeader: true },
+        ...careItems,
+        { href: '/divider2', label: '--- Planning ---', isHeader: true },
+        ...planningItems,
         { href: '/divider3', label: '--- AI Tools ---', isHeader: true },
         ...aiToolsItems,
     ];
@@ -141,7 +146,8 @@ export function MainNav({
             {item.label}
           </Link>
         ))}
-        <NavDropdown label="Child-Focused" items={childFocusedItems} />
+        <NavDropdown label="Daily Care" items={careItems} />
+        <NavDropdown label="Planning" items={planningItems} />
         <NavDropdown label="AI Tools" items={aiToolsItems} />
       </nav>
     </>

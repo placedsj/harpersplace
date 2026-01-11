@@ -1,15 +1,17 @@
 
-import { z } from 'zod';
-<<<<<<< HEAD
-import { defineFlow, action } from '@genkit-ai/flow';
-import { googleAI } from '@genkit-ai/googleai';
-=======
-import { defineFlow } from '@genkit-ai/flow';
-import { googleAI, gemini15Flash } from '@genkit-ai/googleai';
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
+'use server';
 
-// Define the expected output format for the AI
-const ExpenseCategorySchema = z.object({
+/**
+ * @fileOverview An AI agent for categorizing expenses.
+ *
+ * - categorizeExpense - A function that analyzes a description and suggests an expense category.
+ * - CategorizeExpenseOutput - The return type for the categorizeExpense function.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+
+const CategorizeExpenseOutputSchema = z.object({
   category: z.enum([
     'Health',
     'Education',
@@ -20,83 +22,43 @@ const ExpenseCategorySchema = z.object({
     'Other'
   ]).describe('The most appropriate category for the expense.'),
   amount: z.number().optional().describe('The numeric cost of the expense, if mentioned.'),
-  currency: z.string().optional().describe('The currency of the expense, e.g., USD, EUR.'),
+});
+export type CategorizeExpenseOutput = z.infer<typeof CategorizeExpenseOutputSchema>;
+
+
+export async function categorizeExpense(description: string): Promise<CategorizeExpenseOutput> {
+  return categorizeExpenseFlow(description);
+}
+
+const prompt = ai.definePrompt({
+    name: 'categorizeExpensePrompt',
+    input: { schema: z.string() },
+    output: { schema: CategorizeExpenseOutputSchema },
+    prompt: `
+        You are an expert at parsing and categorizing expenses for co-parents.
+        Analyze the following expense description and extract its category and cost if available.
+
+        Expense Description: "{{{input}}}"
+
+        Valid Categories:
+        - Health (doctor visits, prescriptions, dental, vision)
+        - Education (school fees, tutors, books, supplies)
+        - Extracurricular (sports, music lessons, clubs, camps)
+        - Clothing (new clothes, shoes, uniforms)
+        - Childcare (babysitting, daycare)
+        - Travel (costs related to custody exchange or trips)
+        - Other (anything that doesn't fit elsewhere)
+    `,
 });
 
-// Define the Genkit flow
-export const categorizeExpenseFlow = defineFlow(
-  {
-    name: 'categorizeExpenseFlow',
-    inputSchema: z.string().describe('The user\'s description of the expense.'),
-    outputSchema: ExpenseCategorySchema.describe('The categorized expense details.'),
-  },
-<<<<<<< HEAD
-  async (prompt) => {
-    const llmResponse = await action(
-        {
-            name: 'categorizeExpense',
-            inputSchema: z.string(),
-            outputSchema: ExpenseCategorySchema,
-        },
-        async (prompt) => {
-            const llm = googleAI({ model: 'gemini-pro' });
-            const result = await llm.generate({
-                prompt: `
-                    You are an expert at parsing and categorizing expenses for co-parents.
-                    Analyze the following expense description and extract its category and cost.
-                    
-                    Expense Description: "${prompt}"
-
-                    Valid Categories:
-                    - Health (doctor visits, prescriptions, dental, vision)
-                    - Education (school fees, tutors, books, supplies)
-                    - Extracurricular (sports, music lessons, clubs, camps)
-                    - Clothing (new clothes, shoes, uniforms)
-                    - Childcare (babysitting, daycare)
-                    - Travel (costs related to custody exchange or trips)
-                    - Other (anything that doesn't fit elsewhere)
-                `,
-                output: {
-                    schema: ExpenseCategorySchema,
-                }
-            });
-
-            return result.output() || { category: 'Other' };
-        }
-    )(prompt);
-
-    return llmResponse;
-=======
-  async (prompt: string) => {
-    // Simple fallback implementation when AI is not available
-    // In production, this would call the Google AI API
-    const lowerPrompt = prompt.toLowerCase();
-    
-    let category: 'Health' | 'Education' | 'Extracurricular' | 'Clothing' | 'Childcare' | 'Travel' | 'Other' = 'Other';
-    
-    if (lowerPrompt.includes('doctor') || lowerPrompt.includes('medical') || lowerPrompt.includes('prescription') || lowerPrompt.includes('dental')) {
-      category = 'Health';
-    } else if (lowerPrompt.includes('school') || lowerPrompt.includes('tutor') || lowerPrompt.includes('book')) {
-      category = 'Education';
-    } else if (lowerPrompt.includes('sport') || lowerPrompt.includes('music') || lowerPrompt.includes('lesson') || lowerPrompt.includes('camp')) {
-      category = 'Extracurricular';
-    } else if (lowerPrompt.includes('clothes') || lowerPrompt.includes('shoe') || lowerPrompt.includes('uniform')) {
-      category = 'Clothing';
-    } else if (lowerPrompt.includes('daycare') || lowerPrompt.includes('babysit')) {
-      category = 'Childcare';
-    } else if (lowerPrompt.includes('travel') || lowerPrompt.includes('trip') || lowerPrompt.includes('visit')) {
-      category = 'Travel';
+const categorizeExpenseFlow = ai.defineFlow(
+    {
+      name: 'categorizeExpenseFlow',
+      inputSchema: z.string(),
+      outputSchema: CategorizeExpenseOutputSchema,
+    },
+    async (description) => {
+        const { output } = await prompt(description);
+        return output!;
     }
-    
-    // Extract amount if present
-    const amountMatch = prompt.match(/\$?(\d+(?:\.\d{2})?)/);
-    const amount = amountMatch ? parseFloat(amountMatch[1]) : undefined;
-    
-    return {
-      category,
-      amount,
-      currency: amount ? 'CAD' : undefined,
-    };
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
-  }
 );

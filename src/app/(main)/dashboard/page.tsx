@@ -199,7 +199,7 @@ const MainDashboard = () => {
                 </p>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Link href="/communication" className="block group">
+                    <Link href="/ai-tools/communication-coach" className="block group">
                         <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
                             <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
                             <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Safe Communication</h5>
@@ -215,11 +215,11 @@ const MainDashboard = () => {
                         </div>
                     </Link>
                                         
-                    <Link href="/communication-platform" className="block group">
+                    <Link href="/ai-tools/schedule-optimizer" className="block group">
                         <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
                             <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-First Platform</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect their future</p>
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Schedule Optimizer</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Find the best schedule</p>
                         </div>
                     </Link>
                 </div>
