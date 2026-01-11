@@ -1,3 +1,4 @@
+
 // src/app/(main)/communication/page.tsx
 'use client';
 
