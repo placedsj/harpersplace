@@ -29,8 +29,9 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 import type { JournalEntry as JournalEntryType } from '@/lib/journal-data';
+import { Loader2 } from 'lucide-react';
 
 const entrySchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -49,6 +50,7 @@ export default function JournalPage() {
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof entrySchema>>({
@@ -67,10 +69,11 @@ export default function JournalPage() {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }
-
+        setIsSubmitting(true);
         try {
             const newEntry = {
               ...values,
+              date: Timestamp.fromDate(values.date),
               image: values.image || `https://picsum.photos/seed/${Math.random()}/400/200`,
               dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
@@ -92,6 +95,8 @@ export default function JournalPage() {
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error adding entry.' });
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -201,7 +206,10 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="animate-spin" />}
+                    Save Entry
+                    </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -210,6 +218,9 @@ export default function JournalPage() {
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading && <p>Loading entries...</p>}
+        {!loading && entries?.length === 0 && (
+            <p className="text-muted-foreground col-span-full text-center py-10">No journal entries yet. Add your first memory!</p>
+        )}
         {entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
