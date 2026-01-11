@@ -19,8 +19,9 @@ export default function LoginPage() {
             <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
               <span className="text-2xl font-bold font-headline text-primary-foreground">P</span>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent font-headline uppercase">
-              placed.ca
+            <h1 className="font-headline uppercase bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <span className="text-4xl font-extrabold tracking-tight">placed</span>
+                <span className="text-2xl font-extrabold tracking-tight">.ca</span>
             </h1>
             <p className="text-muted-foreground text-lg font-sans">
               Two Roofs, One Home.

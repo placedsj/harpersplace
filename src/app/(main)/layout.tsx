@@ -21,10 +21,11 @@ export default function AppLayout({
               
               {/* LEFT SIDE: Logo and Navigation */}
               <div className="flex items-center space-x-8">
-                {/* Harper's Place Logo */}
+                {/* Placed.ca Logo */}
                 <div className="flex items-center">
-                  <h1 className="text-2xl font-headline tracking-wider uppercase bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                    placed.ca
+                  <h1 className="font-headline uppercase bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                    <span className="text-2xl tracking-wider">placed</span>
+                    <span className="text-lg tracking-wider">.ca</span>
                   </h1>
                 </div>
 
