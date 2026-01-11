@@ -1,4 +1,3 @@
-
 // src/app/(main)/layout.tsx
 'use client';
 
@@ -6,6 +5,7 @@ import { MainNav } from '@/components/main-nav';
 import { UserNav } from '@/components/user-nav';
 import { CoParentingTip } from '@/components/co-parenting-tip';
 import { SiteFooter } from '@/components/site-footer';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export default function AppLayout({
   children,
@@ -40,8 +40,10 @@ export default function AppLayout({
             </div>
           </div>
         </header>
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-          {children}
+        <main id="main-content" className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
           <div className="pt-8">
             <CoParentingTip />
           </div>
