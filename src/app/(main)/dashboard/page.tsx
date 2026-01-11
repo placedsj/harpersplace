@@ -137,7 +137,7 @@ const MainDashboard = () => {
                 </DashboardCard>
 
                 {/* Family Overview */}
-                <DashboardCard title="FAMILY OVERVIEW" description="YOUR HARPER'S PLACE STATS.">
+                <DashboardCard title="FAMILY OVERVIEW" description="YOUR PLACED.CA STATS.">
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">

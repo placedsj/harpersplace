@@ -5,13 +5,13 @@ import { AuthProvider } from '@/hooks/use-auth';
 import { FirebaseProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: "Harper's Place - Modern Co-Parenting & Family Management",
-  description: 'A comprehensive family management platform for New Brunswick families. Track custody schedules, milestones, finances, and more with secure, collaborative tools.',
-  keywords: ['co-parenting', 'family management', 'New Brunswick', 'custody calendar', 'child development', 'parenting app'],
-  authors: [{ name: "Harper's Place Team" }],
+  title: "Placed.ca - Two Roofs, One Home",
+  description: 'A comprehensive family management platform for co-parenting. Track custody schedules, milestones, finances, and more with secure, collaborative tools.',
+  keywords: ['co-parenting', 'family management', 'custody calendar', 'child development', 'parenting app', 'new brunswick'],
+  authors: [{ name: "Placed.ca Team" }],
   openGraph: {
-    title: "Harper's Place",
-    description: 'Modern co-parenting and family management platform',
+    title: "Placed.ca",
+    description: 'Two Roofs, One Home. The modern co-parenting platform.',
     type: 'website',
   },
 };
