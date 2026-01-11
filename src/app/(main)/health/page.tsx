@@ -87,6 +87,7 @@ export default function HealthPage() {
         try {
             await addDoc(collection(db, `users/${user.uid}/health-events`), {
                 ...values,
+                date: Timestamp.fromDate(values.date),
                 userId: user.uid,
                 timestamp: serverTimestamp(),
             });
@@ -186,7 +187,7 @@ export default function HealthPage() {
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "PPP p")
                               ) : (
                                 <span>Pick a date</span>
                               )}

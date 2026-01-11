@@ -93,7 +93,7 @@ const MobileNav = () => {
             </SheetTrigger>
             <SheetContent side="left" className="w-72">
                 <SheetHeader>
-                    <SheetTitle className="text-left">Harper's Place</SheetTitle>
+                    <SheetTitle className="text-left">placed.ca</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6 space-y-1">
                     {allItems.map((item) => (
