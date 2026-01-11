@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
-import { ArrowLeft, FileDown, FileText } from 'lucide-react';
+import { ArrowLeft, FileDown } from 'lucide-react';
 import Link from 'next/link';
 
 // Generate static pages for each blog post
