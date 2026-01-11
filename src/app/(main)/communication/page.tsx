@@ -7,11 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Wand2, Send, Sparkles, Loader2 } from 'lucide-react';
+import { Wand2, Send, Sparkles, Loader2, HelpCircle, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { coParentingActions, CoParentingActionsOutput } from '@/ai/flows/co-parenting-actions';
+import { coParentingActions } from '@/ai/flows/co-parenting-actions';
 import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
+import { childsBestInterestCheck, ChildsBestInterestCheckOutput } from '@/ai/flows/childs-best-interest-check';
+
 import {
   Dialog,
   DialogContent,
@@ -23,12 +25,13 @@ import {
 
 type Message = {
     id: number;
-    user: 'Mom' | 'Dad';
+    user: 'Mom' | 'Dad' | 'AI_MEDIATOR' | 'AI_ADVOCATE';
     avatar: string;
     initials: string;
     text: string;
     timestamp: string;
     actions?: any[];
+    advice?: ChildsBestInterestCheckOutput;
 };
 
 const initialMessages: Message[] = [
@@ -139,7 +142,7 @@ function CommunicationPageInternal() {
             const result = await coParentingActions({ text: userMessage.text });
             const aiResponse: Message = {
                 id: messages.length + 2,
-                user: 'Mom', // Simulating response from the other parent / AI mediator
+                user: 'AI_MEDIATOR',
                 avatar: '',
                 initials: 'AI',
                 text: result.text,
@@ -153,6 +156,37 @@ function CommunicationPageInternal() {
                 variant: 'destructive',
                 title: 'AI Mediator Error',
                 description: 'Could not get a response from the AI mediator.'
+            });
+        } finally {
+            setIsSending(false);
+        }
+    };
+    
+    const handleAskAdvocate = async () => {
+        if (newMessage.trim() === '') return;
+        setIsSending(true);
+        const dilemma = newMessage;
+        setNewMessage('');
+
+        try {
+            const result = await childsBestInterestCheck({ dilemma });
+            const aiAdvocateResponse: Message = {
+                id: messages.length + 1,
+                user: 'AI_ADVOCATE',
+                avatar: '',
+                initials: 'AD',
+                text: '', // Text is unused for advocate messages
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                advice: result,
+            };
+            setMessages(prev => [...prev, aiAdvocateResponse]);
+
+        } catch (error) {
+            console.error("Error with AI Advocate:", error);
+            toast({
+                variant: 'destructive',
+                title: 'AI Advocate Error',
+                description: 'Could not get advice from the AI advocate.'
             });
         } finally {
             setIsSending(false);
@@ -196,14 +230,27 @@ function CommunicationPageInternal() {
                             )}>
                                  {msg.user !== currentUser && (
                                     <Avatar className="h-8 w-8">
-                                        <AvatarFallback>{msg.initials}</AvatarFallback>
+                                        <AvatarFallback className={cn(
+                                            (msg.user === 'AI_MEDIATOR' || msg.user === 'AI_ADVOCATE') && 'bg-primary/20 text-primary'
+                                        )}>{msg.initials}</AvatarFallback>
                                     </Avatar>
                                  )}
                                  <div className={cn(
                                     "max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-lg",
-                                    msg.user === currentUser ? "bg-primary text-primary-foreground" : (msg.initials === 'AI' ? "bg-accent text-accent-foreground" : "bg-muted")
+                                    msg.user === currentUser && "bg-primary text-primary-foreground",
+                                    msg.user === 'Mom' && "bg-muted",
+                                    msg.user === 'AI_MEDIATOR' && "bg-accent text-accent-foreground",
+                                    msg.user === 'AI_ADVOCATE' && "bg-transparent border-none p-0"
                                  )}>
-                                    <p className="text-sm">{msg.text}</p>
+                                    {msg.user === 'AI_ADVOCATE' && msg.advice ? (
+                                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-400 w-full">
+                                            <h4 className="font-semibold text-blue-800 dark:text-blue-200 flex items-center gap-2"><ShieldCheck className="w-5 h-5"/> AI Advocate's Perspective</h4>
+                                            <p className="text-base text-blue-900 dark:text-blue-100 my-2">{msg.advice.advice}</p>
+                                            <p className="text-xs text-blue-700 dark:text-blue-300"><strong>Principle:</strong> {msg.advice.principle}</p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm">{msg.text}</p>
+                                    )}
                                     <p className="text-xs mt-1 text-right opacity-70">{msg.timestamp}</p>
                                  </div>
                                  {msg.user === currentUser && (
@@ -234,7 +281,7 @@ function CommunicationPageInternal() {
                              <Avatar className="h-8 w-8">
                                 <AvatarFallback>AI</AvatarFallback>
                             </Avatar>
-                            <div className="max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-lg bg-accent text-accent-foreground">
+                            <div className="max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-lg bg-muted">
                                 <div className="flex items-center gap-2">
                                     <Loader2 className="animate-spin h-4 w-4" />
                                     <p className="text-sm">Thinking...</p>
@@ -245,7 +292,7 @@ function CommunicationPageInternal() {
                 </div>
                 <div className="mt-4 flex items-center gap-2">
                     <Input 
-                        placeholder="Type your message..."
+                        placeholder="Type your message or dilemma..."
                         className="flex-grow"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
@@ -260,6 +307,9 @@ function CommunicationPageInternal() {
                         </DialogTrigger>
                         {isCoachOpen && <AiCoachDialog message={newMessage} onUseSuggestion={handleUseSuggestion} />}
                     </Dialog>
+                     <Button variant="outline" size="icon" onClick={handleAskAdvocate} aria-label="Ask AI Advocate" disabled={isSending || newMessage.trim().length < 10}>
+                        <HelpCircle />
+                    </Button>
                     <Button size="icon" onClick={handleSendMessage} aria-label="Send Message" disabled={isSending}>
                         <Send />
                     </Button>
