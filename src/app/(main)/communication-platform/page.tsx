@@ -36,31 +36,31 @@ export default function CommunicationPlatformPage() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState(true); // Assume true initially
   const [isMuted, setIsMuted] = useState(true);
   const [isCameraOff, setIsCameraOff] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
+    useEffect(() => {
     const getCameraPermission = async () => {
-      if (typeof window !== 'undefined' && navigator.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions to see the full video demo.',
-          });
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
+        });
       }
     };
+
     getCameraPermission();
   }, [toast]);
 
@@ -238,6 +238,8 @@ export default function CommunicationPlatformPage() {
               <div className="space-y-4">
                 <div className="bg-black rounded-lg aspect-video flex flex-col items-center justify-center relative overflow-hidden">
                   <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                  
+                  {isCameraOff && <div className="absolute inset-0 bg-black flex items-center justify-center text-white"><VideoOff className="w-16 h-16 opacity-50"/></div>}
 
                   {isCallActive && (
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
@@ -265,7 +267,9 @@ export default function CommunicationPlatformPage() {
 
                 {/* Call controls */}
                 <div className="flex items-center justify-center gap-4">
-                    <Button variant={isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}><MicOff className="w-4 h-4" /></Button>
+                    <Button variant={isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}>
+                        {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    </Button>
                     <Button
                         variant={isCallActive ? "destructive" : "default"}
                         onClick={isCallActive ? endCall : startCall}
@@ -274,16 +278,18 @@ export default function CommunicationPlatformPage() {
                         {isCallActive ? <Phone className="w-4 h-4" /> : <Video className="w-4 h-4" />}
                         {isCallActive ? 'End Call' : 'Start Call'}
                     </Button>
-                    <Button variant={isCameraOff ? 'destructive' : 'outline'} size="icon" onClick={toggleCamera} disabled={!isCallActive}><VideoOff className="w-4 h-4" /></Button>
+                    <Button variant={isCameraOff ? 'destructive' : 'outline'} size="icon" onClick={toggleCamera} disabled={!isCallActive}>
+                        {isCameraOff ? <VideoOff className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+                    </Button>
                 </div>
 
-                {!hasCameraPermission && (
-                  <Alert variant="destructive">
-                      <AlertTitle>Camera Access Required</AlertTitle>
-                      <AlertDescription>
-                        Please allow camera access to use this feature.
-                      </AlertDescription>
-                  </Alert>
+                { !hasCameraPermission && (
+                    <Alert variant="destructive">
+                              <AlertTitle>Camera Access Required</AlertTitle>
+                              <AlertDescription>
+                                Please allow camera access to use this feature.
+                              </AlertDescription>
+                      </Alert>
                 )}
               </div>
             </CardContent>
