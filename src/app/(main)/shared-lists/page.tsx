@@ -11,7 +11,7 @@ import { PlusCircle, ShoppingCart, Gift, School, X } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -33,12 +33,12 @@ type WishlistItem = {
 };
 
 const harperWishlist: WishlistItem[] = [
-    { id: 1, name: 'Wooden Building Blocks', description: 'A classic set of colorful wooden blocks for creative play.', link: '#', imageUrl: 'https://picsum.photos/200/200', dataAiHint: "building blocks" },
-    { id: 2, name: 'Plush Storybook Character', description: 'A soft toy of her favorite character from "Goodnight Moon".', link: '#', imageUrl: 'https://picsum.photos/200/201', dataAiHint: "stuffed animal" },
+    { id: 1, name: 'Wooden Building Blocks', description: 'A classic set of colorful wooden blocks for creative play.', link: '#', imageUrl: 'https://picsum.photos/seed/blocks/200/200', dataAiHint: "building blocks" },
+    { id: 2, name: 'Plush Storybook Character', description: 'A soft toy of her favorite character from "Goodnight Moon".', link: '#', imageUrl: 'https://picsum.photos/seed/plush_toy/200/200', dataAiHint: "stuffed animal" },
 ];
 
 const schoolWishlist: WishlistItem[] = [
-    { id: 1, name: 'Backpack', description: 'A durable backpack for the new school year.', link: '#', imageUrl: 'https://picsum.photos/200/202', dataAiHint: "backpack" },
+    { id: 1, name: 'Backpack', description: 'A durable backpack for the new school year.', link: '#', imageUrl: 'https://picsum.photos/seed/backpack/200/200', dataAiHint: "backpack" },
 ];
 
 
@@ -79,6 +79,17 @@ export default function SharedListsPage() {
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error updating item.'});
+        }
+    };
+
+    const deleteGrocery = async (id: string) => {
+        if (!user || !db) return;
+        const itemRef = doc(db, `users/${user.uid}/groceries`, id);
+        try {
+            await deleteDoc(itemRef);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error deleting item.' });
         }
     };
 
@@ -158,6 +169,9 @@ export default function SharedListsPage() {
                                 >
                                     {item.name}
                                 </label>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteGrocery(item.id)}>
+                                    <X className="h-4 w-4" />
+                                </Button>
                             </li>
                         ))}
                     </ul>

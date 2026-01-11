@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
+import type { JournalEntry as JournalEntryType } from '@/lib/journal-data';
 
 const entrySchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -44,7 +44,7 @@ const entrySchema = z.object({
 export default function JournalPage() {
     const { user } = useAuth();
     const { db } = useFirestore();
-    const { data: entries, loading } = useCollection<JournalEntry>(
+    const { data: entries, loading } = useCollection<JournalEntryType>(
         user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc')) : null
     );
 
@@ -71,7 +71,7 @@ export default function JournalPage() {
         try {
             const newEntry = {
               ...values,
-              image: values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`,
+              image: values.image || `https://picsum.photos/seed/${Math.random()}/400/200`,
               dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
               timestamp: serverTimestamp(),
