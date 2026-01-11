@@ -98,6 +98,7 @@ export default function FundPage() {
         await addDoc(expensesColRef, {
           ...values,
           loggedBy: user.displayName || 'Anonymous',
+          userId: user.uid,
           timestamp: serverTimestamp(),
         });
         toast({ title: 'Expense Logged' });

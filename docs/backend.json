@@ -84,6 +84,20 @@
         },
         "required": ["time", "type", "details", "userId", "timestamp"]
     },
+    "expense": {
+      "title": "Expense",
+      "description": "A single expense entry for the child.",
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string", "enum": ["Health", "Education", "Extracurricular", "Clothing", "Childcare", "Travel", "Other"] },
+        "loggedBy": { "type": "string" },
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["description", "amount", "category", "loggedBy", "userId", "timestamp"]
+    },
     "groceryItem": {
         "title": "Grocery Item",
         "description": "An item on the shared grocery list.",
@@ -120,6 +134,10 @@
     "/users/{userId}/daily-logs": {
         "schema": { "$ref": "#/entities/dailyLog" },
         "description": "Stores daily care logs for a user."
+    },
+    "/users/{userId}/expenses": {
+      "schema": { "$ref": "#/entities/expense" },
+      "description": "Stores expenses for a user."
     },
     "/users/{userId}/groceries": {
         "schema": { "$ref": "#/entities/groceryItem" },
