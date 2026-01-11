@@ -214,7 +214,7 @@ export default function FundPage() {
                   />
                   <div className="flex gap-2 pt-2">
                     <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading && <Loader2 className="animate-spin" />}
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       {editId ? 'Update Expense' : 'Log Expense'}
                     </Button>
                     {editId && (
