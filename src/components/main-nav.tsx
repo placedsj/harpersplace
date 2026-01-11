@@ -34,6 +34,7 @@ const planningItems = [
 const aiToolsItems = [
     { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
     { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
+    { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker' },
     { href: '/transition-summary', label: 'Transition Summary AI' },
     { href: '/evidence-ai', label: 'Evidence AI Assistant' },
 ];

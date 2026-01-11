@@ -28,6 +28,46 @@ const author = {
 
 const posts: Post[] = [
     {
+        slug: 'what-not-to-do-at-exchanges',
+        title: 'The Handover Handbook: 7 Things to Never Do at a Custody Exchange',
+        summary: 'Custody exchanges are a major source of stress for children. Learn the key mistakes to avoid to ensure every handover is peaceful, positive, and conflict-free.',
+        contentHtml: `
+            <p>The moment of exchange—when a child transitions from one parent to the other—is one of the most emotionally charged moments in co-parenting. For a child, this brief interaction can be filled with anxiety and loyalty conflicts. Your number one job is to make it boring, predictable, and safe. Here are 7 things to absolutely avoid.</p>
+            <ol class="list-decimal list-inside space-y-3 my-4">
+                <li><strong>Don't discuss adult topics.</strong> The exchange is not the time to talk about child support, legal matters, or your personal grievances. Keep conversation limited to pleasantries and essential, child-related logistics for the next 24 hours.</li>
+                <li><strong>Don't use the child as a messenger.</strong> "Tell your mother she needs to call me." This puts the child in the middle and forces them to manage adult responsibilities. Communicate directly through the proper channels, like the Harper's Place app.</li>
+                <li><strong>Don't linger.</strong> A long, drawn-out goodbye can increase a child's anxiety. The goal is a quick, warm, and confident transition. A hug, a loving "I'll see you on Friday!" and a wave is perfect.</li>
+                <li><strong>Don't display negative body language.</strong> Eye-rolling, sighing, or refusing to make eye contact with the other parent sends a clear signal of conflict to your child, making them feel unsafe.</li>
+                <li><strong>Don't interrogate the child.</strong> "Did you have fun? What did you do? Did you eat your vegetables?" Let your child decompress and share information on their own time. The handover should not feel like an inspection.</li>
+                <li><strong>Don't be late.</strong> Punctuality is a sign of respect and, more importantly, it provides the predictability children need. If you are going to be late, communicate that as early as possible.</li>
+                <li><strong>Don't make it about you.</strong> The exchange is about the child's successful transition between their two homes. Your feelings of sadness or frustration must be managed privately, away from the child.</li>
+            </ol>
+            <p>By keeping exchanges brief, business-like, and friendly, you fulfill your duty to protect your child from conflict and create the emotional stability they need to thrive.</p>
+        `,
+        date: '2025-11-10',
+        category: 'Parenting',
+        author,
+    },
+    {
+        slug: 'helping-children-with-anxiety',
+        title: 'Your Child\'s Safe Harbor: 5 Ways to Help a Child Navigate Anxiety',
+        summary: 'Separation is stressful for children. Learn five actionable strategies to help your child feel secure, understood, and confident amidst family changes.',
+        contentHtml: `
+            <p>Anxiety in children, especially during a family separation, often looks like anger, defiance, or withdrawal. Their world feels unpredictable, and they lack the tools to express their big feelings. Your role is to be their safe harbor—the calm, predictable anchor in their emotional storm. Here are five practical ways to help.</p>
+            <ol class="list-decimal list-inside space-y-3 my-4">
+                <li><strong>Name the Feeling (and Validate It).</strong> Don't say, "Don't be sad." Instead, say, "It looks like you're feeling sad right now. It's okay to feel sad. I'm here with you." Giving a name to their emotion helps them understand it, and validating it tells them their feelings are acceptable.</li>
+                <li><strong>Create Predictable Routines.</strong> Anxiety thrives in uncertainty. A consistent routine for mornings, evenings, and especially handovers provides a sense of control and safety. The <strong>Smart Calendar</strong> in Harper's Place is a perfect tool for establishing and sharing these routines.</li>
+                <li><strong>Focus on What Stays the Same.</strong> While much is changing, many things are not. Remind them: "Even though you'll be sleeping at Dad's house tonight, you'll still have your favorite teddy bear. And I will still be here to talk to on the phone before bed."</li>
+                <li><strong>Practice "Externalizing" the Worry.</strong> For slightly older children, give the anxiety a silly name, like "Mr. Worry Monster." You can say, "Is Mr. Worry Monster telling you silly stories again? What's he saying this time?" This separates the child from their anxiety and turns it into a manageable, external thing they can confront.</li>
+                <li><strong>Model Calm Yourself.</strong> Your child takes their emotional cues from you. If you are anxious, they will be too. It is essential to manage your own stress and model calm, confident behavior, especially during exchanges. Our <strong>AI Communication Coach</strong> can help ensure your written communications are also calm and reassuring.</li>
+            </ol>
+            <p>By providing consistency, validation, and a calm presence, you teach your child that while feelings of anxiety are normal, they are also manageable. You are building their resilience for life.</p>
+        `,
+        date: '2025-11-09',
+        category: 'Wellness',
+        author,
+    },
+    {
         slug: 'navigating-section-7-expenses',
         title: 'Stop Fighting About Who Pays: Navigating Section 7 Expenses in New Brunswick',
         summary: 'A clear guide to understanding, tracking, and documenting extraordinary expenses to reduce conflict and ensure fairness.',
@@ -167,7 +207,7 @@ const posts: Post[] = [
         title: 'From Chaos to Calm: Creating a Peaceful Bedtime Routine for Your Child',
         summary: 'Tired of bedtime battles? Discover simple, effective strategies to create a calming and consistent bedtime routine that helps your child (and you!) get the rest they need.',
         contentHtml: `
-            <p>For many parents, bedtime can be the most stressful part of the day. But it doesn't have to be. A consistent and calming bedtime routine can make a world of difference, helping your child wind down and prepare for a restful night\'s sleep.</p>
+            <p>For many parents, bedtime can be the most stressful part of the day. But it doesn\'t have to be. A consistent and calming bedtime routine can make a world of difference, helping your child wind down and prepare for a restful night\'s sleep.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Magic of Consistency</h3>
             <p>Children thrive on routine. A predictable sequence of events helps them feel safe and secure. The key is to do the same things in the same order every night. This signals to your child\'s brain that it\'s time to sleep.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">A Sample Peaceful Bedtime Routine</h3>
