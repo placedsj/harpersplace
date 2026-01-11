@@ -7,13 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PlusCircle, ShoppingCart, Gift, School, X } from 'lucide-react';
+import { PlusCircle, ShoppingCart, Gift, School, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { groceryItems, harperWishlist, schoolWishlist } from '@/lib/placeholder-data';
+import { harperWishlist, schoolWishlist } from '@/lib/placeholder-data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type GroceryItem = {
@@ -42,11 +42,13 @@ export default function SharedListsPage() {
     );
 
     const [newGroceryItem, setNewGroceryItem] = React.useState('');
+    const [isAdding, setIsAdding] = React.useState(false);
     const { toast } = useToast();
 
     const handleAddGrocery = async () => {
         if (newGroceryItem.trim() === '' || !user || !db) return;
         
+        setIsAdding(true);
         const newItem = {
             name: newGroceryItem,
             checked: false,
@@ -60,6 +62,8 @@ export default function SharedListsPage() {
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error adding item.'});
+        } finally {
+            setIsAdding(false);
         }
     };
     
@@ -140,16 +144,17 @@ export default function SharedListsPage() {
                             value={newGroceryItem}
                             onChange={(e) => setNewGroceryItem(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleAddGrocery()}
+                            disabled={isAdding}
                         />
-                        <Button onClick={handleAddGrocery}>
-                            <PlusCircle />
+                        <Button onClick={handleAddGrocery} disabled={isAdding}>
+                            {isAdding ? <Loader2 className="animate-spin" /> : <PlusCircle />}
                             <span>Add</span>
                         </Button>
                     </div>
                     {loading ? (
                         <div className="space-y-3">
-                            {groceryItems.map(item => (
-                                <div key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                                     <Skeleton className="h-4 w-4" />
                                     <Skeleton className="h-4 flex-grow" />
                                 </div>
@@ -157,7 +162,7 @@ export default function SharedListsPage() {
                         </div>
                     ) : (
                         <ul className="space-y-3">
-                            {groceries && groceries.map(item => (
+                            {groceries && groceries.length > 0 ? groceries.map(item => (
                                 <li key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                                     <Checkbox 
                                         id={`item-${item.id}`}
@@ -166,7 +171,7 @@ export default function SharedListsPage() {
                                     />
                                     <label 
                                         htmlFor={`item-${item.id}`}
-                                        className={`flex-grow text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
+                                        className={`flex-grow text-sm cursor-pointer ${item.checked ? 'line-through text-muted-foreground' : ''}`}
                                     >
                                         {item.name}
                                     </label>
@@ -174,7 +179,9 @@ export default function SharedListsPage() {
                                         <X className="h-4 w-4" />
                                     </Button>
                                 </li>
-                            ))}
+                            )) : (
+                                <p className="text-sm text-muted-foreground text-center py-4">No groceries on the list yet.</p>
+                            )}
                         </ul>
                     )}
                 </CardContent>
