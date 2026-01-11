@@ -6,36 +6,24 @@ import { z } from 'zod';
 import { getStorage } from 'firebase-admin/storage';
 import * as admin from 'firebase-admin';
 
-
-// Check for the environment variable, which should contain the JSON string
-// This is a placeholder for a more secure secret management strategy
-const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-let serviceAccount;
-if (serviceAccountString) {
-    try {
-        serviceAccount = JSON.parse(serviceAccountString);
-    } catch (e) {
-        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.", e);
-    }
-}
-
-
 // Initialize Firebase Admin SDK if not already initialized
-if (!admin.apps.length && serviceAccount) {
+if (!admin.apps.length) {
     try {
+        const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+        if (!serviceAccountString) {
+            throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.");
+        }
+        const serviceAccount = JSON.parse(serviceAccountString);
+
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
             storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
         });
         console.log("Firebase Admin SDK initialized successfully for Storage.");
-    } catch (error) {
-        console.error("Error initializing Firebase Admin SDK for Storage:", error);
+    } catch (error: any) {
+        console.warn(`Firebase Admin SDK initialization failed: ${error.message}. File upload features will not be available.`);
     }
-} else if (!serviceAccount) {
-    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set or is invalid. File upload features will not work.");
 }
-
 
 const inputSchema = z.object({
     fileName: z.string(),
@@ -56,11 +44,13 @@ export const getStorageUploadUrlFlow = ai.defineFlow(
     },
     async ({ fileName, contentType, userId }) => {
         if (!admin.apps.length) {
-            throw new Error("Firebase Admin SDK not initialized. Cannot generate signed URL.");
+            throw new Error("Firebase Admin SDK not initialized. Cannot generate signed URL for file uploads.");
         }
         
         const bucket = getStorage().bucket();
-        const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
+        // Sanitize file name to prevent path traversal and other issues
+        const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filePath = `user-uploads/${userId}/${Date.now()}-${safeFileName}`;
         const file = bucket.file(filePath);
 
         const [signedUrl] = await file.getSignedUrl({

@@ -120,7 +120,7 @@ ${summary.activities.map(a => `- ${a}`).join('\n')}
 ${summary.fullSummary}
     `;
     if (summary.mediaUrls && summary.mediaUrls.length > 0) {
-        textToCopy += `\n**Attachments:**\n${summary.mediaUrls.join('\n')}`;
+        textToCopy += `\n\n**Attachments:**\n${summary.mediaUrls.join('\n')}`;
     }
     navigator.clipboard.writeText(textToCopy.trim());
     setHasCopied(true);
@@ -151,6 +151,7 @@ ${summary.fullSummary}
                                 name="ramble"
                                 render={({ field }) => (
                                     <FormItem>
+                                    <FormLabel>Your Notes</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} rows={10} placeholder="Tell me about your day..." />
                                     </FormControl>
@@ -180,8 +181,8 @@ ${summary.fullSummary}
                                 <div className="grid grid-cols-3 gap-2">
                                     {filePreviews.map((src, index) => (
                                         <div key={index} className="relative group">
-                                            <Image src={src} alt={`preview ${index}`} width={150} height={150} className="rounded-md object-cover w-full h-auto" />
-                                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => removeImage(index)}><X className="h-4 w-4"/></Button>
+                                            <Image src={src} alt={`preview ${index}`} width={150} height={150} className="rounded-md object-cover w-full h-auto aspect-square" />
+                                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={() => removeImage(index)}><X className="h-4 w-4"/></Button>
                                         </div>
                                     ))}
                                 </div>
@@ -221,7 +222,7 @@ ${summary.fullSummary}
                         <>
                             {summary.mediaUrls && summary.mediaUrls.length > 0 && (
                                 <div className="grid grid-cols-3 gap-2">
-                                    {summary.mediaUrls.map((url, i) => <a key={i} href={url} target="_blank" rel="noopener noreferrer"><Image src={url} alt={`uploaded media ${i}`} width={150} height={150} className="rounded-md object-cover w-full h-auto" /></a>)}
+                                    {summary.mediaUrls.map((url, i) => <a key={i} href={url} target="_blank" rel="noopener noreferrer"><Image src={url} alt={`uploaded media ${i}`} width={150} height={150} className="rounded-md object-cover w-full h-auto aspect-square" /></a>)}
                                 </div>
                             )}
                             <div className="space-y-1">

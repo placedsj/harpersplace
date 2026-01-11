@@ -17,7 +17,7 @@ type Summary = {
 export async function generateSummaryAction(ramble: string, uploadedFiles: string[]): Promise<Summary> {
     let prompt = ramble;
     if (uploadedFiles.length > 0) {
-      prompt += `\n\n The user has uploaded the following images related to the day. Briefly mention them in the summary where relevant: ${uploadedFiles.join(', ')}`;
+      prompt += `\n\n The user has uploaded ${uploadedFiles.length} photo(s). Briefly mention these images in the summary where relevant. You can refer to them generically (e.g., "the attached photo of the drawing," "the picture from the park").`;
     }
     
     const result = await generateTransitionSummaryFlow(prompt);
