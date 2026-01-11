@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
 
 const logSchema = z.object({
   time: z.string().min(1, 'Time is required.'),
@@ -59,6 +60,7 @@ export default function LogPage() {
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
     const { toast } = useToast();
     
     const logSummary = logs ? logs.map(log => `${log.time} - ${log.type}: ${log.details}`).join('\n') : '';
@@ -78,6 +80,7 @@ export default function LogPage() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await addDoc(collection(db, `users/${user.uid}/daily-logs`), {
                 ...values,
@@ -97,6 +100,8 @@ export default function LogPage() {
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error adding log.' });
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -175,7 +180,10 @@ export default function LogPage() {
                           <DialogClose asChild>
                             <Button type="button" variant="secondary">Cancel</Button>
                           </DialogClose>
-                          <Button type="submit">Save Entry</Button>
+                          <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="animate-spin" />}
+                            Save Entry
+                          </Button>
                         </DialogFooter>
                     </form>
                 </Form>
@@ -200,12 +208,26 @@ export default function LogPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {loading && <TableRow><TableCell colSpan={3}>Loading logs...</TableCell></TableRow>}
+                            {loading && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center h-24">
+                                        <Loader2 className="mx-auto animate-spin text-primary" />
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {!loading && logs?.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center h-24 text-muted-foreground">
+                                        No logs yet for today.
+                                    </TableCell>
+                                </TableRow>
+                            )}
                             {logs && logs.map((log) => {
                                 const Icon = iconMap[log.type];
+                                const parsedTime = log.time ? parse(log.time, 'HH:mm', new Date()) : null;
                                 return (
                                     <TableRow key={log.id}>
-                                        <TableCell className="font-medium">{format(parse(log.time, 'HH:mm', new Date()), 'p')}</TableCell>
+                                        <TableCell className="font-medium">{parsedTime ? format(parsedTime, 'p') : log.time}</TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
