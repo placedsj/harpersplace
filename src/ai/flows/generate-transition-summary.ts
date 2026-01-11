@@ -1,11 +1,14 @@
-import { z } from 'zod';
-<<<<<<< HEAD
-import { defineFlow, action } from '@genkit-ai/flow';
-import { googleAI } from '@genkit-ai/googleai';
-=======
-import { defineFlow } from '@genkit-ai/flow';
-import { googleAI, gemini15Flash } from '@genkit-ai/googleai';
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
+
+'use server';
+/**
+ * @fileOverview An AI agent for generating co-parenting transition summaries.
+ *
+ * - generateTransitionSummaryFlow - A function that converts raw notes into a structured summary.
+ * - TransitionSummarySchema - The return type for the flow.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const TransitionSummarySchema = z.object({
   title: z.string().describe('A concise, neutral title for the summary (e.g., "Transition Summary for [Date]").'),
@@ -15,55 +18,32 @@ const TransitionSummarySchema = z.object({
   headsUpForTheWeek: z.string().describe('Any upcoming events or important information for the co-parent.'),
   fullSummary: z.string().describe('A detailed, neutral summary of the day, suitable for a co-parent.'),
 });
+export type TransitionSummary = z.infer<typeof TransitionSummarySchema>;
 
-export const generateTransitionSummaryFlow = defineFlow(
+
+const prompt = ai.definePrompt({
+    name: 'generateTransitionSummaryPrompt',
+    input: { schema: z.string() },
+    output: { schema: TransitionSummarySchema },
+    prompt: `
+        You are a helpful assistant for co-parents.
+        Your task is to convert a raw text dump of notes about a child's day into a structured, neutral, and clear transition summary.
+        The summary should be objective and avoid emotional or biased language.
+        Focus on factual information that a co-parent would need to know.
+
+        Raw Notes: "{{{input}}}"
+    `,
+});
+
+
+export const generateTransitionSummaryFlow = ai.defineFlow(
   {
     name: 'generateTransitionSummaryFlow',
-    inputSchema: z.string().describe('A raw text dump of notes about a child\'s day.'),
+    inputSchema: z.string(),
     outputSchema: TransitionSummarySchema,
   },
-<<<<<<< HEAD
   async (prompt) => {
-    const llmResponse = await action(
-        {
-            name: 'generateSummary',
-            inputSchema: z.string(),
-            outputSchema: TransitionSummarySchema,
-        },
-        async (prompt) => {
-            const llm = googleAI({ model: 'gemini-pro' });
-            const result = await llm.generate({
-                prompt: `
-                    You are a helpful assistant for co-parents.
-                    Your task is to convert a raw text dump of notes about a child's day into a structured, neutral, and clear transition summary.
-                    The summary should be objective and avoid emotional or biased language.
-                    Focus on factual information that a co-parent would need to know.
-
-                    Raw Notes: "${prompt}"
-                `,
-                output: {
-                    schema: TransitionSummarySchema,
-                }
-            });
-            return result.output()!;
-        }
-    )(prompt);
-
-    return llmResponse;
-=======
-  async (prompt: string) => {
-    // Simple fallback implementation when AI is not available
-    // In production, this would call the Google AI API
-    const today = new Date().toLocaleDateString();
-    
-    return {
-      title: `Transition Summary for ${today}`,
-      childsMood: 'Good mood observed throughout the day',
-      activities: ['Daily routine activities'],
-      healthAndWellness: 'Regular meals and nap times. No concerns noted.',
-      headsUpForTheWeek: 'No special notes for the upcoming week.',
-      fullSummary: prompt || 'No additional details provided.',
-    };
->>>>>>> 941043bc898d6e748741a645633ad31a6af1c28f
+    const { output } = await prompt(prompt);
+    return output!;
   }
 );

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -35,6 +36,7 @@ export default function TransitionSummaryPage() {
   const { toast } = useToast();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
@@ -57,6 +59,8 @@ export default function TransitionSummaryPage() {
     }
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
+    
+    setIsUploading(true);
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
     setFilePreviews(prev => [...prev, ...newPreviews]);
@@ -81,6 +85,7 @@ export default function TransitionSummaryPage() {
     const results = await Promise.all(uploadPromises);
     const successfulUploads = results.filter((url): url is string => url !== null);
     setUploadedFiles(prev => [...prev, ...successfulUploads]);
+    setIsUploading(false);
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -181,57 +186,70 @@ ${summary.fullSummary}
                                     ))}
                                 </div>
                             )}
-                            <Button type="submit" disabled={isLoading || (fileInputRef.current?.files?.length || 0) > uploadedFiles.length} className='w-full'>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
-                                Generate Summary
+                            <Button type="submit" disabled={isLoading || isUploading} className='w-full'>
+                                {(isLoading || isUploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+                                {isLoading ? 'Generating...' : (isUploading ? 'Uploading...' : 'Generate Summary')}
                             </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
 
-            {summary && (
-                 <Card>
-                    <CardHeader className='flex-row items-start justify-between'>
-                        <div>
-                            <CardTitle>AI-Generated Summary</CardTitle>
-                            <CardDescription>Ready to send to your co-parent.</CardDescription>
+            <Card className={!summary && !isLoading ? "flex items-center justify-center" : ""}>
+                <CardHeader className={summary ? 'flex-row items-start justify-between' : ''}>
+                    <div>
+                        <CardTitle>AI-Generated Summary</CardTitle>
+                        <CardDescription>Ready to send to your co-parent.</CardDescription>
+                    </div>
+                    {summary && <Button variant="outline" size="icon" onClick={handleCopy} disabled={hasCopied}>
+                        {hasCopied ? <ClipboardCheck className="h-4 w-4" /> : <Clipboard className="h-4 w-4"/>}
+                    </Button>}
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm">
+                    {isLoading && (
+                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground pt-10">
+                            <Loader2 className="animate-spin h-8 w-8 mb-2" />
+                            <p>The AI is crafting your summary...</p>
                         </div>
-                        <Button variant="outline" size="icon" onClick={handleCopy} disabled={hasCopied}>
-                            {hasCopied ? <ClipboardCheck className="h-4 w-4" /> : <Clipboard className="h-4 w-4"/>}
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="space-y-4 text-sm">
-                        {summary.mediaUrls && summary.mediaUrls.length > 0 && (
-                            <div className="grid grid-cols-3 gap-2">
-                                {summary.mediaUrls.map((url, i) => <a key={i} href={url} target="_blank" rel="noopener noreferrer"><Image src={url} alt={`uploaded media ${i}`} width={150} height={150} className="rounded-md object-cover w-full h-auto" /></a>)}
+                    )}
+                    {!summary && !isLoading && (
+                        <div className="text-center text-muted-foreground py-10">
+                            Your professional, AI-generated summary will appear here.
+                        </div>
+                    )}
+                    {summary && (
+                        <>
+                            {summary.mediaUrls && summary.mediaUrls.length > 0 && (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {summary.mediaUrls.map((url, i) => <a key={i} href={url} target="_blank" rel="noopener noreferrer"><Image src={url} alt={`uploaded media ${i}`} width={150} height={150} className="rounded-md object-cover w-full h-auto" /></a>)}
+                                </div>
+                            )}
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-lg">{summary.title}</h3>
+                                <p><span className="font-semibold">Mood:</span> {summary.childsMood}</p>
                             </div>
-                        )}
-                        <div className="space-y-1">
-                            <h3 className="font-bold text-lg">{summary.title}</h3>
-                            <p><span className="font-semibold">Mood:</span> {summary.childsMood}</p>
-                        </div>
-                         <div className="space-y-1">
-                            <h3 className="font-semibold">Activities:</h3>
-                            <ul className="list-disc list-inside pl-2">
-                                {summary.activities.map((activity, i) => <li key={i}>{activity}</li>)}
-                            </ul>
-                        </div>
-                        <div className="space-y-1">
-                            <h3 className="font-semibold">Health & Wellness:</h3>
-                            <p>{summary.healthAndWellness}</p>
-                        </div>
-                         <div className="space-y-1">
-                            <h3 className="font-semibold">Heads up for the week:</h3>
-                            <p>{summary.headsUpForTheWeek}</p>
-                        </div>
-                         <div className="space-y-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-md">
-                            <h3 className="font-semibold">Full Summary:</h3>
-                            <p className='whitespace-pre-wrap'>{summary.fullSummary}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+                            <div className="space-y-1">
+                                <h3 className="font-semibold">Activities:</h3>
+                                <ul className="list-disc list-inside pl-2">
+                                    {summary.activities.map((activity, i) => <li key={i}>{activity}</li>)}
+                                </ul>
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="font-semibold">Health & Wellness:</h3>
+                                <p>{summary.healthAndWellness}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="font-semibold">Heads up for the week:</h3>
+                                <p>{summary.headsUpForTheWeek}</p>
+                            </div>
+                            <div className="space-y-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-md">
+                                <h3 className="font-semibold">Full Summary:</h3>
+                                <p className='whitespace-pre-wrap'>{summary.fullSummary}</p>
+                            </div>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     </div>
   );
