@@ -124,6 +124,38 @@
             "timestamp": { "type": "string", "format": "date-time" }
         },
         "required": ["date", "category", "description", "evidence", "loggedBy", "userId", "timestamp"]
+    },
+    "medicalContact": {
+        "title": "Medical Contact",
+        "description": "A medical contact for the child.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "role": { "type": "string" },
+            "phone": { "type": "string" }
+        },
+        "required": ["name", "role", "phone"]
+    },
+    "emergencyContact": {
+        "title": "Emergency Contact",
+        "description": "An emergency contact for the child.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "relation": { "type": "string" },
+            "phone": { "type": "string" }
+        },
+        "required": ["name", "relation", "phone"]
+    },
+    "medicalNotes": {
+        "title": "Medical Notes",
+        "description": "Important medical notes for the child.",
+        "type": "object",
+        "properties": {
+            "allergies": { "type": "string" },
+            "medicalConditions": { "type": "string" },
+            "currentMedications": { "type": "string" }
+        }
     }
   },
   "auth": {
@@ -161,6 +193,18 @@
     "/users/{userId}/evidence": {
         "schema": { "$ref": "#/entities/evidenceEntry" },
         "description": "Stores evidence log entries for a user."
+    },
+    "/users/{userId}/medicalContacts": {
+        "schema": { "$ref": "#/entities/medicalContact" },
+        "description": "Stores medical contacts for a user's child."
+    },
+    "/users/{userId}/emergencyContacts": {
+        "schema": { "$ref": "#/entities/emergencyContact" },
+        "description": "Stores emergency contacts for a user's child."
+    },
+    "/users/{userId}/medicalNotes": {
+        "schema": { "$ref": "#/entities/medicalNotes" },
+        "description": "Stores medical notes for a user's child."
     }
   }
 }
