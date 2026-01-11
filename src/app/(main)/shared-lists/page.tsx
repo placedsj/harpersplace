@@ -13,7 +13,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-
+import { groceryItems, harperWishlist, schoolWishlist } from '@/lib/placeholder-data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type GroceryItem = {
     id: string;
@@ -31,15 +32,6 @@ type WishlistItem = {
     imageUrl: string;
     dataAiHint: string;
 };
-
-const harperWishlist: WishlistItem[] = [
-    { id: 1, name: 'Wooden Building Blocks', description: 'A classic set of colorful wooden blocks for creative play.', link: '#', imageUrl: 'https://picsum.photos/seed/blocks/200/200', dataAiHint: "building blocks" },
-    { id: 2, name: 'Plush Storybook Character', description: 'A soft toy of her favorite character from "Goodnight Moon".', link: '#', imageUrl: 'https://picsum.photos/seed/plush_toy/200/200', dataAiHint: "stuffed animal" },
-];
-
-const schoolWishlist: WishlistItem[] = [
-    { id: 1, name: 'Backpack', description: 'A durable backpack for the new school year.', link: '#', imageUrl: 'https://picsum.photos/seed/backpack/200/200', dataAiHint: "backpack" },
-];
 
 
 export default function SharedListsPage() {
@@ -154,27 +146,37 @@ export default function SharedListsPage() {
                             <span>Add</span>
                         </Button>
                     </div>
-                    {loading && <p>Loading groceries...</p>}
-                    <ul className="space-y-3">
-                        {groceries && groceries.map(item => (
-                            <li key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
-                                <Checkbox 
-                                    id={`item-${item.id}`}
-                                    checked={item.checked}
-                                    onCheckedChange={() => toggleGrocery(item.id, item.checked)}
-                                />
-                                <label 
-                                    htmlFor={`item-${item.id}`}
-                                    className={`flex-grow text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
-                                >
-                                    {item.name}
-                                </label>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteGrocery(item.id)}>
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            </li>
-                        ))}
-                    </ul>
+                    {loading ? (
+                        <div className="space-y-3">
+                            {groceryItems.map(item => (
+                                <div key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                                    <Skeleton className="h-4 w-4" />
+                                    <Skeleton className="h-4 flex-grow" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <ul className="space-y-3">
+                            {groceries && groceries.map(item => (
+                                <li key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                                    <Checkbox 
+                                        id={`item-${item.id}`}
+                                        checked={item.checked}
+                                        onCheckedChange={() => toggleGrocery(item.id, item.checked)}
+                                    />
+                                    <label 
+                                        htmlFor={`item-${item.id}`}
+                                        className={`flex-grow text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}
+                                    >
+                                        {item.name}
+                                    </label>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteGrocery(item.id)}>
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </CardContent>
             </Card>
         </TabsContent>
