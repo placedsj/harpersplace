@@ -235,9 +235,9 @@ export default function MilestonesPage() {
                 </Dialog>
             </div>
             
-            <Accordion type="multiple" defaultValue={['1st-year-intro']} className="w-full">
+            <Accordion type="multiple" defaultValue={['firstYear']} className="w-full">
                 {Object.entries(allMilestones).map(([yearKey, yearData]) => (
-                    <AccordionItem value={`${yearKey}-intro`} key={yearKey}>
+                    <AccordionItem value={yearKey} key={yearKey}>
                         <AccordionTrigger className="text-2xl font-headline uppercase tracking-wide text-primary">
                             {yearData.year}
                         </AccordionTrigger>
@@ -247,7 +247,7 @@ export default function MilestonesPage() {
                                     <p>{yearData.description}</p>
                                 </CardContent>
                            </Card>
-                            <Accordion type="multiple" className="w-full mt-4 space-y-4">
+                            <Accordion type="multiple" className="w-full mt-4 space-y-4" defaultValue={[Object.keys(yearData.ageGroups)[0]]}>
                                 {Object.entries(yearData.ageGroups).map(([ageKey, ageData]) => (
                                     <Card key={ageKey} className="overflow-hidden">
                                         <AccordionItem value={ageKey} className="border-b-0">
