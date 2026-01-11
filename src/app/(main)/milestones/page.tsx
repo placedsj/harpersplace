@@ -33,6 +33,7 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, Timestamp } from 'firebase/firestore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { allMilestones, MilestoneCategory } from '@/lib/milestones-data';
+import { Loader2 } from 'lucide-react';
 
 const milestoneSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -67,6 +68,7 @@ export default function MilestonesPage() {
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof milestoneSchema>>({
@@ -84,10 +86,11 @@ export default function MilestonesPage() {
             toast({ variant: 'destructive', title: 'You must be logged in.' });
             return;
         }
-
+        setIsSubmitting(true);
         try {
             await addDoc(collection(db, `users/${user.uid}/milestones`), {
                 ...values,
+                date: Timestamp.fromDate(values.date),
                 userId: user.uid,
                 timestamp: serverTimestamp(),
             });
@@ -106,6 +109,8 @@ export default function MilestonesPage() {
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error adding milestone.' });
+        } finally {
+            setIsSubmitting(false);
         }
     }
     
@@ -227,7 +232,10 @@ export default function MilestonesPage() {
                                     <DialogClose asChild>
                                         <Button type="button" variant="secondary">Cancel</Button>
                                     </DialogClose>
-                                    <Button type="submit">Save Milestone</Button>
+                                    <Button type="submit" disabled={isSubmitting}>
+                                        {isSubmitting && <Loader2 className="animate-spin" />}
+                                        Save Milestone
+                                    </Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -255,27 +263,33 @@ export default function MilestonesPage() {
                                                 <h3 className="text-lg font-semibold">{ageData.range}</h3>
                                             </AccordionTrigger>
                                             <AccordionContent className="p-4">
-                                                <div className="grid gap-6 md:grid-cols-2">
-                                                    {Object.entries(ageData.milestones).map(([category, milestones]) => (
-                                                        <div key={category}>
-                                                            <h4 className="font-semibold text-primary mb-2">{category}</h4>
-                                                            <ul className="space-y-3">
-                                                                {milestones.map((milestone) => {
-                                                                    const logged = isMilestoneLogged(milestone.title);
-                                                                    return (
-                                                                        <li key={milestone.title} className="flex items-start gap-3 text-sm">
-                                                                            <CheckCircle className={cn("w-5 h-5 mt-0.5 shrink-0", logged ? 'text-green-500' : 'text-muted-foreground/30')} />
-                                                                            <div>
-                                                                                <p className={cn("font-medium", logged && "text-muted-foreground line-through")}>{milestone.title}</p>
-                                                                                <p className="text-xs text-muted-foreground">{milestone.description}</p>
-                                                                            </div>
-                                                                        </li>
-                                                                    )
-                                                                })}
-                                                            </ul>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                                {loading ? (
+                                                    <div className="flex items-center justify-center p-8">
+                                                        <Loader2 className="animate-spin text-primary" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="grid gap-6 md:grid-cols-2">
+                                                        {Object.entries(ageData.milestones).map(([category, milestones]) => (
+                                                            <div key={category}>
+                                                                <h4 className="font-semibold text-primary mb-2">{category}</h4>
+                                                                <ul className="space-y-3">
+                                                                    {milestones.map((milestone) => {
+                                                                        const logged = isMilestoneLogged(milestone.title);
+                                                                        return (
+                                                                            <li key={milestone.title} className="flex items-start gap-3 text-sm">
+                                                                                <CheckCircle className={cn("w-5 h-5 mt-0.5 shrink-0", logged ? 'text-green-500' : 'text-muted-foreground/30')} />
+                                                                                <div>
+                                                                                    <p className={cn("font-medium", logged && "text-muted-foreground line-through")}>{milestone.title}</p>
+                                                                                    <p className="text-xs text-muted-foreground">{milestone.description}</p>
+                                                                                </div>
+                                                                            </li>
+                                                                        )
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </AccordionContent>
                                         </AccordionItem>
                                     </Card>
