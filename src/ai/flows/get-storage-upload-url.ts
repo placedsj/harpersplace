@@ -3,15 +3,23 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { getStorage, getSignedUrl } from 'firebase-admin/storage';
+import { getStorage } from 'firebase-admin/storage';
 import * as admin from 'firebase-admin';
 
 
 // Check for the environment variable, which should contain the JSON string
 // This is a placeholder for a more secure secret management strategy
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
-  : null;
+const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
+let serviceAccount;
+if (serviceAccountString) {
+    try {
+        serviceAccount = JSON.parse(serviceAccountString);
+    } catch (e) {
+        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.", e);
+    }
+}
+
 
 // Initialize Firebase Admin SDK if not already initialized
 if (!admin.apps.length && serviceAccount) {
@@ -25,7 +33,7 @@ if (!admin.apps.length && serviceAccount) {
         console.error("Error initializing Firebase Admin SDK for Storage:", error);
     }
 } else if (!serviceAccount) {
-    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set. File upload features will not work.");
+    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set or is invalid. File upload features will not work.");
 }
 
 
