@@ -1,3 +1,4 @@
+
 // src/app/(main)/blog/[slug]/page.tsx
 import { getPostBySlug, getallPosts } from '@/lib/blog-data';
 import { notFound } from 'next/navigation';
