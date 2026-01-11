@@ -13,6 +13,11 @@ type Post = {
         bio: string;
     };
     audioUrl?: string;
+    resources?: {
+        title: string;
+        url: string;
+        type: 'PDF' | 'DOCX';
+    }[];
 };
 
 const author = {
@@ -49,7 +54,19 @@ const posts: Post[] = [
         date: '2025-11-08',
         category: 'Finances',
         author,
-        audioUrl: 'https://storage.googleapis.com/studioprod-51a82.appspot.com/asset-manager/8e9d5607-e54f-4a43-85f0-62955f7c320d.mp3'
+        audioUrl: 'https://storage.googleapis.com/studioprod-51a82.appspot.com/asset-manager/8e9d5607-e54f-4a43-85f0-62955f7c320d.mp3',
+        resources: [
+            {
+                title: 'Section 7 Expense Tracking Checklist',
+                url: '#',
+                type: 'PDF'
+            },
+            {
+                title: 'Sample Reimbursement Request Form',
+                url: '#',
+                type: 'DOCX'
+            }
+        ]
     },
     {
         slug: 'i-statement-advantage',

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileDown, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 // Generate static pages for each blog post
@@ -57,25 +57,53 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             </CardContent>
           </Card>
         )}
-
-        <div className="prose dark:prose-invert prose-lg max-w-none font-sans" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+        
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="prose dark:prose-invert prose-lg max-w-none font-sans md:col-span-2" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+          
+          <aside className="md:col-span-1 space-y-6">
+            {post.resources && post.resources.length > 0 && (
+                <Card className="border-primary/20">
+                    <CardHeader>
+                        <CardTitle className="font-headline uppercase text-primary text-base">Court-Ready Resources</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                       {post.resources.map(resource => (
+                         <a 
+                            key={resource.title} 
+                            href={resource.url} 
+                            download
+                            className="flex items-center gap-3 p-3 -mx-3 -my-2 rounded-lg hover:bg-primary/10 transition-colors"
+                        >
+                            <FileDown className="w-5 h-5 text-primary" />
+                            <div>
+                                <p className="text-sm font-semibold text-primary">{resource.title}</p>
+                                <p className="text-xs text-muted-foreground">Download {resource.type}</p>
+                            </div>
+                         </a>
+                       ))}
+                    </CardContent>
+                </Card>
+            )}
+             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline uppercase text-base">About the Author</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center gap-4">
+                    <Avatar className="h-12 w-12">
+                        <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                        <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h3 className="font-semibold text-sm">{post.author.name}</h3>
+                        <p className="text-xs text-muted-foreground">{post.author.bio}</p>
+                    </div>
+                </CardContent>
+            </Card>
+          </aside>
+        </div>
       </article>
 
-      <Card>
-        <CardHeader>
-            <CardTitle className="font-headline uppercase">About the Author</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-                <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold text-lg">{post.author.name}</h3>
-                <p className="text-muted-foreground">{post.author.bio}</p>
-              </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
