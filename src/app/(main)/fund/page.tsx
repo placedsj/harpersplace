@@ -145,7 +145,7 @@ export default function FundPage() {
       </Card>
 
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
@@ -167,10 +167,10 @@ export default function FundPage() {
                       </FormItem>
                     )}
                   />
-                  <div className="flex justify-end">
-                    <Button type="button" variant="ghost" size="sm" onClick={handleAiCategorize} disabled={isAiLoading} className="text-xs">
+                  <div className="flex justify-end -mt-2">
+                    <Button type="button" variant="ghost" size="sm" onClick={handleAiCategorize} disabled={isAiLoading} className="text-xs h-auto py-1 px-2">
                       {isAiLoading ? <Loader2 className="animate-spin h-3 w-3 mr-1" /> : <Wand2 className="h-3 w-3 mr-1" />}
-                      Categorize with AI
+                      AI-Categorize
                     </Button>
                   </div>
                   <FormField
@@ -180,7 +180,7 @@ export default function FundPage() {
                       <FormItem>
                         <FormLabel>Amount (CAD)</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="50.00" {...field} />
+                          <Input type="number" step="0.01" placeholder="50.00" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -212,7 +212,7 @@ export default function FundPage() {
                       </FormItem>
                     )}
                   />
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 pt-2">
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading && <Loader2 className="animate-spin" />}
                       {editId ? 'Update Expense' : 'Log Expense'}
