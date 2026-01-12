@@ -1,4 +1,3 @@
-
 // src/components/main-nav.tsx
 'use client';
 
@@ -29,6 +28,7 @@ const planningItems = [
     { href: '/fund', label: 'Fund' },
     { href: '/shared-lists', label: 'Shared Lists' },
     { href: '/family-tree', label: 'Family Tree' },
+    { href: '/legal-export', label: 'Legal Export Center' },
 ]
 
 const aiToolsItems = [
