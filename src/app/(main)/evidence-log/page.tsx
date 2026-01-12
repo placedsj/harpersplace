@@ -14,11 +14,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { Loader2, BookLock } from 'lucide-react';
+import { Loader2, BookLock, Eye } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 
 const evidenceSchema = z.object({
@@ -46,6 +54,7 @@ function EvidenceLogPageInternal() {
   const { db } = useFirestore();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [selectedEntry, setSelectedEntry] = React.useState<EvidenceEntry | null>(null);
   const searchParams = useSearchParams();
 
   const evidenceQuery = React.useMemo(() => {
@@ -110,6 +119,10 @@ function EvidenceLogPageInternal() {
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const handleRowClick = (entry: EvidenceEntry) => {
+    setSelectedEntry(entry);
   };
 
   return (
@@ -208,7 +221,7 @@ function EvidenceLogPageInternal() {
           <Card>
             <CardHeader>
               <CardTitle>Evidence History</CardTitle>
-              <CardDescription>A chronological record of all logged events.</CardDescription>
+              <CardDescription>A chronological record of all logged events. Click a row to view details.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -217,31 +230,37 @@ function EvidenceLogPageInternal() {
                     <TableHead>Date</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Summary</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {evidenceLoading && (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center h-24">
+                      <TableCell colSpan={4} className="text-center h-24">
                         <Loader2 className="mx-auto animate-spin text-primary" />
                       </TableCell>
                     </TableRow>
                   )}
                    {!evidenceLoading && evidenceEntries?.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center h-24 text-muted-foreground">
+                      <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
                         No evidence has been logged yet.
                       </TableCell>
                     </TableRow>
                   )}
                   {evidenceEntries &&
                     evidenceEntries.map((entry) => (
-                      <TableRow key={entry.id}>
+                      <TableRow key={entry.id} onClick={() => handleRowClick(entry)} className="cursor-pointer">
                         <TableCell className="font-medium whitespace-nowrap">{format(new Date(entry.date), 'PP')}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">{entry.category}</Badge>
                         </TableCell>
-                        <TableCell>{entry.description}</TableCell>
+                        <TableCell className="max-w-xs truncate">{entry.description}</TableCell>
+                         <TableCell className="text-right">
+                            <Button variant="ghost" size="sm">
+                               <Eye className="h-4 w-4 mr-2" /> View
+                            </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -250,6 +269,36 @@ function EvidenceLogPageInternal() {
           </Card>
         </div>
       </div>
+        <Dialog open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
+            <DialogContent>
+                {selectedEntry && (
+                    <>
+                        <DialogHeader>
+                            <DialogTitle>{selectedEntry.description}</DialogTitle>
+                            <DialogDescription>
+                                Logged on {format(selectedEntry.timestamp.toDate(), 'PPP p')}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div>
+                                <h4 className="text-sm font-semibold text-muted-foreground">Date of Event</h4>
+                                <p>{format(new Date(selectedEntry.date), 'PPP')}</p>
+                            </div>
+                             <div>
+                                <h4 className="text-sm font-semibold text-muted-foreground">Category</h4>
+                                <p><Badge variant="outline">{selectedEntry.category}</Badge></p>
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-semibold text-muted-foreground">Evidence Details</h4>
+                                <div className="p-3 bg-muted rounded-md text-sm max-h-60 overflow-y-auto whitespace-pre-wrap">
+                                    {selectedEntry.evidence}
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }
