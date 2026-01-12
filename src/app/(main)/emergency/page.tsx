@@ -246,14 +246,14 @@ export default function EmergencyPage() {
         <Dialog open={!!dialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{currentItem ? 'Edit' : 'Add'} {dialogOpen} Information</DialogTitle>
+                    <DialogTitle>{currentItem ? 'Edit' : 'Add'} {dialogOpen === 'notes' ? 'Medical Notes' : `${dialogOpen} Contact`}</DialogTitle>
                 </DialogHeader>
                 {dialogOpen === 'medical' && (
                     <Form {...formMedical}>
                         <form onSubmit={formMedical.handleSubmit(onSubmit)} className="space-y-4">
                             <FormField control={formMedical.control} name="name" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={formMedical.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role (e.g., Pediatrician)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={formMedical.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={formMedical.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <DialogFooter><DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose><Button type="submit" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="animate-spin" /> : 'Save'}</Button></DialogFooter>
                         </form>
                     </Form>
@@ -263,7 +263,7 @@ export default function EmergencyPage() {
                         <form onSubmit={formEmergency.handleSubmit(onSubmit)} className="space-y-4">
                             <FormField control={formEmergency.control} name="name" render={({ field }) => (<FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={formEmergency.control} name="relation" render={({ field }) => (<FormItem><FormLabel>Relation (e.g., Grandmother)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={formEmergency.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={formEmergency.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <DialogFooter><DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose><Button type="submit" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="animate-spin" /> : 'Save'}</Button></DialogFooter>
                         </form>
                     </Form>
