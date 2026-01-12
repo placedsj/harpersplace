@@ -218,7 +218,7 @@
         "schema": { "$ref": "#/entities/emergencyContact" },
         "description": "Stores emergency contacts for a user's child."
     },
-    "/users/{userId}/medicalNotes": {
+    "/users/{userId}/medicalNotes/main": {
         "schema": { "$ref": "#/entities/medicalNotes" },
         "description": "Stores medical notes for a user's child."
     },

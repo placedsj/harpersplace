@@ -104,7 +104,7 @@ export default function EmergencyPage() {
                 if (currentItem) await updateDoc(doc(coll, currentItem.id), values);
                 else await addDoc(coll, { ...values, timestamp: serverTimestamp() });
             } else if (type === 'notes') {
-                await setDoc(doc(db, `users/${user.uid}/medicalNotes`, 'main'), values);
+                await setDoc(doc(db, `users/${user.uid}/medicalNotes`, 'main'), values, { merge: true });
             }
 
             toast({ title: 'Success', description: `Information has been ${currentItem ? 'updated' : 'added'}.` });
