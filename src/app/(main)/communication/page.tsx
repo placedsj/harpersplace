@@ -8,12 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Wand2, Send, Sparkles, Loader2, HelpCircle, ShieldCheck } from 'lucide-react';
+import { Wand2, Send, Sparkles, Loader2, HelpCircle, ShieldCheck, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { coParentingActions } from '@/ai/flows/co-parenting-actions';
 import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 import { childsBestInterestCheck, ChildsBestInterestCheckOutput } from '@/ai/flows/childs-best-interest-check';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { VideoCall } from '@/components/video-call';
 
 import {
   Dialog,
@@ -23,6 +25,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+
 
 type Message = {
     id: number;
@@ -113,8 +125,10 @@ function CommunicationPageInternal() {
     const [newMessage, setNewMessage] = React.useState('');
     const [isSending, setIsSending] = React.useState(false);
     const [isCoachOpen, setIsCoachOpen] = React.useState(false);
+    const [isVideoOpen, setIsVideoOpen] = React.useState(false);
     const { toast } = useToast();
     const searchParams = useSearchParams();
+    const isMobile = useIsMobile();
 
     React.useEffect(() => {
         const draftMessage = searchParams.get('draft');
@@ -207,6 +221,14 @@ function CommunicationPageInternal() {
     };
 
     const currentUser = 'Dad'; // For styling purposes
+    
+    const VideoCallDialog = isMobile ? Sheet : Dialog;
+    const VideoCallTrigger = isMobile ? SheetTrigger : DialogTrigger;
+    const VideoCallContent = isMobile ? SheetContent : DialogContent;
+    const VideoCallHeader = isMobile ? SheetHeader : DialogHeader;
+    const VideoCallTitle = isMobile ? SheetTitle : DialogTitle;
+    const VideoCallDescription = isMobile ? SheetDescription : DialogDescription;
+
 
   return (
     <div className="space-y-8">
@@ -217,9 +239,23 @@ function CommunicationPageInternal() {
             </p>
         </div>
         <Card className="shadow-lg border-2 border-primary/40">
-            <CardHeader>
-                <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
-                <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
+                    <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
+                </div>
+                 <VideoCallDialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
+                    <VideoCallTrigger asChild>
+                        <Button variant="outline">
+                            <Video />
+                            <span>Video Call</span>
+                        </Button>
+                    </VideoCallTrigger>
+                    <VideoCallContent className={isMobile ? "w-full h-full p-0" : "max-w-4xl p-0"} onInteractOutside={(e) => e.preventDefault()}>
+                        <VideoCall onCallEnd={() => setIsVideoOpen(false)}/>
+                    </VideoCallContent>
+                </VideoCallDialog>
+
             </CardHeader>
             <CardContent className="flex flex-col h-[65vh]">
                 <div className="flex-grow space-y-6 overflow-y-auto p-4 border rounded-md bg-muted/20">
