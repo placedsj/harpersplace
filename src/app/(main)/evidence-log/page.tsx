@@ -270,7 +270,7 @@ function EvidenceLogPageInternal() {
         </div>
       </div>
         <Dialog open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
                 {selectedEntry && (
                     <>
                         <DialogHeader>

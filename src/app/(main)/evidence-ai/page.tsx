@@ -65,8 +65,8 @@ export default function EvidenceAiPage() {
     if (!result) return;
     const query = new URLSearchParams({
         category: result.suggestedCategory,
-        description: result.summary,
-        evidence: `AI analysis of uploaded image: "${result.suggestedTitle}"`,
+        description: result.suggestedTitle, // Use the more concise title for the log summary
+        evidence: `AI-Extracted Text: "${result.extractedText}"\n\nAI Summary: "${result.summary}"`,
     });
     router.push(`/evidence-log?${query.toString()}`);
   };
@@ -80,13 +80,13 @@ export default function EvidenceAiPage() {
       <div>
         <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Evidence AI Assistant</h1>
         <p className="text-muted-foreground mt-1">
-          Upload an image (screenshot, receipt, etc.) to automatically extract text and categorize it.
+          Upload an image (screenshot, receipt, etc.) to automatically extract text and categorize it for your evidence log.
         </p>
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 items-start">
         <Card>
           <CardHeader>
-            <CardTitle>Upload Evidence</CardTitle>
+            <CardTitle>1. Upload Evidence</CardTitle>
             <CardDescription>Select an image file from your device.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -121,12 +121,12 @@ export default function EvidenceAiPage() {
 
         <Card className={!result && !isLoading ? 'flex items-center justify-center' : ''}>
           <CardHeader>
-            <CardTitle>AI Analysis</CardTitle>
+            <CardTitle>2. AI Analysis</CardTitle>
             <CardDescription>Review the AI's analysis before adding to your log.</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading && (
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground pt-10">
                 <Loader2 className="animate-spin h-8 w-8 mb-2" />
                 <p>Analyzing your image...</p>
               </div>
@@ -141,20 +141,20 @@ export default function EvidenceAiPage() {
             {result && (
               <div className="space-y-6">
                 <div>
-                    <h3 className="font-semibold mb-2">Suggested Title</h3>
-                    <p className="p-3 bg-muted rounded-md text-sm">{result.suggestedTitle}</p>
+                    <h3 className="font-semibold mb-1 text-sm text-muted-foreground">Suggested Title</h3>
+                    <p className="p-3 bg-muted rounded-md text-sm border">{result.suggestedTitle}</p>
                 </div>
                 <div>
-                    <h3 className="font-semibold mb-2">Suggested Category</h3>
-                    <p className="p-3 bg-muted rounded-md text-sm">{result.suggestedCategory}</p>
+                    <h3 className="font-semibold mb-1 text-sm text-muted-foreground">Suggested Category</h3>
+                    <p className="p-3 bg-muted rounded-md text-sm border">{result.suggestedCategory}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Summary</h3>
-                  <p className="p-3 bg-muted rounded-md text-sm">{result.summary}</p>
+                  <h3 className="font-semibold mb-1 text-sm text-muted-foreground">Summary</h3>
+                  <p className="p-3 bg-muted rounded-md text-sm border">{result.summary}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Extracted Text (OCR)</h3>
-                  <div className="p-3 bg-muted rounded-md text-sm max-h-40 overflow-y-auto">
+                  <h3 className="font-semibold mb-1 text-sm text-muted-foreground">Extracted Text (OCR)</h3>
+                  <div className="p-3 bg-muted rounded-md text-sm max-h-32 overflow-y-auto border">
                     <p className="whitespace-pre-wrap">{result.extractedText || "No text found."}</p>
                   </div>
                 </div>
