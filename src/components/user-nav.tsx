@@ -19,7 +19,7 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation";
 
-export function UserNav() {
+export function UserNav({ onVideoCallClick }: { onVideoCallClick: () => void }) {
     const { user, logOut, loading } = useAuth();
     const router = useRouter();
 
@@ -77,6 +77,9 @@ export function UserNav() {
           </DropdownMenuItem>
            <DropdownMenuItem onClick={() => router.push('/blueprint')}>
             📋 Stability Blueprint
+          </DropdownMenuItem>
+           <DropdownMenuItem onClick={onVideoCallClick}>
+            📹 Video Call
           </DropdownMenuItem>
            <DropdownMenuItem onClick={() => router.push('/about')}>
             ℹ️ About Harper's Place

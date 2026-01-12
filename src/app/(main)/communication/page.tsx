@@ -1,4 +1,3 @@
-
 // src/app/(main)/communication/page.tsx
 'use client';
 
@@ -14,8 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import { coParentingActions } from '@/ai/flows/co-parenting-actions';
 import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 import { childsBestInterestCheck, ChildsBestInterestCheckOutput } from '@/ai/flows/childs-best-interest-check';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { VideoCall } from '@/components/video-call';
 
 import {
   Dialog,
@@ -25,16 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-
 
 type Message = {
     id: number;
@@ -120,15 +107,13 @@ function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSug
     );
 }
 
-function CommunicationPageInternal() {
+function CommunicationPageInternal({ setLaunchVideo }: { setLaunchVideo?: (open: boolean) => void }) {
     const [messages, setMessages] = React.useState<Message[]>(initialMessages);
     const [newMessage, setNewMessage] = React.useState('');
     const [isSending, setIsSending] = React.useState(false);
     const [isCoachOpen, setIsCoachOpen] = React.useState(false);
-    const [isVideoOpen, setIsVideoOpen] = React.useState(false);
     const { toast } = useToast();
     const searchParams = useSearchParams();
-    const isMobile = useIsMobile();
 
     React.useEffect(() => {
         const draftMessage = searchParams.get('draft');
@@ -222,11 +207,6 @@ function CommunicationPageInternal() {
 
     const currentUser = 'Dad'; // For styling purposes
     
-    const VideoCallDialog = isMobile ? Sheet : Dialog;
-    const VideoCallTrigger = isMobile ? SheetTrigger : DialogTrigger;
-    const VideoCallContent = isMobile ? SheetContent : DialogContent;
-
-
   return (
     <div className="space-y-8">
         <div>
@@ -241,18 +221,10 @@ function CommunicationPageInternal() {
                     <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
                     <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
                 </div>
-                 <VideoCallDialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
-                    <VideoCallTrigger asChild>
-                        <Button variant="outline">
-                            <Video />
-                            <span>Video Call</span>
-                        </Button>
-                    </VideoCallTrigger>
-                    <VideoCallContent className={isMobile ? "w-full h-full p-0" : "max-w-4xl p-0"} onInteractOutside={(e) => e.preventDefault()}>
-                        <VideoCall onCallEnd={() => setIsVideoOpen(false)}/>
-                    </VideoCallContent>
-                </VideoCallDialog>
-
+                <Button variant="outline" onClick={() => setLaunchVideo && setLaunchVideo(true)}>
+                    <Video />
+                    <span>Video Call</span>
+                </Button>
             </CardHeader>
             <CardContent className="flex flex-col h-[65vh]">
                 <div className="flex-grow space-y-6 overflow-y-auto p-4 border rounded-md bg-muted/20">

@@ -1,17 +1,30 @@
 // src/app/(main)/layout.tsx
 'use client';
 
+import * as React from 'react';
 import { MainNav } from '@/components/main-nav';
 import { UserNav } from '@/components/user-nav';
 import { CoParentingTip } from '@/components/co-parenting-tip';
 import { SiteFooter } from '@/components/site-footer';
 import { ErrorBoundary } from '@/components/error-boundary';
 
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { VideoCall } from '@/components/video-call';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+
 export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [isVideoOpen, setIsVideoOpen] = React.useState(false);
+  const isMobile = useIsMobile();
+
+  const VideoCallDialog = isMobile ? Sheet : Dialog;
+  const VideoCallContent = isMobile ? SheetContent : DialogContent;
+
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -35,20 +48,28 @@ export default function AppLayout({
 
               {/* RIGHT SIDE: User Navigation */}
               <div className="ml-auto flex items-center space-x-4">
-                <UserNav />
+                <UserNav onVideoCallClick={() => setIsVideoOpen(true)} />
               </div>
             </div>
           </div>
         </header>
+        
         <main id="main-content" className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <ErrorBoundary>
-            {children}
+            {React.cloneElement(children as React.ReactElement, { setLaunchVideo: setIsVideoOpen })}
           </ErrorBoundary>
           <div className="pt-8">
             <CoParentingTip />
           </div>
         </main>
+        
         <SiteFooter />
+
+        <VideoCallDialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
+            <VideoCallContent className={isMobile ? "w-full h-full p-0" : "max-w-4xl p-0"} onInteractOutside={(e) => e.preventDefault()}>
+                <VideoCall onCallEnd={() => setIsVideoOpen(false)}/>
+            </VideoCallContent>
+        </VideoCallDialog>
     </div>
   );
 }
