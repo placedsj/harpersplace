@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, Rocket } from 'lucide-react';
+import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Rocket, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
-    const [isClient, setIsClient] = useState(false);
+    const [harperAgeInMonths, setHarperAgeInMonths] = useState(0);
     
     // --- Data Fetching ---
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
@@ -37,12 +37,12 @@ const MainDashboard = () => {
     const { data: profile, loading: profileLoading } = useDoc<Profile>(
         user && db ? doc(db, `users/${user.uid}/profile`, 'main') : null
     );
-
+    
     useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    const harperAgeInMonths = isClient && profile?.dob ? differenceInMonths(new Date(), profile.dob.toDate()) : 0;
+        if (profile?.dob) {
+            setHarperAgeInMonths(differenceInMonths(new Date(), profile.dob.toDate()));
+        }
+    }, [profile]);
     
     // --- UI Components ---
     const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden uppercase font-headline";
@@ -63,8 +63,8 @@ const MainDashboard = () => {
     
     const JournalSkeleton = () => (
         <div className="space-y-3">
-            <Skeleton className="h-32 w-full rounded-lg" />
-            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-48 w-full rounded-lg" />
+            <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-4 w-2/3" />
         </div>
     );
@@ -122,125 +122,122 @@ const MainDashboard = () => {
                 </Link>
             </div>
 
-            {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
-                    {logsLoading ? <ActivitySkeleton /> : (
-                        logs && logs.length > 0 ? (
-                            <div className="space-y-3">
-                                {logs.map((log) => {
-                                    const parsedTime = log.time ? parse(log.time, 'HH:mm', new Date()) : null;
-                                    return(
-                                        <div key={log.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                            <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
-                                                {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
-                                                {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
-                                                {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+            {/* 3. Main Content Area (2-column layout) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {/* LEFT (Wider) Column */}
+                <div className="lg:col-span-2 space-y-6">
+                    <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
+                        {logsLoading ? <ActivitySkeleton /> : (
+                            logs && logs.length > 0 ? (
+                                <div className="space-y-3">
+                                    {logs.map((log) => {
+                                        const parsedTime = log.time ? parse(log.time, 'HH:mm', new Date()) : null;
+                                        return(
+                                            <div key={log.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                <div className="p-3 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg">
+                                                    {log.type === 'Feeding' && <Utensils className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                                    {log.type === 'Sleep' && <BedDouble className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                                    {log.type === 'Diaper' && <Baby className="w-5 h-5 text-purple-600 dark:text-purple-400"/>}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                        {parsedTime ? format(parsedTime, 'p') : log.time} - {log.details}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="font-semibold text-gray-900 dark:text-white">{log.type}</p>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                    {parsedTime ? format(parsedTime, 'p') : log.time} - {log.details}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                                    <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
+                                    <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                        <Link href="/log">
+                                            <Clock className="h-4 w-4 mr-2" />
+                                            Add First Entry
+                                        </Link>
+                                    </Button>
+                                </div>
+                            )
+                        )}
+                    </DashboardCard>
+                    
+                    <DashboardCard title="MEMORY JOURNAL" description="LATEST MEMORIES AND MILESTONES">
+                        {journalLoading ? <JournalSkeleton /> : latestStory ? (
+                            <>
+                                {latestStory.image && (
+                                    <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
+                                )}
+                                <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white uppercase font-headline">{latestStory.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{latestStory.content}</p>
+                                <Button asChild variant="default" size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                                    <Link href="/journal">View All Memories</Link>
+                                </Button>
+                            </>
                         ) : (
                             <div className="text-center py-12">
-                                <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                                <p className="text-gray-400 dark:text-gray-500 mb-4">No recent activity</p>
+                                <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                                <p className="text-gray-400 dark:text-gray-500 mb-4">No memories captured yet</p>
                                 <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
-                                    <Link href="/log">
-                                        <Clock className="h-4 w-4 mr-2" />
-                                        Add First Entry
-                                    </Link>
+                                    <Link href="/journal">Create First Memory</Link>
                                 </Button>
                             </div>
-                        )
-                    )}
-                </DashboardCard>
-
-                <DashboardCard title="FAMILY OVERVIEW" description="YOUR PLACED.CA STATS.">
-                    <div className="flex justify-around items-center mb-6">
-                        <div className="text-center">
-                            <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {logs?.length || 0}
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {journalEntries?.length || 0}
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
-                        </div>
-                    </div>
-                    <Button asChild variant="outline" className="w-full hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-700 transition">
-                        <Link href="/profile">Manage Profile</Link>
-                    </Button>
-                </DashboardCard>
-
-                <DashboardCard title="MEMORY JOURNAL" description="LATEST MEMORIES AND MILESTONES">
-                    {journalLoading ? <JournalSkeleton /> : latestStory ? (
-                        <>
-                            {latestStory.image && (
-                                <Image src={latestStory.image} alt={latestStory.title} data-ai-hint={latestStory.dataAiHint} width={400} height={200} className="rounded-lg object-cover w-full aspect-video mb-4 shadow-md" />
-                            )}
-                            <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white uppercase font-headline">{latestStory.title}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{latestStory.content}</p>
-                            <Button asChild variant="default" size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
-                                <Link href="/journal">View All Memories</Link>
-                            </Button>
-                        </>
-                    ) : (
-                        <div className="text-center py-12">
-                            <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                            <p className="text-gray-400 dark:text-gray-500 mb-4">No memories captured yet</p>
-                            <Button asChild variant="default" size="sm" className="bg-purple-600 hover:bg-purple-700">
-                                <Link href="/journal">Create First Memory</Link>
-                            </Button>
-                        </div>
-                    )}
-                </DashboardCard>
-            </div>
-
-            {/* 4. AI TOOLS SHOWCASE */}
-            <div className="p-6 bg-gradient-to-r from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-blue-900/20 border-l-4 border-purple-600 dark:border-purple-400 rounded-r-xl shadow-xl">
-                <div className="flex items-center mb-4">
-                    <Sparkles className="h-7 w-7 text-purple-600 dark:text-purple-400 mr-3" />
-                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white uppercase font-sans tracking-widest">CHILD-FIRST AI TOOLS</h4>
+                        )}
+                    </DashboardCard>
                 </div>
-                <p className="text-base text-gray-600 dark:text-gray-400 mb-6">
-                    Intelligent features designed to keep your child's emotional safety and best interests at the center of every decision.
-                </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Link href="/ai-tools/communication-coach" className="block group">
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                            <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Safe Communication</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect emotional well-being</p>
+
+                {/* RIGHT (Narrower) Column */}
+                <div className="lg:col-span-1 space-y-6">
+                    <DashboardCard title="AI Tools" description="Child-First Features">
+                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Intelligent features to keep your child's best interests at the center of every decision.
+                        </p>
+                         <div className="grid grid-cols-2 gap-4">
+                            <Link href="/ai-tools/communication-coach" className="block group">
+                                <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 h-full">
+                                    <Wand2 className="h-7 w-7 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+                                    <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white">Communication Coach</h5>
+                                </div>
+                            </Link>
+                            <Link href="/ai-tools/schedule-optimizer" className="block group">
+                                <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 h-full">
+                                    <Rocket className="h-7 w-7 text-green-600 dark:text-green-400 mx-auto mb-2" />
+                                    <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white">Schedule Optimizer</h5>
+                                </div>
+                            </Link>
+                             <Link href="/ai-tools/best-interest-checker" className="block group col-span-2">
+                                <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 h-full">
+                                    <Shield className="h-7 w-7 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+                                    <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white">Child's Best Interest Checker</h5>
+                                </div>
+                            </Link>
                         </div>
-                    </Link>
-                    
-                    <Link href="/fund" className="block group">
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                            <Tag className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-Need Tracking</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Prioritize child expenses</p>
+                    </DashboardCard>
+
+                    <DashboardCard title="FAMILY OVERVIEW" description="YOUR PLACED.CA STATS.">
+                        <div className="flex justify-around items-center mb-6">
+                            <div className="text-center">
+                                <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                                    {logs?.length || 0}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                                    {journalEntries?.length || 0}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
+                            </div>
                         </div>
-                    </Link>
-                                        
-                    <Link href="/ai-tools/schedule-optimizer" className="block group">
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                            <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Schedule Optimizer</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Find the best schedule</p>
-                        </div>
-                    </Link>
+                        <Button asChild variant="outline" className="w-full hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-700 transition">
+                            <Link href="/profile">Manage Profile</Link>
+                        </Button>
+                    </DashboardCard>
                 </div>
+
             </div>
         </div>
     );
