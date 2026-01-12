@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Stethoscope, Ruler, PlusCircle, CalendarIcon, CheckCircle } from 'lucide-react';
+import { Trophy, Brain, Heart, MessageSquare, PlusCircle, CalendarIcon, CheckCircle, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -53,10 +53,10 @@ export type Milestone = {
 };
 
 const iconMap: Record<Milestone['category'], React.ElementType> = {
-    'Cognitive': Trophy,
-    'Social & Emotional': Stethoscope,
-    'Language & Communication': Ruler,
-    'Motor Skills': PlusCircle,
+    'Cognitive': Brain,
+    'Social & Emotional': Heart,
+    'Language & Communication': MessageSquare,
+    'Motor Skills': Award,
 };
 
 
@@ -115,7 +115,7 @@ export default function MilestonesPage() {
     }
     
     const isMilestoneLogged = (title: string) => {
-        return loggedMilestones?.some(m => m.title === title) ?? false;
+        return loggedMilestones?.some(m => m.title.toLowerCase() === title.toLowerCase()) ?? false;
     };
 
     return (
@@ -269,9 +269,14 @@ export default function MilestonesPage() {
                                                     </div>
                                                 ) : (
                                                     <div className="grid gap-6 md:grid-cols-2">
-                                                        {Object.entries(ageData.milestones).map(([category, milestones]) => (
+                                                        {Object.entries(ageData.milestones).map(([category, milestones]) => {
+                                                            const CategoryIcon = iconMap[category as keyof typeof iconMap];
+                                                            return (
                                                             <div key={category}>
-                                                                <h4 className="font-semibold text-primary mb-2">{category}</h4>
+                                                                <h4 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                                                                    <CategoryIcon className="w-4 h-4" />
+                                                                    {category}
+                                                                </h4>
                                                                 <ul className="space-y-3">
                                                                     {milestones.map((milestone) => {
                                                                         const logged = isMilestoneLogged(milestone.title);
@@ -287,7 +292,7 @@ export default function MilestonesPage() {
                                                                     })}
                                                                 </ul>
                                                             </div>
-                                                        ))}
+                                                        )})}
                                                     </div>
                                                 )}
                                             </AccordionContent>

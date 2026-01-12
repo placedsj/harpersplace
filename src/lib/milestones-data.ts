@@ -8,7 +8,7 @@ export const MilestoneCategory = [
     'Motor Skills',
 ] as const;
 
-type MilestoneItem = {
+export type MilestoneItem = {
     title: string;
     description: string;
 };
