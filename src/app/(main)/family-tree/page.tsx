@@ -37,8 +37,13 @@ type FamilyMember = {
     dob?: string;
 };
 
-const FamilyMemberCard = ({ name, dob }: FamilyMember) => (
-    <div className="flex flex-col items-center text-center p-2 bg-muted/30 rounded-lg">
+const FamilyMemberCard = ({ name, dob, side }: FamilyMember & { side: 'maternal' | 'paternal' | 'child' }) => (
+    <div className={cn(
+        "flex flex-col items-center text-center p-3 rounded-lg shadow-sm w-full",
+        side === 'child' && 'bg-accent/20 border-2 border-accent',
+        side === 'maternal' && 'bg-mom/10 border border-mom/20',
+        side === 'paternal' && 'bg-dad/10 border border-dad/20',
+    )}>
         <div className="leading-tight">
             <p className="font-semibold font-sans">{name}</p>
             {dob && <p className="text-xs text-muted-foreground">{dob}</p>}
@@ -46,22 +51,26 @@ const FamilyMemberCard = ({ name, dob }: FamilyMember) => (
     </div>
 );
 
+
 const FamilyBranch = ({ title, members, side }: { title: string, members: FamilyMember[], side: 'maternal' | 'paternal' }) => {
     if (members.length === 0) return null;
     return (
-        <div className="space-y-2">
+        <div className="space-y-3">
             <h3 className={cn(
                 "font-headline uppercase text-center text-sm tracking-wider pb-1 border-b-2",
                 side === 'maternal' ? 'border-mom text-mom' : 'border-dad text-dad'
             )}>{title}</h3>
-            <div className="flex justify-center flex-wrap gap-4 pt-2">
-                {members.map(member => <FamilyMemberCard key={member.name} {...member} />)}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {members.map(member => <FamilyMemberCard key={member.name} {...member} side={side} />)}
             </div>
         </div>
     );
 }
 
 export default function FamilyTreePage() {
+  const paternalParent = familyMembers.parents.find(p => p.side === 'paternal');
+  const maternalParent = familyMembers.parents.find(p => p.side === 'maternal');
+
   return (
     <div className="space-y-8">
         <div>
@@ -71,36 +80,35 @@ export default function FamilyTreePage() {
             </p>
         </div>
 
-        <div className="space-y-12 flex flex-col items-center">
-            {/* Harper */}
-             <div className="flex flex-col items-center text-center">
-                 <div className="leading-tight p-4 bg-accent/20 border-2 border-accent rounded-lg">
-                    <p className="font-bold text-xl font-headline text-accent-foreground">{familyMembers.harper.name}</p>
-                    <p className="text-sm text-muted-foreground">{familyMembers.harper.dob}</p>
-                </div>
+        <div className="flex flex-col items-center space-y-8">
+            {/* Child */}
+            <div className="w-48">
+                 <FamilyMemberCard name={familyMembers.harper.name} dob={familyMembers.harper.dob} side="child" />
             </div>
 
              {/* Connecting Lines to Parents */}
-            <div className="w-full max-w-sm h-12 border-b-2 border-l-2 border-r-2 border-muted rounded-b-lg"></div>
+            <div className="h-10 w-px bg-muted-foreground/30 relative">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-px bg-muted-foreground/30"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-5 bg-muted-foreground/30"></div>
+            </div>
 
             {/* Parents */}
-            <div className="w-full max-w-2xl grid grid-cols-2 gap-8 relative">
-                <div className="absolute top-[-3rem] left-1/2 -translate-x-1/2 w-px h-12 bg-muted"></div>
-                {familyMembers.parents.map(member => <FamilyMemberCard key={member.name} {...member} />)}
+            <div className="w-full max-w-md grid grid-cols-2 gap-8 relative">
+                 {paternalParent && <FamilyMemberCard {...paternalParent} />}
+                 {maternalParent && <FamilyMemberCard {...maternalParent} />}
             </div>
             
             {/* Connecting Lines to Grandparents etc. */}
-            <div className="w-full max-w-2xl grid grid-cols-2 gap-8">
-                <div className="border-t-2 border-muted h-12 w-1/2 mx-auto rounded-t-lg"></div>
-                <div className="border-t-2 border-muted h-12 w-1/2 mx-auto rounded-t-lg"></div>
+            <div className="w-full max-w-md grid grid-cols-2 gap-8">
+                <div className="h-10 w-px bg-muted-foreground/30 mx-auto"></div>
+                <div className="h-10 w-px bg-muted-foreground/30 mx-auto"></div>
             </div>
 
-
             {/* Grandparents & Aunts/Uncles/Cousins */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                 <Card className="bg-dad/5 border-dad/20">
                     <CardHeader>
-                        <CardTitle className="text-center text-dad font-headline uppercase">Dad's Family</CardTitle>
+                        <CardTitle className="text-center text-dad font-headline uppercase tracking-widest">Dad's Family</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FamilyBranch title="Grandparents" members={familyMembers.paternalGrandparents} side="paternal" />
@@ -111,7 +119,7 @@ export default function FamilyTreePage() {
 
                  <Card className="bg-mom/5 border-mom/20">
                     <CardHeader>
-                        <CardTitle className="text-center text-mom font-headline uppercase">Mom's Family</CardTitle>
+                        <CardTitle className="text-center text-mom font-headline uppercase tracking-widest">Mom's Family</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                        <FamilyBranch title="Grandparents" members={familyMembers.maternalGrandparents} side="maternal" />
