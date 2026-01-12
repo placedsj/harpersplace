@@ -1,4 +1,3 @@
-
 // src/components/main-nav.tsx
 'use client';
 
@@ -8,40 +7,35 @@ import { cn } from "@/lib/utils"
 import { ComponentProps, useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 const navItems = [
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/calendar', label: 'Calendar' },
-    { href: '/communication', label: 'Chat' },
+    { href: '/communication', label: 'Communication Hub' },
     { href: '/blog', label: 'Blog' },
 ];
 
-const careItems = [
-    { href: '/log', label: 'Daily Log' },
-    { href: '/health', label: 'Health Hub' },
-    { href: '/milestones', label: 'Milestones' },
+const toolsMenuItems = [
+    { href: '/log', label: 'Daily Log', group: 'Child Development' },
+    { href: '/health', label: 'Health Hub', group: 'Child Development' },
+    { href: '/milestones', label: 'Milestones', group: 'Child Development' },
+    { href: '/journal', label: 'Journal', group: 'Planning' },
+    { href: '/fund', label: 'Fund', group: 'Planning' },
+    { href: '/shared-lists', label: 'Shared Lists', group: 'Planning' },
+    { href: '/family-tree', label: 'Family Tree', group: 'Planning' },
+    { href: '/legal-export', label: 'Legal Export Center', group: 'Planning' },
+    { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer', group: 'AI Tools' },
+    { href: '/ai-tools/communication-coach', label: 'Communication Coach', group: 'AI Tools' },
+    { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker', group: 'AI Tools' },
+    { href: '/transition-summary', label: 'Transition Summary AI', group: 'AI Tools' },
+    { href: '/evidence-ai', label: 'Evidence AI Assistant', group: 'AI Tools' },
+    { href: '/communication-platform', label: 'Platform Vision', group: 'AI Tools' },
 ];
 
-const planningItems = [
-    { href: '/journal', label: 'Journal' },
-    { href: '/fund', label: 'Fund' },
-    { href: '/shared-lists', label: 'Shared Lists' },
-    { href: '/family-tree', label: 'Family Tree' },
-    { href: '/legal-export', label: 'Legal Export Center' },
-]
 
-const aiToolsItems = [
-    { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
-    { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
-    { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker' },
-    { href: '/transition-summary', label: 'Transition Summary AI' },
-    { href: '/evidence-ai', label: 'Evidence AI Assistant' },
-    { href: '/communication-platform', label: 'Platform Vision' },
-];
-
-const NavDropdown = ({ label, items }: { label: string, items: {href: string, label: string}[] }) => {
+const NavDropdown = ({ label, items, groups }: { label: string, items: {href: string, label: string, group: string}[], groups: string[] }) => {
     const pathname = usePathname();
     const isActive = items.some(item => pathname.startsWith(item.href));
 
@@ -56,16 +50,20 @@ const NavDropdown = ({ label, items }: { label: string, items: {href: string, la
                     <ChevronDown className="w-4 h-4 ml-1" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="start" forceMount>
-                <DropdownMenuGroup>
-                     {items.map((item) => (
-                        <Link href={item.href} key={item.href} passHref>
-                            <DropdownMenuItem>
-                                {item.label}
-                            </DropdownMenuItem>
-                        </Link>
-                    ))}
-                </DropdownMenuGroup>
+            <DropdownMenuContent className="w-64" align="start" forceMount>
+                {groups.map((group, index) => (
+                    <DropdownMenuGroup key={group}>
+                        {index > 0 && <DropdownMenuSeparator />}
+                        <DropdownMenuLabel>{group}</DropdownMenuLabel>
+                        {items.filter(item => item.group === group).map(item => (
+                            <Link href={item.href} key={item.href} passHref>
+                                <DropdownMenuItem>
+                                    {item.label}
+                                </DropdownMenuItem>
+                            </Link>
+                        ))}
+                    </DropdownMenuGroup>
+                ))}
             </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -74,15 +72,11 @@ const NavDropdown = ({ label, items }: { label: string, items: {href: string, la
 const MobileNav = () => {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
+    
+    const menuGroups = ['Child Development', 'Planning', 'AI Tools'];
 
-    const allItems: Array<{ href: string; label: string; isHeader?: boolean }> = [
-        ...navItems,
-        { href: '/divider1', label: '--- Daily Care ---', isHeader: true },
-        ...careItems,
-        { href: '/divider2', label: '--- Planning ---', isHeader: true },
-        ...planningItems,
-        { href: '/divider3', label: '--- AI Tools ---', isHeader: true },
-        ...aiToolsItems,
+    const allNavItems = [
+      ...navItems,
     ];
 
     return (
@@ -98,24 +92,41 @@ const MobileNav = () => {
                     <SheetTitle className="text-left">placed.ca</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6 space-y-1">
-                    {allItems.map((item) => (
-                        item.isHeader ? (
-                            <div key={item.href} className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                {item.label.replace(/---/g, '').trim()}
+                    {allNavItems.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                                "block px-3 py-2 rounded-md text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                                pathname === item.href ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                            )}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
+
+                    <DropdownMenuSeparator />
+
+                     {menuGroups.map((group) => (
+                        <div key={group}>
+                            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                {group}
                             </div>
-                        ) : (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setOpen(false)}
-                                className={cn(
-                                    "block px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                                    pathname === item.href ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-                                )}
-                            >
-                                {item.label}
-                            </Link>
-                        )
+                             {toolsMenuItems.filter(item => item.group === group).map(item => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    onClick={() => setOpen(false)}
+                                    className={cn(
+                                        "block px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                                        pathname === item.href ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </div>
                     ))}
                 </div>
             </SheetContent>
@@ -151,12 +162,8 @@ export function MainNav({
             {item.label}
           </Link>
         ))}
-        <NavDropdown label="Daily Care" items={careItems} />
-        <NavDropdown label="Planning" items={planningItems} />
-        <NavDropdown label="AI Tools" items={aiToolsItems} />
+        <NavDropdown label="Tools & Logs" items={toolsMenuItems} groups={['Child Development', 'Planning', 'AI Tools']} />
       </nav>
     </>
   )
 }
-
-    
