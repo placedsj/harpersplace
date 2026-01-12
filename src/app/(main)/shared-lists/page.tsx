@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PlusCircle, ShoppingCart, Gift, School, X, Loader2, Trash2 } from 'lucide-react';
+import { PlusCircle, ShoppingCart, Gift, School, Trash2, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
@@ -251,7 +251,7 @@ export default function SharedListsPage() {
                             onKeyDown={(e) => e.key === 'Enter' && handleAddGrocery()}
                             disabled={isAddingGrocery}
                         />
-                        <Button onClick={handleAddGrocery} disabled={isAddingGrocery}>
+                        <Button onClick={handleAddGrocery} disabled={isAddingGrocery || newGroceryItem.trim() === ''}>
                             {isAddingGrocery ? <Loader2 className="animate-spin" /> : <PlusCircle />}
                             <span>Add</span>
                         </Button>
@@ -260,7 +260,7 @@ export default function SharedListsPage() {
                         <div className="space-y-3">
                             {[...Array(5)].map((_, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
-                                    <Skeleton className="h-4 w-4" />
+                                    <Skeleton className="h-5 w-5 rounded-sm" />
                                     <Skeleton className="h-4 flex-grow" />
                                 </div>
                             ))}
@@ -268,24 +268,25 @@ export default function SharedListsPage() {
                     ) : (
                         <ul className="space-y-3">
                             {groceries && groceries.length > 0 ? groceries.map(item => (
-                                <li key={item.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                                <li key={item.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 group">
                                     <Checkbox 
                                         id={`item-${item.id}`}
                                         checked={item.checked}
                                         onCheckedChange={() => toggleGrocery(item.id, item.checked)}
+                                        className="h-5 w-5"
                                     />
                                     <label 
                                         htmlFor={`item-${item.id}`}
-                                        className={`flex-grow text-sm cursor-pointer ${item.checked ? 'line-through text-muted-foreground' : ''}`}
+                                        className={`flex-grow text-sm font-medium cursor-pointer transition-colors ${item.checked ? 'line-through text-muted-foreground' : 'text-foreground'}`}
                                     >
                                         {item.name}
                                     </label>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteGrocery(item.id)}>
-                                        <X className="h-4 w-4" />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteGrocery(item.id)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </li>
                             )) : (
-                                <p className="text-sm text-muted-foreground text-center py-4">No groceries on the list yet.</p>
+                                <p className="text-sm text-muted-foreground text-center py-8">No groceries on the list yet.</p>
                             )}
                         </ul>
                     )}
