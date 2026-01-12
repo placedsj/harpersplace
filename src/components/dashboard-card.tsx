@@ -17,10 +17,10 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl transition duration-300 hover:shadow-2xl hover:scale-[1.002] border border-gray-100 dark:border-gray-700 ${className}`}
+      className={`bg-white dark:bg-gray-800/50 p-6 rounded-2xl shadow-lg transition duration-300 hover:shadow-xl border border-gray-100 dark:border-gray-700/50 ${className}`}
     >
-  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 uppercase font-headline tracking-wider">{title}</h3>
-  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 uppercase font-sans tracking-wide">{description}</p>
+      <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 mb-1 uppercase font-sans tracking-wider">{title}</h3>
+      <p className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 uppercase font-headline tracking-wider">{description}</p>
       <div className="mt-2">
         {children}
       </div>
