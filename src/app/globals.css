@@ -164,4 +164,28 @@
      .btn-primary:hover {
         @apply bg-primary-dark;
     }
+
+    /* Print-specific styles */
+    .print-hidden {
+        @media print {
+            display: none;
+        }
+    }
+    .print-only {
+        display: none;
+        @media print {
+            display: block;
+        }
+    }
+
+    @media print {
+        body {
+            background-color: white;
+            font-size: 12pt;
+        }
+        #legal-export-page {
+            padding: 0;
+            margin: 0;
+        }
+    }
 }

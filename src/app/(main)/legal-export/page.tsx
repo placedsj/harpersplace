@@ -1,3 +1,4 @@
+
 // src/app/(main)/legal-export/page.tsx
 'use client';
 
@@ -12,13 +13,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, FileDown, Loader2, BookLock } from 'lucide-react';
+import { CalendarIcon, FileDown, Loader2, BookLock, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, query, where, orderBy, Timestamp, getDocs } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-
 
 const reportSchema = z.object({
   startDate: z.date(),
@@ -62,8 +62,14 @@ export default function LegalExportPage() {
         setIsLoading(true);
         setReportData(null);
         try {
-            const startTimestamp = Timestamp.fromDate(values.startDate);
-            const endTimestamp = Timestamp.fromDate(values.endDate);
+            const startOfDay = new Date(values.startDate);
+            startOfDay.setHours(0, 0, 0, 0);
+            
+            const endOfDay = new Date(values.endDate);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const startTimestamp = Timestamp.fromDate(startOfDay);
+            const endTimestamp = Timestamp.fromDate(endOfDay);
             
             const q = query(
                 collection(db, `users/${user.uid}/evidence`),
@@ -72,23 +78,15 @@ export default function LegalExportPage() {
                 orderBy('timestamp', 'asc')
             );
             
-            // This is a simplified fetch; in a real scenario you'd use getDocs.
-            // For this demo, we are showing the concept.
-            // We'll simulate fetching by filtering existing data if available, or just showing a message.
-            toast({ title: 'Report Generated', description: 'Showing a preview of the evidence log.' });
-            
-            // To make this work without a direct fetch for the demo, we will just show a placeholder
-            // In a real implementation we would do:
-            // const querySnapshot = await getDocs(q);
-            // const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EvidenceEntry));
-            // setReportData(results);
-            
-            // For demonstration, let's create some fake data that matches the structure.
-            setReportData([
-                { id: '1', date: format(values.startDate, 'yyyy-MM-dd'), category: 'Communication', description: 'Texts regarding weekend pickup', evidence: 'User confirmed they would be 30 minutes late.', timestamp: Timestamp.fromDate(values.startDate) },
-                { id: '2', date: format(new Date(), 'yyyy-MM-dd'), category: 'Financial', description: 'Receipt for new shoes', evidence: 'Submitted receipt for $54.99 for new school shoes.', timestamp: Timestamp.now() },
-            ]);
+            const querySnapshot = await getDocs(q);
+            const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as EvidenceEntry));
+            setReportData(results);
 
+            if (results.length === 0) {
+                 toast({ title: 'No Data Found', description: 'There are no evidence entries in the selected date range.' });
+            } else {
+                toast({ title: 'Report Generated', description: `Found ${results.length} entries.` });
+            }
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not generate the report.' });
@@ -98,21 +96,20 @@ export default function LegalExportPage() {
     };
     
     const handleDownload = () => {
-        // This would trigger a server-side PDF generation in a real app
-        toast({ title: 'Downloading PDF...', description: 'Your report is being prepared.' });
-        window.print(); // Use browser print functionality as a placeholder
+        toast({ title: 'Preparing Printable Report...', description: 'Your report is being prepared for printing or saving as a PDF.' });
+        setTimeout(() => window.print(), 500);
     };
 
     return (
-        <div className="space-y-8">
-             <div>
+        <div className="space-y-8" id="legal-export-page">
+             <div className="print-hidden">
                 <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Legal Export Center</h1>
                 <p className="text-muted-foreground mt-1">
                     Generate professional, court-ready reports from your logged data.
                 </p>
             </div>
             
-            <div className="grid lg:grid-cols-3 gap-8 items-start">
+            <div className="grid lg:grid-cols-3 gap-8 items-start print-hidden">
                 <div className="lg:col-span-1">
                     <Card>
                         <CardHeader>
@@ -180,7 +177,7 @@ export default function LegalExportPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Report Preview</CardTitle>
-                            <CardDescription>A preview of your generated report will appear here.</CardDescription>
+                            <CardDescription>A preview of your generated report will appear here. Use the button at the bottom to print or save as a PDF.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {isLoading && (
@@ -194,34 +191,75 @@ export default function LegalExportPage() {
                                     <p className="mt-2 font-semibold">Select a date range to generate a report.</p>
                                 </div>
                             )}
-                             {reportData && (
-                                <div className="space-y-6">
-                                    <div className="text-center border-b pb-4">
-                                        <h3 className="font-bold text-lg font-headline uppercase text-primary">Evidence Log Report</h3>
-                                        <p className="text-sm text-muted-foreground">For the period of {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
-                                    </div>
-                                    <div className="space-y-4">
-                                        {reportData.map(entry => (
-                                            <div key={entry.id} className="border-b pb-3">
-                                                <p className="font-semibold">{entry.description}</p>
-                                                <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                                                    <span>{format(new Date(entry.date), 'PP')}</span>
-                                                    <Badge variant="secondary">{entry.category}</Badge>
-                                                </div>
-                                                <p className="text-sm mt-2">{entry.evidence}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <Button className="w-full" onClick={handleDownload}>
-                                        <FileDown />
-                                        <span>Download as PDF</span>
-                                    </Button>
+                            {reportData && reportData.length === 0 && (
+                                <div className="text-center text-muted-foreground py-10">
+                                     <BookLock className="mx-auto h-12 w-12" />
+                                     <p className="mt-2 font-semibold">No evidence found in this date range.</p>
                                 </div>
+                            )}
+                             {reportData && reportData.length > 0 && (
+                                 <div className="space-y-4">
+                                    <div className="text-right">
+                                        <Button className="w-full sm:w-auto" onClick={handleDownload}>
+                                            <Printer />
+                                            <span>Print or Save as PDF</span>
+                                        </Button>
+                                    </div>
+                                    <div id="report-content" className="border rounded-lg p-4 max-h-[60vh] overflow-y-auto">
+                                        <div className="text-center border-b pb-4 mb-4">
+                                            <h3 className="font-bold text-lg font-headline uppercase text-primary">Evidence Log Report</h3>
+                                            <p className="text-sm text-muted-foreground">Generated by Placed.ca</p>
+                                            <p className="text-sm text-muted-foreground">For the period of {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {reportData.map(entry => (
+                                                <div key={entry.id} className="border-b pb-3 last:border-b-0">
+                                                    <p className="font-semibold text-base">{entry.description}</p>
+                                                    <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                                                        <p><strong>Event Date:</strong> {format(new Date(entry.date), 'PP')}</p>
+                                                        <p><strong>Logged On:</strong> {format(entry.timestamp.toDate(), 'PPp')}</p>
+                                                        <Badge variant="secondary">{entry.category}</Badge>
+                                                    </div>
+                                                    <div className="mt-2 text-sm whitespace-pre-wrap bg-muted/50 p-2 rounded-md">{entry.evidence}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                 </div>
                             )}
                         </CardContent>
                     </Card>
                  </div>
             </div>
+
+            {/* Hidden, print-only version of the report */}
+            <div className="print-only">
+                {reportData && reportData.length > 0 && (
+                    <div id="print-report-content" className="p-4">
+                        <div className="text-center border-b pb-4 mb-4">
+                            <h3 className="font-bold text-xl font-headline uppercase text-primary">Evidence Log Report</h3>
+                            <p className="text-md text-muted-foreground">Generated by Placed.ca</p>
+                            <p className="text-md text-muted-foreground">For the period of {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
+                        </div>
+                        <div className="space-y-6">
+                            {reportData.map(entry => (
+                                <div key={entry.id} className="pb-4 break-inside-avoid">
+                                    <h4 className="font-semibold text-lg">{entry.description}</h4>
+                                    <div className="flex items-center gap-6 text-sm text-muted-foreground my-1">
+                                        <span><strong>Event Date:</strong> {format(new Date(entry.date), 'PPP')}</span>
+                                        <span><strong>Category:</strong> {entry.category}</span>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        <span><strong>Logged On:</strong> {format(entry.timestamp.toDate(), 'PPPp')}</span>
+                                    </div>
+                                    <div className="mt-2 text-md border p-3 rounded-md bg-gray-50">{entry.evidence}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
+
