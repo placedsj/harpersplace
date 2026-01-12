@@ -1,4 +1,3 @@
-
 // src/app/(main)/calendar/page.tsx
 'use client';
 
@@ -64,7 +63,11 @@ const getEventsForDate = (date: Date): CalendarEvent[] => {
 
     // 3. Birthdays
     familyBirthdays.forEach(bday => {
-        if (date.getMonth() === bday.date.getMonth() && date.getDate() === bday.date.getDate()) {
+        const today = new Date(date);
+        const birthdayDate = new Date(bday.date);
+        today.setFullYear(1900); // Normalize year to avoid year-specific issues
+        birthdayDate.setFullYear(1900);
+        if (isSameDay(today, birthdayDate)) {
              events.push({ date, type: 'birthday', title: `${bday.name}'s Birthday` });
         }
     });
@@ -74,18 +77,23 @@ const getEventsForDate = (date: Date): CalendarEvent[] => {
 
 
 export default function CalendarPage() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date("2025-09-06T00:00:00Z"));
-  const [events, setEvents] = React.useState<CalendarEvent[]>([]);
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [monthEvents, setMonthEvents] = React.useState<CalendarEvent[]>([]);
   const router = useRouter();
 
   React.useEffect(() => {
+    // Set initial date only on client to avoid hydration mismatch
+    setDate(new Date("2025-09-06T12:00:00Z"));
+  }, []);
+
+  React.useEffect(() => {
     document.title = "Calendar | Harper's Home";
-    const today = date || new Date("2025-09-06T00:00:00Z");
+    const today = date || new Date("2025-09-06T12:00:00Z");
     const start = startOfMonth(today);
     const end = endOfMonth(today);
 
-    const monthEvents: CalendarEvent[] = eachDayOfInterval({ start, end }).flatMap(getEventsForDate);
-    setEvents(monthEvents);
+    const events = eachDayOfInterval({ start, end }).flatMap(day => getEventsForDate(day));
+    setMonthEvents(events);
 
   }, [date]);
 
@@ -97,9 +105,9 @@ export default function CalendarPage() {
     const encodedMessage = encodeURIComponent(message);
     router.push(`/communication?draft=${encodedMessage}`);
   };
-
+  
   const dayHasEventType = (day: Date, eventType: CalendarEvent['type']) => {
-      return events.some(e => isSameDay(e.date, day) && e.type === eventType);
+      return monthEvents.some(e => isSameDay(e.date, day) && e.type === eventType);
   }
 
   const modifiers = {
@@ -116,7 +124,7 @@ export default function CalendarPage() {
       birthday: 'font-bold border-2 border-accent rounded-full',
   };
 
-  const selectedDayEvents = date ? events.filter(e => isSameDay(e.date, date)) : [];
+  const selectedDayEvents = date ? monthEvents.filter(e => isSameDay(e.date, date)) : [];
 
 
   return (
@@ -137,6 +145,8 @@ export default function CalendarPage() {
                             className="p-4"
                             modifiers={modifiers}
                             modifiersClassNames={modifiersClassNames}
+                            month={date}
+                            onMonthChange={(month) => setDate(new Date(month.getFullYear(), month.getMonth(), 1))}
                         />
                     </CardContent>
         </Card>
@@ -214,4 +224,3 @@ export default function CalendarPage() {
     </div>
   );
 }
-
