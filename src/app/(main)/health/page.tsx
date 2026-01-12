@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, isFuture, isPast } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Calendar as CalendarIcon, Syringe, Stethoscope, ClipboardList } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, Syringe, Stethoscope, ClipboardList, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -34,6 +34,7 @@ import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from '
 const eventSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   date: z.date(),
+  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Please use HH:MM format."),
   details: z.string().min(1, 'Details are required.'),
   type: z.enum(['Appointment', 'Immunization', 'Note']),
   doctor: z.string().optional(),
@@ -74,6 +75,7 @@ export default function HealthPage() {
             details: '',
             type: 'Appointment',
             date: new Date(),
+            time: format(new Date(), 'HH:mm'),
             doctor: '',
         },
     });
@@ -84,10 +86,14 @@ export default function HealthPage() {
             return;
         }
 
+        const [hours, minutes] = values.time.split(':').map(Number);
+        const combinedDateTime = new Date(values.date);
+        combinedDateTime.setHours(hours, minutes);
+
         try {
             await addDoc(collection(db, `users/${user.uid}/health-events`), {
                 ...values,
-                date: Timestamp.fromDate(values.date),
+                date: Timestamp.fromDate(combinedDateTime),
                 userId: user.uid,
                 timestamp: serverTimestamp(),
             });
@@ -100,6 +106,7 @@ export default function HealthPage() {
                 details: '',
                 type: 'Appointment',
                 date: new Date(),
+                time: format(new Date(), 'HH:mm'),
                 doctor: '',
             });
             setIsDialogOpen(false);
@@ -170,44 +177,59 @@ export default function HealthPage() {
                     </FormItem>
                   )}
                 />
-                 <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date & Time</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
+                 <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="date"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Time</FormLabel>
                           <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP p")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
+                            <Input type="time" {...field} />
                           </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
                  <FormField
                   control={form.control}
                   name="type"
@@ -260,7 +282,10 @@ export default function HealthPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Event</Button>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && <Loader2 className="animate-spin" />}
+                    Save Event
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -274,11 +299,13 @@ export default function HealthPage() {
                     <CardTitle className="font-headline uppercase">Upcoming Appointments</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    {loading && <p className="p-4 text-sm text-muted-foreground">Loading...</p>}
+                    {loading && (
+                        <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                    )}
                     {!loading && upcomingAppointments.length > 0 ? (
                         upcomingAppointments.map(event => <EventCard key={event.id} event={event} />)
                     ) : (
-                        !loading && <p className="text-sm text-muted-foreground p-4">No upcoming appointments scheduled.</p>
+                        !loading && <p className="text-sm text-muted-foreground p-4 text-center">No upcoming appointments scheduled.</p>
                     )}
                 </CardContent>
             </Card>
@@ -287,11 +314,13 @@ export default function HealthPage() {
                     <CardTitle className="font-headline uppercase">Immunization Record</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 max-h-96 overflow-y-auto">
-                    {loading && <p className="p-4 text-sm text-muted-foreground">Loading...</p>}
+                    {loading && (
+                        <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                    )}
                     {!loading && immunizations.length > 0 ? (
                         immunizations.map(event => <EventCard key={event.id} event={event} />)
                     ) : (
-                       !loading && <p className="text-sm text-muted-foreground p-4">No immunization records logged.</p>
+                       !loading && <p className="text-sm text-muted-foreground p-4 text-center">No immunization records logged.</p>
                     )}
                 </CardContent>
             </Card>
@@ -302,11 +331,13 @@ export default function HealthPage() {
                 <CardDescription>A reverse chronological log of past appointments and notes.</CardDescription>
             </CardHeader>
             <CardContent className="p-0 max-h-[60vh] overflow-y-auto">
-                {loading && <p className="p-4 text-sm text-muted-foreground">Loading...</p>}
+                {loading && (
+                    <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                )}
                 {!loading && [...pastAppointments, ...notes].length > 0 ? ([...pastAppointments, ...notes].sort((a,b) => b.date.toMillis() - a.date.toMillis()).map(event => (
                     <EventCard key={event.id} event={event} />
                 ))) : (
-                   !loading && <p className="p-4 text-sm text-muted-foreground">No past events.</p>
+                   !loading && <p className="p-4 text-sm text-muted-foreground text-center">No past events.</p>
                 )}
             </CardContent>
        </Card>
