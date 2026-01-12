@@ -1,5 +1,5 @@
-
 // src/lib/blog-data.ts
+import placeholderImages from '@/app/lib/placeholder-images.json';
 
 type Post = {
     slug: string;
@@ -23,7 +23,7 @@ type Post = {
 
 const author = {
     name: 'The Harper\'s Place Team',
-    avatar: 'https://picsum.photos/seed/author/100/100',
+    avatar: placeholderImages.authorAvatar.url,
     bio: 'Dedicated to providing New Brunswick families with the tools and strategies for child-centered co-parenting and stability.'
 };
 

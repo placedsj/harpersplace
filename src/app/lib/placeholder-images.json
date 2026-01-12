@@ -1,0 +1,47 @@
+{
+    "authorAvatar": {
+        "url": "https://picsum.photos/seed/author/100/100",
+        "dataAiHint": "professional headshot"
+    },
+    "journalEntries": [
+        {
+            "id": "soccerGoal",
+            "url": "https://images.unsplash.com/photo-1552318965-6e6be7484ada?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c29jY2VyJTIwZ29hbHxlbnwwfHx8fDE3NTkxOTU3OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+            "dataAiHint": "soccer goal"
+        },
+        {
+            "id": "scienceMuseum",
+            "url": "https://picsum.photos/seed/museum/400/200",
+            "dataAiHint": "science museum"
+        },
+        {
+            "id": "preschool",
+            "url": "https://picsum.photos/seed/preschool/400/200",
+            "dataAiHint": "preschool children"
+        },
+        {
+            "id": "parkDay",
+            "url": "https://picsum.photos/seed/park/400/200",
+            "dataAiHint": "family park"
+        },
+        {
+            "id": "beachDay",
+            "url": "https://picsum.photos/seed/beach/400/200",
+            "dataAiHint": "family beach"
+        }
+    ],
+    "wishlist": {
+        "blocks": {
+            "url": "https://picsum.photos/seed/blocks/200/200",
+            "dataAiHint": "building blocks"
+        },
+        "plushToy": {
+            "url": "https://picsum.photos/seed/plush_toy/200/200",
+            "dataAiHint": "stuffed animal"
+        },
+        "backpack": {
+            "url": "https://picsum.photos/seed/backpack/200/200",
+            "dataAiHint": "backpack"
+        }
+    }
+}

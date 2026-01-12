@@ -31,6 +31,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 import type { JournalEntry as JournalEntryType } from '@/lib/journal-data';
+import placeholderImages from '@/app/lib/placeholder-images.json';
 import { Loader2 } from 'lucide-react';
 
 const entrySchema = z.object({
@@ -71,11 +72,14 @@ export default function JournalPage() {
         }
         setIsSubmitting(true);
         try {
+            // Get a random placeholder image if none is provided
+            const placeholder = placeholderImages.journalEntries[Math.floor(Math.random() * placeholderImages.journalEntries.length)];
+            
             const newEntry = {
               ...values,
               date: Timestamp.fromDate(values.date),
-              image: values.image || `https://picsum.photos/seed/${Math.random()}/400/200`,
-              dataAiHint: values.dataAiHint || 'family memory placeholder',
+              image: values.image || placeholder.url,
+              dataAiHint: values.dataAiHint || placeholder.dataAiHint,
               userId: user.uid,
               timestamp: serverTimestamp(),
             };

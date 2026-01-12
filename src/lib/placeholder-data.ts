@@ -1,4 +1,5 @@
 // src/lib/placeholder-data.ts
+import placeholderImages from '@/app/lib/placeholder-images.json';
 
 /**
  * This file contains placeholder data that can be used in the UI for development and demonstration purposes.
@@ -16,11 +17,11 @@ export const groceryItems = [
 
 // Placeholder for Harper's wishlist
 export const harperWishlist = [
-    { id: 1, name: 'Wooden Building Blocks', description: 'A classic set of colorful wooden blocks for creative play.', link: '#', imageUrl: 'https://picsum.photos/seed/blocks/200/200', dataAiHint: "building blocks" },
-    { id: 2, name: 'Plush Storybook Character', description: 'A soft toy of her favorite character from "Goodnight Moon".', link: '#', imageUrl: 'https://picsum.photos/seed/plush_toy/200/200', dataAiHint: "stuffed animal" },
+    { id: 1, name: 'Wooden Building Blocks', description: 'A classic set of colorful wooden blocks for creative play.', link: '#', imageUrl: placeholderImages.wishlist.blocks.url, dataAiHint: placeholderImages.wishlist.blocks.dataAiHint },
+    { id: 2, name: 'Plush Storybook Character', description: 'A soft toy of her favorite character from "Goodnight Moon".', link: '#', imageUrl: placeholderImages.wishlist.plushToy.url, dataAiHint: placeholderImages.wishlist.plushToy.dataAiHint },
 ];
 
 // Placeholder for school supplies wishlist
 export const schoolWishlist = [
-    { id: 1, name: 'Backpack', description: 'A durable backpack for the new school year.', link: '#', imageUrl: 'https://picsum.photos/seed/backpack/200/200', dataAiHint: "backpack" },
+    { id: 1, name: 'Backpack', description: 'A durable backpack for the new school year.', link: '#', imageUrl: placeholderImages.wishlist.backpack.url, dataAiHint: placeholderImages.wishlist.backpack.dataAiHint },
 ];
