@@ -1,130 +1,28 @@
 // src/app/(main)/communication-platform/page.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { 
-  Video, 
   MessageSquare, 
-  Shield, 
   FileText, 
   Clock, 
   DollarSign, 
-  Users, 
-  Gavel,
-  CheckCircle,
-  Play,
-  Pause,
-  Phone,
-  Camera,
-  Mic,
-  MicOff,
-  VideoOff
 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
 
 export default function CommunicationPlatformPage() {
-  const [activeDemo, setActiveDemo] = useState<string>('messaging');
-  const [isCallActive, setIsCallActive] = useState(false);
-  const [callDuration, setCallDuration] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isCameraOff, setIsCameraOff] = useState(false);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    let stream: MediaStream | null = null;
-    const getCameraPermission = async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setHasCameraPermission(true);
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this app.',
-        });
-      }
-    };
-
-    getCameraPermission();
-
-    // Cleanup function to stop media tracks when component unmounts
-    return () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-    };
-  }, [toast]);
-
-  // Simulate call timer
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isCallActive) {
-      interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isCallActive]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
   
-  const toggleMute = () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-          const stream = videoRef.current.srcObject as MediaStream;
-          stream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-          setIsMuted(prev => !prev);
-      }
-  };
-  const toggleCamera = () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-          const stream = videoRef.current.srcObject as MediaStream;
-          stream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-          setIsCameraOff(prev => !prev);
-      }
-  };
-
-  const startCall = () => {
-    if (!hasCameraPermission) {
-        toast({
-            variant: 'destructive',
-            title: 'Cannot Start Call',
-            description: 'Camera permission is required to start a video call.',
-        });
-        return;
-    }
-    setIsCallActive(true);
-    setCallDuration(0);
-  };
-
-  const endCall = () => setIsCallActive(false);
-
-  const costCalculation = {
+  const [costCalculation, setCostCalculation] = useState({
     users: 2,
     monthlyMessages: 100,
     monthlyCalls: 10,
     callDuration: 15
-  };
+  });
 
   const calculateCost = () => {
     const baseCost = 15000;
@@ -172,22 +70,11 @@ export default function CommunicationPlatformPage() {
     <div className="space-y-8">
       {/* Hero Section */}
       <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <MessageSquare className="w-6 h-6 text-white" />
-          </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-            <Video className="w-6 h-6 text-white" />
-          </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center">
-            <Shield className="w-6 h-6 text-white" />
-          </div>
-        </div>
         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Child-Centered Communication Platform
+          Platform Vision & Investment
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Keep your child's best interests at the heart of every conversation. Professional, documented communication that prioritizes your child's emotional well-being, stability, and safety above all else.
+          Estimate the development cost for a custom, child-centered communication platform and review the implementation roadmap.
         </p>
         <div className="flex flex-wrap gap-2 justify-center">
           <Badge variant="secondary" className="text-sm">👶 Child-First Approach</Badge>
@@ -197,250 +84,6 @@ export default function CommunicationPlatformPage() {
         </div>
       </div>
 
-      {/* Interactive Demos */}
-      <Tabs value={activeDemo} onValueChange={setActiveDemo} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="messaging">📱 Messaging</TabsTrigger>
-          <TabsTrigger value="video">🎥 Video Calls</TabsTrigger>
-          <TabsTrigger value="legal">⚖️ Legal Export</TabsTrigger>
-          <TabsTrigger value="security">🔐 Security</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="messaging" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Child-Focused Messaging Demo</CardTitle>
-              <CardDescription>AI ensures every message keeps your child's best interests and emotional well-being at the center</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Mock message thread */}
-                <div className="border rounded-lg p-4 bg-muted/20 max-h-64 overflow-y-auto">
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">D</div>
-                      <div className="flex-1">
-                        <div className="bg-blue-100 dark:bg-blue-900/20 rounded-lg p-3 max-w-xs">
-                          <p className="text-sm">Hi! Could you pick up Harper today? I'm running late from work but want to make sure she gets home safely. Thank you!</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-muted-foreground">2:15 PM</span>
-                            <CheckCircle className="w-3 h-3 text-green-500" />
-                            <span className="text-xs text-green-600">✓ Read</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2 justify-end">
-                      <div className="flex-1">
-                        <div className="bg-purple-100 dark:bg-purple-900/20 rounded-lg p-3 max-w-xs ml-auto">
-                          <p className="text-sm">Absolutely! I'll be there by 3:30. Should I take Harper to soccer practice so she doesn't miss it? I know how much she loves it.</p>
-                          <div className="flex items-center gap-2 mt-1 justify-end">
-                            <Badge variant="outline" className="text-xs">👶 Child-focused</Badge>
-                            <span className="text-xs text-muted-foreground">2:16 PM</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm">M</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    Every message is analyzed for child-focused language, encrypted for privacy, and stored to demonstrate your commitment to your child's best interests in court.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="video" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Child-Safe Video Conversations</CardTitle>
-              <CardDescription>Face-to-face discussions about your child's needs, with professional documentation for their protection</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="bg-black rounded-lg aspect-video flex flex-col items-center justify-center relative overflow-hidden">
-                  <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                  
-                  {isCameraOff && <div className="absolute inset-0 bg-black flex items-center justify-center text-white"><VideoOff className="w-16 h-16 opacity-50"/></div>}
-
-                  {isCallActive && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
-                      <div className="absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                        🔴 Recording • {formatTime(callDuration)}
-                      </div>
-                    </div>
-                  )}
-
-                  {!isCallActive && !hasCameraPermission && (
-                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <Alert variant="destructive" className="max-w-md">
-                          <AlertTitle>Camera Access Required</AlertTitle>
-                          <AlertDescription>
-                            Please allow camera access in your browser to use this feature.
-                          </AlertDescription>
-                        </Alert>
-                    </div>
-                  )}
-                  
-                  {!isCallActive && hasCameraPermission && (
-                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="text-center text-white">
-                            <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                            <p className="text-lg">Video Call Ready</p>
-                            <p className="text-sm opacity-70">Click start to begin a secure call</p>
-                        </div>
-                    </div>
-                  )}
-
-                   {/* Other Person's Video (Picture-in-Picture) */}
-                  <div className="absolute top-4 right-4 w-1/4 h-1/4 bg-purple-500/30 rounded-lg border-2 border-white/20 flex items-center justify-center text-white">
-                      <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-2xl">M</div>
-                  </div>
-                </div>
-
-                {/* Call controls */}
-                <div className="flex items-center justify-center gap-4">
-                    <Button variant={!isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}>
-                        {isMuted ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                        variant={isCallActive ? "destructive" : "default"}
-                        onClick={isCallActive ? endCall : startCall}
-                        className="gap-2 w-32"
-                    >
-                        {isCallActive ? <Phone className="w-4 h-4" /> : <Video className="w-4 h-4" />}
-                        {isCallActive ? 'End Call' : 'Start Call'}
-                    </Button>
-                    <Button variant={isCameraOff ? 'destructive' : 'outline'} size="icon" onClick={toggleCamera} disabled={!isCallActive}>
-                        {isCameraOff ? <VideoOff className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
-                    </Button>
-                </div>
-
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="legal" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Child Welfare Documentation</CardTitle>
-              <CardDescription>Professional reports showing your commitment to your child's best interests for court review</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Mock legal document */}
-                <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 bg-muted/10">
-                    <div className="space-y-4">
-                    <div className="text-center border-b pb-4">
-                      <h3 className="font-bold text-lg">HARPER'S PLACE</h3>
-                      <p className="text-sm text-muted-foreground">Child-Centered Communication Analysis</p>
-                      <p className="text-xs text-muted-foreground">Document ID: HP-2025-10-22-001</p>
-                    </div>                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">Parties:</span>
-                        <span>Parent A & Parent B</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">Period:</span>
-                        <span>October 1-22, 2025</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">Total Messages:</span>
-                        <span>47</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">Child-Focused Response Rate:</span>
-                        <span className="text-green-600">94% (Excellent)</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                      <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Child's Best Interest Metrics</h4>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-green-700 dark:text-green-300">Child Safety Focus: 92%</span>
-                          <Progress value={92} className="mt-1 h-2" />
-                        </div>
-                        <div>
-                          <span className="text-green-700 dark:text-green-300">Emotional Stability: 87%</span>
-                          <Progress value={87} className="mt-1 h-2" />
-                        </div>
-                        <div>
-                          <span className="text-green-700 dark:text-green-300">Collaborative Tone: 89%</span>
-                          <Progress value={89} className="mt-1 h-2" />
-                        </div>
-                        <div>
-                          <span className="text-green-700 dark:text-green-300">Child-Centered Language: 76%</span>
-                          <Progress value={76} className="mt-1 h-2" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button className="gap-2">
-                    <FileText className="w-4 h-4" />
-                    Export PDF
-                  </Button>
-                  <Button variant="outline" className="gap-2">
-                    <Gavel className="w-4 h-4" />
-                    Legal Package
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="security" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Architecture</CardTitle>  
-              <CardDescription>Bank-level security protecting your family's communications</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Security layers visualization */}
-                <div className="relative">
-                  {[
-                    { name: 'End-to-End Encryption', desc: 'Messages encrypted before leaving your device', color: 'bg-red-500' },
-                    { name: 'Transport Security', desc: 'TLS 1.3 encryption in transit', color: 'bg-orange-500' },
-                    { name: 'Storage Security', desc: 'AES-256 encryption at rest', color: 'bg-yellow-500' },
-                    { name: 'Access Control', desc: 'Multi-factor authentication required', color: 'bg-green-500' },
-                    { name: 'Audit Trail', desc: 'Immutable logging with digital signatures', color: 'bg-blue-500' }
-                  ].map((layer, index) => (
-                    <div key={index} className="flex items-center gap-4 p-4 rounded-lg border border-muted-foreground/20">
-                      <div className={`w-4 h-4 rounded-full ${layer.color}`}></div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{layer.name}</h4>
-                        <p className="text-sm text-muted-foreground">{layer.desc}</p>
-                      </div>
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    </div>
-                  ))}
-                </div>
-
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    All security measures meet or exceed HIPAA, SOC 2, and family court requirements for sensitive communications.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
       {/* Cost Calculator */}
       <Card>
         <CardHeader>
@@ -448,7 +91,7 @@ export default function CommunicationPlatformPage() {
             <DollarSign className="w-5 h-5" />
             Development Cost Calculator
           </CardTitle>
-          <CardDescription>Estimate your custom communication platform investment</CardDescription>
+          <CardDescription>Estimate your custom communication platform investment by adjusting the sliders based on your expected usage and complexity.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
@@ -456,7 +99,8 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Family Members (Parents & Guardians)</Label>
                 <Slider
-                  defaultValue={[costCalculation.users]}
+                  value={[costCalculation.users]}
+                  onValueChange={(value) => setCostCalculation(prev => ({...prev, users: value[0]}))}
                   max={10}
                   min={2}
                   step={1}
@@ -472,7 +116,8 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Monthly Child-Focused Messages</Label>
                 <Slider
-                  defaultValue={[costCalculation.monthlyMessages]}
+                  value={[costCalculation.monthlyMessages]}
+                  onValueChange={(value) => setCostCalculation(prev => ({...prev, monthlyMessages: value[0]}))}
                   max={1000}
                   min={50}
                   step={50}
@@ -488,7 +133,8 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Monthly Child Planning Calls</Label>
                 <Slider
-                  defaultValue={[costCalculation.monthlyCalls]}
+                  value={[costCalculation.monthlyCalls]}
+                  onValueChange={(value) => setCostCalculation(prev => ({...prev, monthlyCalls: value[0]}))}
                   max={100}
                   min={5}
                   step={5}
@@ -504,7 +150,8 @@ export default function CommunicationPlatformPage() {
               <div>
                 <Label>Average Call Duration (minutes)</Label>
                 <Slider
-                  defaultValue={[costCalculation.callDuration]}
+                  value={[costCalculation.callDuration]}
+                   onValueChange={(value) => setCostCalculation(prev => ({...prev, callDuration: value[0]}))}
                   max={60}
                   min={5}
                   step={5}
@@ -569,17 +216,17 @@ export default function CommunicationPlatformPage() {
       <Card>
         <CardHeader>
           <CardTitle>Development Roadmap</CardTitle>
-          <CardDescription>Visual timeline of platform development phases</CardDescription>
+          <CardDescription>A visual timeline of the platform development phases, from core messaging to advanced legal features.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             {phases.map((phase, index) => (
               <div key={index} className="relative">
                 {index < phases.length - 1 && (
-                  <div className="absolute left-6 top-12 w-0.5 h-20 bg-muted-foreground/20"></div>
+                  <div className="absolute left-6 top-12 w-0.5 h-full bg-muted-foreground/20"></div>
                 )}
                 <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 ${phase.color} rounded-full flex items-center justify-center text-white font-bold text-lg`}>
+                  <div className={`w-12 h-12 ${phase.color} rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0`}>
                     {index + 1}
                   </div>
                   <div className="flex-1 grid gap-4 md:grid-cols-3">
@@ -616,7 +263,7 @@ export default function CommunicationPlatformPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Ready to Put Your Child's Best Interests First?</CardTitle>
           <CardDescription className="text-lg">
-            Create a communication platform that prioritizes your child's emotional safety, stability, and well-being in every interaction
+            Create a communication platform that prioritizes your child's emotional safety, stability, and well-being in every interaction.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
