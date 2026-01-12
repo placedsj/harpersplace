@@ -225,9 +225,6 @@ function CommunicationPageInternal() {
     const VideoCallDialog = isMobile ? Sheet : Dialog;
     const VideoCallTrigger = isMobile ? SheetTrigger : DialogTrigger;
     const VideoCallContent = isMobile ? SheetContent : DialogContent;
-    const VideoCallHeader = isMobile ? SheetHeader : DialogHeader;
-    const VideoCallTitle = isMobile ? SheetTitle : DialogTitle;
-    const VideoCallDescription = isMobile ? SheetDescription : DialogDescription;
 
 
   return (
@@ -365,3 +362,5 @@ export default function CommunicationPage() {
         </React.Suspense>
     );
 }
+
+    
