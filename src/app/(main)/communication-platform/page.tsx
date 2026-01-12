@@ -36,15 +36,16 @@ export default function CommunicationPlatformPage() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(true); // Assume true initially
+  const [hasCameraPermission, setHasCameraPermission] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isCameraOff, setIsCameraOff] = useState(false);
   const { toast } = useToast();
 
-    useEffect(() => {
+  useEffect(() => {
+    let stream: MediaStream | null = null;
     const getCameraPermission = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setHasCameraPermission(true);
 
         if (videoRef.current) {
@@ -62,6 +63,13 @@ export default function CommunicationPlatformPage() {
     };
 
     getCameraPermission();
+
+    // Cleanup function to stop media tracks when component unmounts
+    return () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    };
   }, [toast]);
 
   // Simulate call timer
@@ -81,13 +89,34 @@ export default function CommunicationPlatformPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  const toggleMute = () => setIsMuted(!isMuted);
-  const toggleCamera = () => setIsCameraOff(!isCameraOff);
+  const toggleMute = () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+          const stream = videoRef.current.srcObject as MediaStream;
+          stream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+          setIsMuted(prev => !prev);
+      }
+  };
+  const toggleCamera = () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+          const stream = videoRef.current.srcObject as MediaStream;
+          stream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
+          setIsCameraOff(prev => !prev);
+      }
+  };
 
   const startCall = () => {
+    if (!hasCameraPermission) {
+        toast({
+            variant: 'destructive',
+            title: 'Cannot Start Call',
+            description: 'Camera permission is required to start a video call.',
+        });
+        return;
+    }
     setIsCallActive(true);
     setCallDuration(0);
   };
+
   const endCall = () => setIsCallActive(false);
 
   const costCalculation = {
@@ -249,7 +278,18 @@ export default function CommunicationPlatformPage() {
                     </div>
                   )}
 
-                  {!isCallActive && (
+                  {!isCallActive && !hasCameraPermission && (
+                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <Alert variant="destructive" className="max-w-md">
+                          <AlertTitle>Camera Access Required</AlertTitle>
+                          <AlertDescription>
+                            Please allow camera access in your browser to use this feature.
+                          </AlertDescription>
+                        </Alert>
+                    </div>
+                  )}
+                  
+                  {!isCallActive && hasCameraPermission && (
                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                         <div className="text-center text-white">
                             <Video className="w-16 h-16 mx-auto mb-4 opacity-50" />
@@ -267,8 +307,8 @@ export default function CommunicationPlatformPage() {
 
                 {/* Call controls */}
                 <div className="flex items-center justify-center gap-4">
-                    <Button variant={isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}>
-                        {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    <Button variant={!isMuted ? 'destructive' : 'outline'} size="icon" onClick={toggleMute} disabled={!isCallActive}>
+                        {isMuted ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
                     </Button>
                     <Button
                         variant={isCallActive ? "destructive" : "default"}
@@ -283,14 +323,6 @@ export default function CommunicationPlatformPage() {
                     </Button>
                 </div>
 
-                { !hasCameraPermission && (
-                    <Alert variant="destructive">
-                              <AlertTitle>Camera Access Required</AlertTitle>
-                              <AlertDescription>
-                                Please allow camera access to use this feature.
-                              </AlertDescription>
-                      </Alert>
-                )}
               </div>
             </CardContent>
           </Card>
