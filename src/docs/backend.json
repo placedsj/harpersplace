@@ -111,6 +111,21 @@
         },
         "required": ["name", "checked", "userId", "timestamp"]
     },
+    "wishlistItem": {
+        "title": "Wishlist Item",
+        "description": "An item on a shared wishlist.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "link": { "type": "string", "format": "uri" },
+            "imageUrl": { "type": "string", "format": "uri" },
+            "dataAiHint": { "type": "string" },
+            "userId": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "description", "userId", "timestamp"]
+    },
     "evidenceEntry": {
         "title": "Evidence Entry",
         "description": "A single entry in the court-ready evidence log.",
@@ -205,6 +220,14 @@
     "/users/{userId}/groceries": {
         "schema": { "$ref": "#/entities/groceryItem" },
         "description": "Stores grocery list items for a user."
+    },
+    "/users/{userId}/harperWishlist": {
+        "schema": { "$ref": "#/entities/wishlistItem" },
+        "description": "Stores items for Harper's wishlist."
+    },
+    "/users/{userId}/schoolWishlist": {
+        "schema": { "$ref": "#/entities/wishlistItem" },
+        "description": "Stores items for the school supplies wishlist."
     },
     "/users/{userId}/evidence": {
         "schema": { "$ref": "#/entities/evidenceEntry" },
