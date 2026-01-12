@@ -120,6 +120,26 @@ export default function FundPage() {
     }
   };
 
+  const handleEdit = (expense: Expense) => {
+    setEditId(expense.id);
+    form.reset({
+      description: expense.description,
+      amount: expense.amount,
+      category: expense.category,
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!user || !db || !window.confirm('Are you sure you want to delete this expense?')) return;
+    try {
+      await deleteDoc(doc(db, `users/${user.uid}/expenses`, id));
+      toast({ title: 'Expense Deleted' });
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not delete expense.' });
+    }
+  };
+
   const totalExpenses = useMemo(() => {
     return expenses?.reduce((acc, expense) => acc + expense.amount, 0) || 0;
   }, [expenses]);
@@ -249,7 +269,7 @@ export default function FundPage() {
                     <TableHead>Description</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -275,7 +295,14 @@ export default function FundPage() {
                           <Badge variant="outline">{expense.category}</Badge>
                         </TableCell>
                         <TableCell className="text-right">${expense.amount.toFixed(2)}</TableCell>
-                        <TableCell>{expense.timestamp?.toDate().toLocaleDateString()}</TableCell>
+                        <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => handleEdit(expense)}>
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(expense.id)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
