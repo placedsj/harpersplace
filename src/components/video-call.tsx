@@ -82,9 +82,10 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
         }
     };
     
+    // Simulate remote peer connecting and sending their stream
     setTimeout(() => {
-       if (remoteVideoRef.current) {
-           // Placeholder for remote user
+       if (remoteVideoRef.current && localStreamRef.current) {
+           remoteVideoRef.current.srcObject = localStreamRef.current;
        }
     }, 2000);
   };
@@ -202,8 +203,7 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
           return;
       }
       
-      // For this demo, we'll record the local user's stream (camera or screen share)
-      const streamToRecord = screenStreamRef.current || localStreamRef.current;
+      const streamToRecord = screenStreamRef.current || remoteVideoRef.current?.srcObject as MediaStream || localStreamRef.current;
       if (!streamToRecord) return;
 
       mediaRecorderRef.current = new MediaRecorder(streamToRecord, { mimeType: 'video/webm' });
@@ -216,20 +216,20 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
       };
 
       mediaRecorderRef.current.onstop = () => {
-          // In a real app, you would upload this blob to a server.
           const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-          console.log('Recording stopped, blob created:', blob);
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'call-recording.webm';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
           toast({
-              title: 'Processing Recording...',
-              description: 'Your recording is being saved and transcribed.',
+              title: 'Recording Ready',
+              description: 'Your call recording has been downloaded.',
           });
-          // Simulate server processing
-          setTimeout(() => {
-              toast({
-                  title: 'Recording Saved & Transcribed',
-                  description: 'The call record is available in your legal export center.',
-              });
-          }, 3000);
       };
 
       mediaRecorderRef.current.start();
@@ -240,6 +240,10 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
   const stopRecording = () => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
           mediaRecorderRef.current.stop();
+          toast({
+              title: 'Recording Stopped',
+              description: 'Preparing your recording for download...',
+          });
       }
       setIsRecording(false);
   };
@@ -289,7 +293,7 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
             
             <AlertDialog>
                 <AlertDialogTrigger asChild>
-                    <Button variant={isRecording ? 'destructive' : 'outline'} size="icon" className="rounded-full h-12 w-12 bg-transparent border-gray-600 hover:bg-gray-700 text-white">
+                    <Button variant={isRecording ? 'destructive' : 'outline'} size="icon" className="rounded-full h-12 w-12 bg-transparent border-gray-600 hover:bg-gray-700 text-white" onClick={isRecording ? stopRecording : undefined}>
                         <Disc />
                     </Button>
                 </AlertDialogTrigger>
