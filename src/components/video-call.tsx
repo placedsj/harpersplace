@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { DialogTitle as VisuallyHiddenTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
 interface VideoCallProps {
@@ -251,6 +252,7 @@ export function VideoCall({ onCallEnd }: VideoCallProps) {
 
   return (
     <div className="h-full w-full flex flex-col bg-black">
+      <VisuallyHiddenTitle className="sr-only">Video Call</VisuallyHiddenTitle>
         <div className="flex-1 relative">
              <div className="w-full h-full object-cover bg-gray-900 flex items-center justify-center">
                  <video ref={remoteVideoRef} className="w-full h-full object-cover" autoPlay playsInline />
