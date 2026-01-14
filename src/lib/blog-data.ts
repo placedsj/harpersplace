@@ -29,6 +29,174 @@ const author = {
 
 const posts: Post[] = [
     {
+        slug: 'the-reloction-audit',
+        title: 'The Longest Bridge: The Relocation Audit',
+        summary: 'A move-away is the ultimate test of your co-parenting structure. Learn how to navigate this "heavy load" with the raw, bare-boned honesty of the Steel Bridge philosophy.',
+        contentHtml: `
+            <p>The news landed like a structural impact test: one parent got a job offer in Halifax. A great one. In the "covered bridge" days, this would have been a declaration of war. Lawyers would be called, threats would be made, and the bridge would have been torn apart by the "scary as fuck" tension, with Harper caught in the middle.</p>
+            <p>But this is 2026. This is the era of the Steel Bridge.</p>
+            <p>The parent didn't hide it. They used the <strong>AI Communication Coach</strong> to draft a "no-makeup," legally sound notification: "Per our parenting plan and the NB Family Law Act, I am formally providing notice to discuss a potential relocation and its impact on Harper's best interests."</p>
+            <p>There was no drama. There was just data. They used the Harper’s Place platform to conduct a "Structural Audit":</p>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>The Shared Journal:</strong> A perfect, timestamped record of Harper’s deep community ties in the Valley.</li>
+                <li><strong>The Smart Calendar:</strong> An unalterable log of the existing, stable Parenting Time schedule.</li>
+                <li><strong>The "Voice of the Child":</strong> At her age, Harper’s own desire to stay near her school and friends was a significant, logged factor.</li>
+            </ul>
+            <p>They didn’t have to fight. The data on the bridge was so solid, so clear, that it guided the decision. The bridge held, even under this heavy load, because it was built of raw, unshakeable truth.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Raw Steel" Guide to Relocation in New Brunswick</h3>
+            <p>You can't just move. A "move-away" is a legal event that requires a specific process.</p>
+            <ol class="list-decimal list-inside space-y-2 my-4">
+                <li><strong>The 60-Day Notice:</strong> Under the Family Law Act, you must provide 60 days' written notice of a planned relocation. An email isn't steel; use a verifiable method.</li>
+                <li><strong>The "Best Interest" Test on Wheels:</strong> A judge won't care about your new job if the move isn't in the child’s best interest. You must prove how the child's stability, schooling, and relationships will be maintained.</li>
+                <li><strong>The Burden of Proof is on the Mover:</strong> It is up to the parent who wants to move to show that it is the right thing for the child.</li>
+                <li><strong>Don't Burn the Bridge:</strong> Never relocate without consent or a court order. It's the fastest way to have a judge order the child's immediate return to New Brunswick.</li>
+            </ol>
+        `,
+        date: '2026-03-20',
+        category: 'Legal',
+        author,
+    },
+    {
+        slug: 'the-summer-load',
+        title: 'The Summer Load: Navigating the 119 Exit with a Boat in Tow',
+        summary: 'Summer vacation can collapse a "covered bridge" of unspoken expectations. Learn how to build a summer plan out of raw, bare-boned steel that can handle the heaviest loads.',
+        contentHtml: `
+            <p>In the old days—Nanny’s days—summer was a "covered bridge" of uncertainty. Mom and Dad would wait until the last week of June to argue about who got the week at the cottage. It was painted over with "we'll just see how it goes," but inside, the stress was scary as fuck for Harper.</p>
+            <p>In 2026, we’ve stripped the roof off. The Hammond River Bridge doesn't care about "vibes"; it cares about structure.</p>
+            <p>Harper’s parents didn't wait for the heatwave. They used the <strong>Smart Calendar</strong> to lock in summer Parenting Time back in March. They used the <strong>AI Communication Coach</strong> to settle the dates for summer camps. When the machines got heavier—literally, when Dad hooked up the boat to head to the river—there was no drama. The logistics were already riveted into the app. Harper didn’t have to navigate her parents’ conflict; she just had to navigate the river. That is the Safe Harbor standard in action.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Raw Steel" Summer Checklist</h3>
+             <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>Parenting Time, Not "Visits":</strong> Remember, the law in New Brunswick has moved away from "access" to Parenting Time. This is Harper’s right to a stable relationship with both parents.</li>
+                <li><strong>The Section 7 Summer Audit:</strong> Summer camps and swimming lessons are extraordinary expenses. Log these Section 7 costs in the <strong>Finances</strong> tab the moment registration opens to avoid rot in your budget.</li>
+                <li><strong>The Duty to Inform:</strong> Under the NB Family Law Act, you must keep the other parent informed about travel logistics. Use the <strong>Shared Journal</strong> to log flight numbers or cottage addresses.</li>
+                <li><strong>No Makeup Communication:</strong> Keep holiday requests brief and business-like. If a dispute arises, let the timestamped records speak for themselves.</li>
+            </ul>
+        `,
+        date: '2026-02-25',
+        category: 'Planning',
+        author,
+    },
+    {
+        slug: 'adding-a-new-beam-new-partners',
+        title: 'Adding a New Beam: The Raw Truth About New Partners',
+        summary: 'Introducing a new partner is a heavy load for the bridge. Learn how to reinforce the structure with raw honesty, leaving the "covered bridge" of secrets and jealousy behind.',
+        contentHtml: `
+            <p>In the old "covered bridge" days, Dad would have hidden his new girlfriend for a year, terrified of the "scary as fuck" fallout. It was painted over with lies like "Oh, she’s just a friend from work," until the rot of the secret made Harper feel like she couldn't trust her own eyes.</p>
+            <p>In 2026, we’ve stripped the roof off. We don’t hide behind the paint.</p>
+            <p>When Dad started seeing someone seriously, he used the <strong>AI Communication Coach</strong> to draft a "no-makeup" notification to Mom: "I am introducing a new partner to Harper this weekend. We will be at Meenan’s Cove park for one hour. This is about her stability, not a change in our parenting time."</p>
+            <p>Mom didn't have to like it, but because the bridge is made of steel, she respected the structure. She looked at the <strong>Smart Calendar</strong> and saw the routine was the same. Harper wasn't losing a parent; she was just seeing a new beam being riveted onto her bridge. No secrets, no "scary" echoes—just a raw, bare-boned transition that kept her best interests at the center.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Raw Steel" Guide to New Partners</h3>
+             <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>Safety First:</strong> Under the New Brunswick Family Law Act, ensuring any new partner provides a safe and stable environment is your legal duty.</li>
+                <li><strong>The "No-Messenger" Rule:</strong> Never ask your child to keep the new partner a secret; this creates "scary" internal conflict that rots the bridge from the inside.</li>
+                <li><strong>Document the Transition:</strong> Use the <strong>Shared Journal</strong> to log how the child is reacting to the new person—not for "spying," but to ensure the child’s emotional wellness remains a priority.</li>
+                <li><strong>Parallel Boundaries:</strong> Remember that in a Parallel Parenting model, you do not need the other parent's permission to date, but you do have a duty to ensure the transition doesn't interfere with established Parenting Time.</li>
+            </ul>
+        `,
+        date: '2026-01-30',
+        category: 'Parenting',
+        author,
+    },
+    {
+        slug: 'the-parent-teacher-standoff',
+        title: 'The Structural Audit: The Parent-Teacher Stand-off',
+        summary: 'Forget the "covered bridge" awkwardness of sitting in tiny chairs together. We’re moving to the high-tensile strength of Parallel Educational Support.',
+        contentHtml: `
+             <p>In the old days, Nanny thought it was best if both parents sat together at the tiny classroom desk. It was "pretty on the outside" for the teacher, but inside, it was scary as fuck. The tension was so thick the teacher could barely talk about Harper’s math progress.</p>
+            <p>In 2026, we’ve stripped the roof off that tradition.</p>
+            <p>This year, Harper’s parents didn't do the "fake together" routine. They scheduled separate 10-minute windows. Instead of a "he said, she said" dispute, they used the <strong>Shared Journal</strong> to log the teacher’s feedback. No makeup. No hiding. Just raw data about Harper’s reading level. This is the Safe Harbor standard: the teacher can focus on the student, and the parents can focus on the support.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Raw Steel" Guide to School Logistics</h3>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>The Right to Know:</strong> Under the NB Family Law Act, both parents with Decision-Making Responsibility have the right to school records.</li>
+                <li><strong>No Messenger Kids:</strong> Never ask Harper "What did your teacher tell Dad?" Use the app to share school memos.</li>
+                <li><strong>Section 7 School Costs:</strong> Field trips and hot lunch programs are extraordinary expenses. Log them in the <strong>Finances</strong> tab the second the permission slip comes home.</li>
+                <li><strong>The AI Coach for Emails:</strong> Before you email the teacher, run it through the <strong>AI Communication Coach</strong>. Keep it "no-makeup" and professional.</li>
+            </ul>
+        `,
+        date: '2025-12-20',
+        category: 'Communication',
+        author,
+    },
+     {
+        slug: 'nannys-guide-to-the-new-bridge',
+        title: 'Nanny’s Guide to the New Bridge: Why Steel is Safer than Paint',
+        summary: 'This one is for the family members who remember the "Old Way." An explanation of why we stripped off the red paint and wooden roof to reveal the raw steel that keeps Harper safe.',
+        contentHtml: `
+            <p>Nanny loves a good story, and she loves the old covered bridges that dot the New Brunswick landscape. To her, those bridges represent a time when things were simpler. But Nanny also remembers the "creaks"—the way the air felt inside those covered bridges when Harper’s parents first separated—dark, uncertain, and a little bit scary.</p>
+            <p>We had to tell Nanny: "The red paint was beautiful, but the wood couldn't hold the weight anymore."</p>
+            <p>The world got heavier. The 2026 legal requirements in New Brunswick aren't about "polite silence"; they are about Decision-Making Responsibility. We showed her the Hammond River Bridge—the raw, bare-boned steel. We explained that by using Harper’s Place, we aren't "hiding" the separation. We are showing her the strength of the connection. Now, when Nanny takes Harper for the weekend, she just looks at the <strong>Smart Calendar</strong> and knows exactly where the bridge leads.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Structural Audit" for 2026</h3>
+            <p>As we cross into a new year, it’s time to inspect the rivets:</p>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>The Communication Rivet:</strong> Are you still using the <strong>AI Communication Coach</strong> to keep things "no-makeup" and professional?</li>
+                <li><strong>The Financial Beam:</strong> Are Section 7 expenses being logged the moment they happen?</li>
+                <li><strong>The "Best Interest" Foundation:</strong> Does the schedule still reflect the child’s best interest?</li>
+                <li><strong>The Unalterable Record:</strong> Are you relying on memory, or on timestamped records a New Brunswick judge would respect?</li>
+            </ul>
+        `,
+        date: '2025-12-15',
+        category: 'Family',
+        author,
+    },
+    {
+        slug: 'the-heavy-load-holidays',
+        title: 'The Heavy Load: Surviving the KV Holidays with a Steel Bridge',
+        summary: 'We’re stripping away the painted-on "perfect family" expectations and building a holiday strategy out of high-tensile steel. No makeup, no pretending, just a solid plan.',
+        contentHtml: `
+            <p>For years, the KV Santa Claus Parade was a source of "covered bridge" anxiety. Nanny wanted everyone in the same row of lawn chairs, wearing matching mittens, pretending the rot wasn't there. It was pretty for the Facebook photos, but inside, the tension was "scary as fuck."</p>
+            <p>This year, we’re doing the Steel Bridge version. No more hiding.</p>
+            <p>Harper’s parents looked at the <strong>Smart Calendar</strong> three weeks early. They used the <strong>AI Communication Coach</strong> to set a clear, raw boundary: "Dad has Harper for the parade from 5 PM to 7 PM; Mom picks her up at the Q-Plex parking lot for the tree lighting at 7:15 PM." No makeup. No pretending. Just a solid, structural plan that allowed Harper to enjoy the lights without the heavy weight of her parents' unspoken conflict.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The "Raw Steel" Holiday Checklist</h3>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>The Zero-Friction Exchange:</strong> Use a public, neutral spot like the Q-Plex for holiday handovers.</li>
+                <li><strong>Section 7 Transparency:</strong> Holidays are a breeding ground for "extraordinary expenses". Log the cost of big-ticket gifts in the <strong>Finances</strong> tab immediately.</li>
+                <li><strong>The Stability Blueprint:</strong> Remind the child what stays the same. "Even though we're doing things differently this year, you still have your favorite stockings at both houses."</li>
+                <li><strong>Timestamped Peace of Mind:</strong> If the schedule changes because of a New Brunswick snowstorm, log it in the app. Unalterable records prevent "he said/she said" drama.</li>
+            </ul>
+        `,
+        date: '2025-11-20',
+        category: 'Planning',
+        author,
+    },
+    {
+        slug: 'hammond-river-bridge',
+        title: 'The Hammond River Bridge: The Real "Safe Harbor"',
+        summary: 'You can\'t talk about a "New Brunswick Blueprint" in Quispamsis without the Hammond River Bridge. This is the literal steel backbone of the Valley and the metaphorical bridge for every family navigating "Two Roofs, One Home."',
+        contentHtml: `
+            <p>For Harper, the Hammond River Bridge is the signal. When she sees those steel trusses reflecting off the water, she knows she’s almost "home," whichever roof that happens to be tonight. It’s the two-minute warning to finish her book and transition from "Dad’s World" to "Mom’s World."</p>
+            <p>In the old days, that bridge felt like a gauntlet. But now, her parents treat the bridge like a neutral zone. Because they use <strong>Harper’s Place</strong>, the "business" of parenting stays off the bridge. The <strong>Section 7</strong> expenses for her soccer cleats are already logged. Her <strong>Parenting Time</strong> schedule is synced. By the time the tires hum over the bridge deck, the only thing Harper has to worry about is being a kid.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">Maintaining the Bridge: A Fact-Driven Blueprint</h3>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>The Communication Handshake:</strong> Never use the child to "send a message" across the bridge. Keep all logistical talk in the app.</li>
+                <li><strong>The "Best Interest" Anchor:</strong> Every decision must be anchored in what is best for the child, as required by the New Brunswick Family Law Act.</li>
+                <li><strong>Timestamped Stability:</strong> In NB, "he said/she said" doesn't hold up in court. Use unalterable records to prove you are holding up your end of the parenting time agreement.</li>
+            </ul>
+        `,
+        date: '2025-11-15',
+        category: 'Legal',
+        author,
+    },
+    {
+        slug: 'harpers-bridge-two-roofs-one-bridge',
+        title: 'Two Roofs, One Bridge: Welcome to Harper’s Bridge',
+        summary: 'If Harper’s Place is the home, the Bridge is the connection that makes "Two Roofs, One Home" possible. In the "New Brunswick Blueprint," we don’t just focus on where the child sleeps; we focus on the safe passage between those spaces.',
+        contentHtml: `
+            <p>In New Brunswick, the "Sunday Drive" is a tradition, but for Harper, it’s the most important part of her week. As she crosses the bridge, she isn't thinking about "custody" or "access"—terms the law has rightfully left behind. She’s thinking about how her life feels like one continuous story, even if the setting changes.</p>
+            <p>Because her parents use the <strong>Harper’s Place AI Communication Coach</strong>, the bridge is clear of the "emotional fog" that once made these trips scary. There are no tense conversations at the curb. Instead, there is a "handshake" of data: her medication schedule is logged, her school project is in the backpack, and her parents have already shared a "success note" in the journal about her winning the science fair.</p>
+            <p>Harper’s Bridge isn't made of steel; it’s made of consistency, validation, and a calm presence.</p>
+            <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Fact-Driven Blueprint: Engineering a Strong Bridge</h3>
+            <ul class="list-disc list-inside space-y-2 my-4">
+                <li><strong>Move Away from Old Language:</strong> The law no longer recognizes "custody" and "access"; it focuses on Parenting Time and Decision-Making Responsibility.</li>
+                <li><strong>The Duty to Protect:</strong> Parents have a legal obligation to shield children from conflict. Every argument on the "bridge" is a breach of the child's best interests.</li>
+                <li><strong>Verifiable Transitions:</strong> Judges value timestamped, unalterable records because they prove a parent’s commitment to a stable routine.</li>
+                <li><strong>The Power of Parallelism:</strong> In high-conflict cases, a "bridge" doesn't mean parents have to walk it together. You can use neutral drop-off points to ensure the child never sees a parental dispute.</li>
+            </ul>
+        `,
+        date: '2025-11-12',
+        category: 'Communication',
+        author,
+    },
+    {
         slug: 'what-not-to-do-at-exchanges',
         title: 'The Handover Handbook: 7 Things to Never Do at a Custody Exchange',
         summary: 'Custody exchanges are a major source of stress for children. Learn the key mistakes to avoid to ensure every handover is peaceful, positive, and conflict-free.',
@@ -56,13 +224,13 @@ const posts: Post[] = [
         contentHtml: `
             <p>Anxiety in children, especially during a family separation, often looks like anger, defiance, or withdrawal. Their world feels unpredictable, and they lack the tools to express their big feelings. Your role is to be their safe harbor—the calm, predictable anchor in their emotional storm. Here are five practical ways to help.</p>
             <ol class="list-decimal list-inside space-y-3 my-4">
-                <li><strong>Name the Feeling (and Validate It).</strong> Don\'t say, "Don\'t be sad." Instead, say, "It looks like you\'re feeling sad right now. It\'s okay to feel sad. I\'m here with you." Giving a name to their emotion helps them understand it, and validating it tells them their feelings are acceptable.</li>
+                <li><strong>Name the Feeling (and Validate It).</strong> Don\'t say, "Don\'t be sad." Instead, say, "It looks like you\'re feeling sad right now. It\'s okay to feel sad. I\'m here with you." Naming an emotion helps a child understand it, while validation ensures they feel heard and safe.</li>
                 <li><strong>Create Predictable Routines.</strong> Anxiety thrives in uncertainty. A consistent routine for mornings, evenings, and especially handovers provides a sense of control and safety. The <strong>Smart Calendar</strong> in Harper\'s Place is a perfect tool for establishing and sharing these routines.</li>
                 <li><strong>Focus on What Stays the Same.</strong> While much is changing, many things are not. Remind them: "Even though you\'ll be sleeping at Dad\'s house tonight, you\'ll still have your favorite teddy bear. And I will still be here to talk to on the phone before bed."</li>
                 <li><strong>Practice "Externalizing" the Worry.</strong> For slightly older children, give the anxiety a silly name, like "Mr. Worry Monster." You can say, "Is Mr. Worry Monster telling you silly stories again? What\'s he saying this time?" This separates the child from their anxiety and turns it into a manageable, external thing they can confront.</li>
-                <li><strong>Model Calm Yourself.</strong> Your child takes their emotional cues from you. If you are anxious, they will be too. It is essential to manage your own stress and model calm, confident behavior, especially during exchanges. Our <strong>AI Communication Coach</strong> can help ensure your written communications are also calm and reassuring.</li>
+                <li><strong>Model Calm Yourself.</strong> Your child takes their emotional cues from you. If you are anxious, they will be too. It is essential to manage your own stress and model calm, confident behavior, especially during exchanges. Our <strong>AI Communication Coach</strong> can help ensure your written communications are also calm and reassuring, reducing the need for direct verbal interaction and thus lowering the child's anxiety.</li>
             </ol>
-            <p>By providing consistency, validation, and a calm presence, you teach your child that while feelings of anxiety are normal, they are also manageable. You are building their resilience for life.</p>
+            <p>By providing consistency, validation, and a calm presence, you teach your child that while feelings of anxiety are normal, they are also manageable. This is a key factor judges look for when determining a parent's ability to act in the "child's best interest."</p>
         `,
         date: '2025-11-09',
         category: 'Wellness',
@@ -128,7 +296,7 @@ const posts: Post[] = [
             <p>The <strong>AI Communication Coach</strong> in Harper\'s Place is designed to help you make this shift automatically. Here\'s how it works:</p>
             <blockquote class="border-l-4 border-accent pl-4 py-2 my-4">
                 <p><strong>Before (Hostile):</strong> "Why are you always late?"</p>
-                <p><strong>After (AI-Revised):</strong> "I get worried when the schedule isn\'t met because it disrupts Harper\'s routine. Can we confirm a pickup time that works for you?"</p>
+                <p><strong>After (AI-Revised):</strong> "I get worried when the schedule isn\'t met because it disrupts Harper\'s routine. Can we confirm a time that works for you?"</p>
             </blockquote>
             <p>The revised message is impossible to argue with. It states a feeling ("I get worried"), identifies a child-centered problem ("it disrupts Harper\'s routine"), and proposes a collaborative solution ("Can we confirm a time?").</p>
             <p>Using tools like the AI Communication Coach isn\'t just about being polite; it\'s about actively fulfilling your legal duty to shield your child from conflict and demonstrating your fitness as a parent.</p>
