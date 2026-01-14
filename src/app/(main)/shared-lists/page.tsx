@@ -23,7 +23,7 @@ import { z } from 'zod';
 // --- Schemas & Types ---
 
 const groceryItemSchema = z.object({
-    name: z.string().min(1, 'Item name is required.'),
+    name: z.string().min(1, 'Item name cannot be empty.'),
 });
 
 const wishlistItemSchema = z.object({
@@ -72,15 +72,16 @@ export default function SharedListsPage() {
     );
 
     // --- Grocery List Logic ---
-    const [newGroceryItem, setNewGroceryItem] = React.useState('');
-    const [isAddingGrocery, setIsAddingGrocery] = React.useState(false);
+    const groceryForm = useForm<z.infer<typeof groceryItemSchema>>({
+        resolver: zodResolver(groceryItemSchema),
+        defaultValues: { name: '' },
+    });
 
-    const handleAddGrocery = async () => {
-        if (newGroceryItem.trim() === '' || !user || !db) return;
+    const handleAddGrocery = async (values: z.infer<typeof groceryItemSchema>) => {
+        if (!user || !db) return;
         
-        setIsAddingGrocery(true);
         const newItem = {
-            name: newGroceryItem,
+            name: values.name,
             checked: false,
             userId: user.uid,
             timestamp: serverTimestamp(),
@@ -88,12 +89,10 @@ export default function SharedListsPage() {
 
         try {
             await addDoc(collection(db, `users/${user.uid}/groceries`), newItem);
-            setNewGroceryItem('');
+            groceryForm.reset();
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error adding item.'});
-        } finally {
-            setIsAddingGrocery(false);
         }
     };
     
@@ -193,7 +192,7 @@ export default function SharedListsPage() {
         return (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Card className="flex items-center justify-center border-dashed hover:border-primary hover:text-primary transition-colors cursor-pointer">
+                    <Card className="flex items-center justify-center border-dashed hover:border-primary hover:text-primary transition-colors cursor-pointer min-h-[200px]">
                         <div className="flex flex-col h-full w-full items-center justify-center gap-2 p-8">
                             <PlusCircle className="w-8 h-8 text-muted-foreground" />
                             <span className="text-muted-foreground font-semibold">Add Item</span>
@@ -243,21 +242,29 @@ export default function SharedListsPage() {
                     <CardDescription>Add items we need for the house. Anyone can view and check things off.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex gap-2 mb-4">
-                        <Input 
-                            placeholder="e.g., Bananas"
-                            value={newGroceryItem}
-                            onChange={(e) => setNewGroceryItem(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleAddGrocery()}
-                            disabled={isAddingGrocery}
-                        />
-                        <Button onClick={handleAddGrocery} disabled={isAddingGrocery || newGroceryItem.trim() === ''}>
-                            {isAddingGrocery ? <Loader2 className="animate-spin" /> : <PlusCircle />}
-                            <span>Add</span>
-                        </Button>
-                    </div>
+                    <Form {...groceryForm}>
+                        <form onSubmit={groceryForm.handleSubmit(handleAddGrocery)} className="flex gap-2 mb-4">
+                            <FormField
+                                control={groceryForm.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem className="flex-grow">
+                                        <FormControl>
+                                            <Input placeholder="e.g., Bananas" {...field} disabled={groceryForm.formState.isSubmitting} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="submit" disabled={groceryForm.formState.isSubmitting}>
+                                {groceryForm.formState.isSubmitting ? <Loader2 className="animate-spin" /> : <PlusCircle />}
+                                <span>Add</span>
+                            </Button>
+                        </form>
+                    </Form>
+                    
                     {groceriesLoading ? (
-                        <div className="space-y-3">
+                        <div className="space-y-3 pt-4">
                             {[...Array(5)].map((_, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
                                     <Skeleton className="h-5 w-5 rounded-sm" />
@@ -266,7 +273,7 @@ export default function SharedListsPage() {
                             ))}
                         </div>
                     ) : (
-                        <ul className="space-y-3">
+                        <ul className="space-y-3 pt-4">
                             {groceries && groceries.length > 0 ? groceries.map(item => (
                                 <li key={item.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 group">
                                     <Checkbox 
