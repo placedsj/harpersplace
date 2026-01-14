@@ -23,7 +23,7 @@ export default function BlogPage() {
           <Link href={`/blog/${post.slug}`} key={post.slug} className="group block">
             <Card className="h-full overflow-hidden transition-all duration-300 group-hover:border-primary group-hover:shadow-2xl group-hover:-translate-y-1">
               <CardHeader>
-                <Badge variant="outline" className="w-fit mb-2">{post.category}</Badge>
+                <Badge variant="secondary" className="w-fit mb-2">{post.category}</Badge>
                 <CardTitle className="font-headline text-2xl uppercase group-hover:text-primary transition-colors">{post.title}</CardTitle>
                 <CardDescription className="font-sans text-sm">{format(new Date(post.date), 'PPP')} • by {post.author.name}</CardDescription>
               </CardHeader>

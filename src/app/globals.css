@@ -4,61 +4,61 @@
 
 @layer base {
   :root {
-    --background: 220 13% 97%; /* --light-gray-bg */
-    --foreground: 220 10% 20%; /* --text-color-dark */
+    --background: 220 20% 98%;
+    --foreground: 220 10% 20%;
 
-    --card: 0 0% 100%; /* --white */
+    --card: 0 0% 100%;
     --card-foreground: 220 10% 20%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 10% 20%;
 
-    --primary: 271 76% 53%; /* Electric Purple */
+    --primary: 271 76% 53%;
     --primary-dark: 271 76% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 13% 91%; /* --silver-gray */
+    --secondary: 220 13% 91%;
     --secondary-foreground: 271 76% 53%;
 
     --muted: 220 13% 91%;
-    --muted-foreground: 220 9% 45%; /* --text-color-light */
+    --muted-foreground: 220 9% 45%;
 
-    --accent: 45 100% 50%; /* --pale-yellow-orange */
+    --accent: 330 80% 65%;
     --accent-foreground: 215 100% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 80%; /* --border-color */
+    --border: 220 13% 80%;
     --input: 220 13% 80%;
     --ring: 271 76% 53%;
     --radius: 0.75rem;
 
-    --mom: 330 80% 65%; /* Vibrant Pink/Red */
-    --dad: 210 80% 60%; /* Bright Blue */
+    --mom: 330 80% 65%;
+    --dad: 210 80% 60%;
   }
 
   .dark {
-    --background: 240 10% 4%; /* Near Black */
-    --foreground: 210 40% 98%; 
+    --background: 240 10% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 10% 10%; 
+    --card: 240 10% 10%;
     --card-foreground: 210 40% 98%;
 
     --popover: 240 10% 4%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 271 76% 63%; /* Electric Purple */
+    --primary: 271 76% 63%;
     --primary-dark: 271 76% 70%;
     --primary-foreground: 240 10% 4%;
 
-    --secondary: 240 10% 15%; 
+    --secondary: 240 10% 15%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 240 10% 15%;
     --muted-foreground: 240 5% 65%;
 
-    --accent: 45 100% 50%; 
+    --accent: 330 80% 65%;
     --accent-foreground: 240 10% 4%;
 
     --destructive: 0 63% 31%;
@@ -79,6 +79,9 @@
     }
     body {
         @apply bg-background text-foreground;
+        background-image: radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.05), transparent 30%),
+                          radial-gradient(circle at 80% 30%, hsl(var(--accent) / 0.05), transparent 30%);
+
     }
     h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-headline), sans-serif;
