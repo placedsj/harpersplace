@@ -4,72 +4,72 @@
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 220 10% 20%;
+    --background: 45 33% 97%; /* Warm Sandstone White */
+    --foreground: 25 25% 15%; /* Deep Brown */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 10% 20%;
+    --card: 45 20% 100%;
+    --card-foreground: 25 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 20%;
+    --popover: 45 20% 100%;
+    --popover-foreground: 25 25% 15%;
 
-    --primary: 271 76% 53%;
-    --primary-dark: 271 76% 40%;
+    --primary: 180 55% 40%; /* Deep Teal */
+    --primary-dark: 180 55% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 271 76% 53%;
+    --secondary: 45 20% 94%;
+    --secondary-foreground: 180 55% 40%;
 
-    --muted: 220 13% 91%;
-    --muted-foreground: 220 9% 45%;
+    --muted: 45 20% 94%;
+    --muted-foreground: 45 10% 45%;
 
-    --accent: 330 80% 65%;
-    --accent-foreground: 215 100% 15%;
+    --accent: 25 80% 60%; /* Warm Terracotta */
+    --accent-foreground: 25 25% 15%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 80%;
-    --input: 220 13% 80%;
-    --ring: 271 76% 53%;
+    --border: 45 20% 88%;
+    --input: 45 20% 88%;
+    --ring: 180 55% 40%;
     --radius: 0.75rem;
 
-    --mom: 330 80% 65%;
-    --dad: 210 80% 60%;
+    --mom: 340 70% 60%; /* Softer Pink */
+    --dad: 210 70% 60%; /* Calmer Blue */
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 210 40% 98%;
+    --background: 220 15% 8%; /* Deep Slate Blue */
+    --foreground: 210 30% 96%;
 
-    --card: 240 10% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 15% 12%;
+    --card-foreground: 210 30% 96%;
 
-    --popover: 240 10% 4%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 15% 8%;
+    --popover-foreground: 210 30% 96%;
 
-    --primary: 271 76% 63%;
-    --primary-dark: 271 76% 70%;
-    --primary-foreground: 240 10% 4%;
+    --primary: 180 50% 60%; /* Brighter Teal */
+    --primary-dark: 180 50% 70%;
+    --primary-foreground: 220 15% 8%;
 
-    --secondary: 240 10% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 210 30% 96%;
 
-    --muted: 240 10% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 330 80% 65%;
-    --accent-foreground: 240 10% 4%;
+    --accent: 25 60% 55%; /* Muted Terracotta */
+    --accent-foreground: 220 15% 8%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 10% 20%;
-    --input: 240 10% 20%;
-    --ring: 271 76% 63%;
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 180 50% 60%;
     
-    --mom: 330 80% 65%;
-    --dad: 210 80% 60%;
+    --mom: 340 60% 60%; /* Softer Pink */
+    --dad: 210 60% 60%; /* Calmer Blue */
   }
 }
 
