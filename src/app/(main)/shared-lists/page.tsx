@@ -205,10 +205,10 @@ export default function SharedListsPage() {
                     </DialogHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleAddItem)} className="space-y-4">
-                            <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Item Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="link" render={({ field }) => (<FormItem><FormLabel>Link to Item (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name="imageUrl" render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Item Name</FormLabel><FormControl><Input placeholder="e.g., Lego Set" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="A short description of the item." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="link" render={({ field }) => (<FormItem><FormLabel>Link to Item (Optional)</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="imageUrl" render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input placeholder="https://example.com/image.jpg" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <DialogFooter>
                                 <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                                 <Button type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? <Loader2 className="animate-spin" /> : 'Add Item'}</Button>
