@@ -1,7 +1,7 @@
 
 'use server';
 
-import { generateTransitionSummaryFlow } from '@/ai/flows/generate-transition-summary';
+import { generateTransitionSummaryFlow, TransitionSummaryInput } from '@/ai/flows/generate-transition-summary';
 import { getStorageUploadUrlFlow } from '@/ai/flows/get-storage-upload-url';
 
 type Summary = {
@@ -14,13 +14,14 @@ type Summary = {
     mediaUrls?: string[];
 }
 
-export async function generateSummaryAction(ramble: string, uploadedFiles: string[]): Promise<Summary> {
-    let prompt = ramble;
-    if (uploadedFiles.length > 0) {
-      prompt += `\n\n The user has uploaded ${uploadedFiles.length} photo(s). Briefly mention these images in the summary where relevant. You can refer to them generically (e.g., "the attached photo of the drawing," "the picture from the park").`;
-    }
+export async function generateSummaryAction(formData: Omit<TransitionSummaryInput, 'mediaUrls'>, uploadedFiles: string[]): Promise<Summary> {
     
-    const result = await generateTransitionSummaryFlow(prompt);
+    const inputForFlow: TransitionSummaryInput = {
+        ...formData,
+        mediaUrls: uploadedFiles,
+    };
+    
+    const result = await generateTransitionSummaryFlow(inputForFlow);
     
     const finalResult: Summary = {
         ...result,

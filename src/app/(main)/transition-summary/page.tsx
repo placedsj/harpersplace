@@ -14,12 +14,17 @@ import { Loader2, Clipboard, ClipboardCheck, X, Upload } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import Image from 'next/image';
 import { generateSummaryAction, getSignedUrlAction } from './actions';
+import { Input } from '@/components/ui/input';
 
-const formSchema = z.object({
-  ramble: z.string().min(10, 'Please provide a bit more detail about your day.'),
+const questionnaireSchema = z.object({
+  childsMood: z.string().min(3, 'Please describe their mood.'),
+  keyActivities: z.string().min(5, 'Please list at least one activity.'),
+  healthAndWellnessNotes: z.string().min(5, 'Please provide some health notes.'),
+  upcomingEvents: z.string().min(3, 'Please mention any upcoming items.'),
+  additionalNotes: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof questionnaireSchema>;
 
 type Summary = {
     title: string;
@@ -43,8 +48,14 @@ export default function TransitionSummaryPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { ramble: '' },
+    resolver: zodResolver(questionnaireSchema),
+    defaultValues: {
+      childsMood: '',
+      keyActivities: '',
+      healthAndWellnessNotes: '',
+      upcomingEvents: '',
+      additionalNotes: '',
+    },
   });
   
   const removeImage = (index: number) => {
@@ -92,7 +103,7 @@ export default function TransitionSummaryPage() {
     setIsLoading(true);
     setSummary(null);
     try {
-      const result = await generateSummaryAction(values.ramble, uploadedFiles);
+      const result = await generateSummaryAction(values, uploadedFiles);
       setSummary(result);
     } catch (error) {
       console.error('Failed to generate summary:', error);
@@ -133,7 +144,7 @@ ${summary.fullSummary}
         <div>
             <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Transition Summary Generator</h1>
             <p className="text-muted-foreground mt-1">
-                Turn your notes, and photos, into a clear, neutral summary for your co-parent.
+                Turn your notes and photos into a clear, neutral summary for your co-parent.
             </p>
         </div>
 
@@ -141,26 +152,19 @@ ${summary.fullSummary}
             <Card>
                 <CardHeader>
                     <CardTitle>Your Notes & Photos</CardTitle>
-                    <CardDescription>Ramble on about your day. Add some photos. The AI will handle the rest.</CardDescription>
+                    <CardDescription>Answer the questions below. The AI will handle the rest.</CardDescription>
                 </CardHeader>
                 <CardContent>
                      <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                             <FormField
-                                control={form.control}
-                                name="ramble"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>Your Notes</FormLabel>
-                                    <FormControl>
-                                        <Textarea {...field} rows={10} placeholder="Tell me about your day..." />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                             <FormField control={form.control} name="childsMood" render={({ field }) => (<FormItem><FormLabel>How was Harper's mood today?</FormLabel><FormControl><Input placeholder="e.g., Happy and energetic, a little fussy before nap." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="keyActivities" render={({ field }) => (<FormItem><FormLabel>What were the key activities?</FormLabel><FormControl><Textarea placeholder="e.g., Went to the park, played with Legos, read two books." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="healthAndWellnessNotes" render={({ field }) => (<FormItem><FormLabel>Any health or wellness notes?</FormLabel><FormControl><Textarea placeholder="e.g., Ate all her lunch, took a 2-hour nap, no issues." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="upcomingEvents" render={({ field }) => (<FormItem><FormLabel>What's coming up this week?</FormLabel><FormControl><Input placeholder="e.g., Soccer practice on Tuesday, dentist on Friday." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="additionalNotes" render={({ field }) => (<FormItem><FormLabel>Any other notes? (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., She's really excited about her friend's birthday party next weekend." {...field} /></FormControl><FormMessage /></FormItem>)} />
+
                             <div className="space-y-2">
-                                <FormLabel>Add Photos</FormLabel>
+                                <FormLabel>Add Photos (Optional)</FormLabel>
                                 <div 
                                     className="border-2 border-dashed border-muted rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
                                     onClick={() => fileInputRef.current?.click()}
