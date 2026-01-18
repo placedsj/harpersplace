@@ -41,19 +41,26 @@ const prompt = ai.definePrompt({
         You are a helpful assistant for co-parents.
         Your task is to convert structured notes about a child's day into a professional, neutral, and clear transition summary.
         The summary should be objective and avoid emotional or biased language.
-        Focus on factual information that a co-parent would need to know.
 
-        Use the following structured information to create the summary:
+        Based on the provided notes, generate the following fields:
+        1.  \`title\`: A concise, neutral title (e.g., "Transition Summary for [Date]").
+        2.  \`childsMood\`: A brief, objective description of the child's overall mood.
+        3.  \`activities\`: A bulleted list of key activities.
+        4.  \`healthAndWellness\`: A summary of health notes (meals, naps, etc.).
+        5.  \`headsUpForTheWeek\`: Information about upcoming events.
+        6.  \`fullSummary\`: **Synthesize all the provided information** into a cohesive, paragraph-style summary suitable for a co-parent. Do not just list the points again; weave them into a narrative of the day.
+
+        Use the following structured information:
         - Child's Mood: {{{childsMood}}}
         - Key Activities: {{{keyActivities}}}
         - Health & Wellness Notes: {{{healthAndWellnessNotes}}}
         - Upcoming Events: {{{upcomingEvents}}}
         {{#if additionalNotes}}
-        - Additional Notes: {{{additionalNotes}}}
+        - Additional Notes for context: {{{additionalNotes}}}
         {{/if}}
 
         {{#if mediaUrls}}
-        - The user has uploaded {{mediaUrls.length}} photo(s). Briefly mention these images in the summary where relevant. You can refer to them generically (e.g., "the attached photo of the drawing," "the picture from the park").
+        - The user has uploaded {{mediaUrls.length}} photo(s). If relevant, briefly mention them in the summary (e.g., "As you can see in the photo from the park...").
         {{/if}}
     `,
 });

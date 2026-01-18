@@ -86,9 +86,9 @@ export default function TransitionSummaryPage() {
                 headers: { 'Content-Type': file.type },
             });
             return publicUrl;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload failed for', file.name, error);
-            toast({ variant: 'destructive', title: 'Upload Failed', description: `Could not upload ${file.name}. Please try again.` });
+            toast({ variant: 'destructive', title: 'Upload Failed', description: error.message || `Could not upload ${file.name}. Please try again.` });
             return null;
         }
     });
@@ -105,9 +105,9 @@ export default function TransitionSummaryPage() {
     try {
       const result = await generateSummaryAction(values, uploadedFiles);
       setSummary(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to generate summary:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not generate the summary. Please try again.' });
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not generate the summary. Please try again.' });
     } finally {
       setIsLoading(false);
     }
