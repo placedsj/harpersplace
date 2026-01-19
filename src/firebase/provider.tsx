@@ -5,7 +5,6 @@ import { FirebaseApp } from 'firebase/app';
 import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { FirebaseClientProvider, useFirebaseClient } from './client-provider';
-import { UserProvider } from './auth/use-user';
 
 export interface FirebaseContextValue {
   app: FirebaseApp | null;
@@ -35,9 +34,7 @@ function FirebaseServicesProvider({ children }: { children: ReactNode }) {
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-        <UserProvider>
-            {children}
-        </UserProvider>
+        {children}
     </FirebaseContext.Provider>
   );
 }
@@ -51,10 +48,10 @@ export const useFirebase = () => {
   return context;
 };
 
-export const useAuth = () => {
+export const useFirebaseAuthService = () => {
   const context = useContext(FirebaseContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within a FirebaseProvider');
+    throw new Error('useFirebaseAuthService must be used within a FirebaseProvider');
   }
   return { auth: context.auth };
 };

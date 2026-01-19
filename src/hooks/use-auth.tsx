@@ -1,28 +1,47 @@
 // src/hooks/use-auth.tsx
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut,
-  updateProfile
+  updateProfile,
+  onAuthStateChanged,
+  User
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
-import { useUser, useFirebase } from '@/firebase';
+import { useFirebase } from '@/firebase';
 
-type AuthMethodsType = {
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
   signUp: (firstName: string, lastName: string, email: string, password: string) => Promise<any>;
   logIn: (email: string, password: string) => Promise<any>;
   logOut: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthMethodsType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { auth, db } = useFirebase();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!auth) {
+        setLoading(false);
+        return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
 
   const signUp = async (firstName: string, lastName: string, email: string, password: string) => {
     if (!auth || !db) throw new Error("Firebase not initialized");
@@ -59,6 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const value = {
+    user,
+    loading,
     signUp,
     logIn,
     logOut,
@@ -68,10 +89,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export const useAuth = () => {
-  const userContext = useUser();
   const context = useContext(AuthContext);
-  if (context === undefined || userContext === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider and FirebaseProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return { ...userContext, ...context };
+  return context;
 };
