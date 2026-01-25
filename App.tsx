@@ -7,28 +7,46 @@ import ROICalculator from './components/ROICalculator';
 import CheckoutFlow from './components/CheckoutFlow';
 import LivePowerGauge from './components/LivePowerGauge';
 import Contact from './components/Contact';
+import AdminDashboard from './components/AdminDashboard';
 import { SHOWROOM_ITEMS, PRICING_PACKAGES, TESTIMONIALS } from './constants';
 import { ShedStyleType, ShedSpec, CostEstimate } from './types';
 
-const Header = ({ onHome, onBuild, onHandbook, onCalculator, onContact, onDashboard }: { onHome: () => void, onBuild: () => void, onHandbook: () => void, onCalculator: () => void, onContact: () => void, onDashboard: () => void }) => (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white/5 backdrop-blur-xl px-10 py-5 flex justify-between items-center border-b border-white/10">
-        <div onClick={onHome} className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center font-black text-white text-xl group-hover:rotate-6 transition-transform shadow-lg shadow-orange-900/40">H</div>
-            <div className="flex flex-col leading-none">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Homeowner's</span>
-                <span className="text-sm font-bold text-orange-500 tracking-tighter">HANDBOOK</span>
+const Header = ({ onHome, onBuild, onHandbook, onCalculator, onContact, onDashboard }: { onHome: () => void, onBuild: () => void, onHandbook: () => void, onCalculator: () => void, onContact: () => void, onDashboard: () => void }) => {
+    const [secretCount, setSecretCount] = useState(0);
+
+    return (
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-white/5 backdrop-blur-xl px-10 py-5 flex justify-between items-center border-b border-white/10">
+            <div
+                onClick={() => {
+                    if (secretCount + 1 >= 5) {
+                        onDashboard();
+                        setSecretCount(0);
+                    } else {
+                        setSecretCount(p => p + 1);
+                        if (secretCount === 0) onHome(); // Normal behavior on first click
+                    }
+                }}
+                className="flex items-center gap-3 cursor-pointer group"
+            >
+                <div className={`w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center font-black text-white text-xl transition-transform shadow-lg shadow-orange-900/40 ${secretCount > 0 ? 'scale-90 bg-red-600' : 'group-hover:rotate-6'}`}>
+                    {secretCount > 0 ? '🔒' : 'H'}
+                </div>
+                <div className="flex flex-col leading-none">
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Homeowner's</span>
+                    <span className="text-sm font-bold text-orange-500 tracking-tighter">HANDBOOK</span>
+                </div>
             </div>
-        </div>
-        <div className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
-            <button onClick={onBuild} className="hover:text-white transition-colors uppercase">Services</button>
-            <button onClick={onHandbook} className="hover:text-white transition-colors uppercase">Handbook</button>
-            <button onClick={onCalculator} className="hover:text-white transition-colors uppercase">ROI Tool</button>
-            <button onClick={onDashboard} className="hover:text-white transition-colors uppercase text-cyan-400">My Shed</button>
-            <button onClick={onContact} className="hover:text-white transition-colors uppercase">Contact</button>
-            <button onClick={onBuild} className="bg-orange-600 text-white px-8 py-3 rounded-full hover:bg-orange-500 transition-all shadow-xl shadow-orange-900/20 text-[10px] font-black tracking-widest uppercase">Get Started</button>
-        </div>
-    </nav>
-);
+            <div className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
+                <button onClick={onBuild} className="hover:text-white transition-colors uppercase">Services</button>
+                <button onClick={onHandbook} className="hover:text-white transition-colors uppercase">Handbook</button>
+                <button onClick={onCalculator} className="hover:text-white transition-colors uppercase">ROI Tool</button>
+                <button onClick={onDashboard} className="hover:text-white transition-colors uppercase text-cyan-400">My Shed</button>
+                <button onClick={onContact} className="hover:text-white transition-colors uppercase">Contact</button>
+                <button onClick={onBuild} className="bg-orange-600 text-white px-8 py-3 rounded-full hover:bg-orange-500 transition-all shadow-xl shadow-orange-900/20 text-[10px] font-black tracking-widest uppercase">Get Started</button>
+            </div>
+        </nav>
+    );
+};
 
 const Landing = ({ onStart, onHandbook, onCalculator }: { onStart: () => void, onHandbook: () => void, onCalculator: () => void }) => (
     <div className="min-h-screen bg-[#020617] text-white selection:bg-orange-600">
@@ -153,9 +171,58 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
 );
 
 const App: React.FC = () => {
-    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard'>('landing');
-    const [initialStyle, setInitialStyle] = useState<ShedStyleType>('Modern Studio');
-    const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(null);
+    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin'>('landing');
+
+    // URL State Parsing
+    const getInitialSpecFromURL = (): ShedSpec | null => {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('style')) return null;
+
+        return {
+            style: params.get('style') as ShedStyleType || 'Modern Studio',
+            width: parseInt(params.get('width') || '10'),
+            depth: parseInt(params.get('depth') || '12'),
+            wallColor: params.get('color') ? `#${params.get('color')}` : '#f8fafc',
+            sidingType: (params.get('siding') as any) || 'lap',
+            addons: {
+                ramp: params.get('ramp') === 'true',
+                solar: params.get('solar') === 'true',
+                ac: params.get('ac') === 'true',
+                loft: params.get('loft') === 'true',
+                workbench: params.get('workbench') === 'true',
+                shedLoo: params.get('shedLoo') === 'true'
+            },
+            electricalTier: params.get('power') as any || null,
+            // Defaults
+            material: 'Metal', terrain: 'grass', time: 50, viewMode: 'exterior',
+            renderMode: '3D', inventory: [], landscape: [], pitch: 6, trimColor: '#334155', doorType: 'single'
+        };
+    };
+
+    const initialSpecFromURL = getInitialSpecFromURL();
+    const [initialStyle, setInitialStyle] = useState<ShedStyleType>(initialSpecFromURL?.style || 'Modern Studio');
+    const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(initialSpecFromURL);
+
+    // Auto-launch builder if URL params exist
+    React.useEffect(() => {
+        if (initialSpecFromURL) {
+            setView('builder');
+        }
+    }, []);
+
+    const updateURL = (spec: ShedSpec) => {
+        const params = new URLSearchParams();
+        params.set('style', spec.style);
+        params.set('width', spec.width.toString());
+        params.set('depth', spec.depth.toString());
+        params.set('color', spec.wallColor.replace('#', ''));
+        params.set('siding', spec.sidingType);
+        if (spec.electricalTier) params.set('power', spec.electricalTier);
+        Object.entries(spec.addons).forEach(([k, v]) => {
+            if (v) params.set(k, 'true');
+        });
+        window.history.replaceState({}, '', `?${params.toString()}`);
+    };
     const [currentCosts, setCurrentCosts] = useState<CostEstimate | null>(null);
     const [chatbotOpen, setChatbotOpen] = useState(false);
     const [activeLoads, setActiveLoads] = useState<string[]>(['Idle']);
@@ -190,14 +257,28 @@ const App: React.FC = () => {
                 onHandbook={() => setView('handbook')}
                 onCalculator={() => setView('calculator')}
                 onContact={() => setView('contact')}
-                onDashboard={() => setView('dashboard')}
+                onDashboard={() => setView('admin')}
             />
 
             <div className="w-full h-full overflow-y-auto no-scrollbar scroll-smooth">
                 <div key={view} className="animate-in fade-in duration-700">
                     {view === 'landing' && <Landing onStart={() => setView('showroom')} onHandbook={() => setView('handbook')} onCalculator={() => setView('calculator')} />}
                     {view === 'showroom' && <Showroom onSelect={handleSelect} />}
-                    {view === 'builder' && <EnterpriseBuilder initialStyle={initialStyle} onBack={() => setView('showroom')} onCheckout={handleCheckout} />}
+                    {view === 'builder' && (
+                        <EnterpriseBuilder
+                            initialStyle={initialStyle}
+                            initialSpec={initialSpecFromURL || undefined}
+                            onBack={() => {
+                                window.history.replaceState({}, '', '/');
+                                setView('showroom');
+                            }}
+                            onCheckout={handleCheckout}
+                            onSpecChange={(s) => {
+                                setCurrentSpec(s);
+                                updateURL(s);
+                            }}
+                        />
+                    )}
                     {view === 'handbook' && <Handbook />}
                     {view === 'calculator' && <ROICalculator />}
                     {view === 'contact' && <Contact />}
@@ -210,6 +291,7 @@ const App: React.FC = () => {
                         />
                     )}
                     {view === 'tracking' && <div className="p-40 text-white text-center"><h2 className="text-4xl font-black uppercase mb-4">Order Confirmed!</h2><p className="text-white/40">Your structure is scheduled for fabrication in Saint John.</p></div>}
+                    {view === 'admin' && <AdminDashboard />}
                     {view === 'dashboard' && (
                         <div className="min-h-screen pt-40 pb-20 px-10 bg-[#020617]">
                             <div className="max-w-6xl mx-auto">

@@ -13,6 +13,9 @@
     "@vercel/analytics": "^1.4.1",
     "react-dom": "^19.2.3",
     "react": "^19.2.3"
+    "jspdf": "^4.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

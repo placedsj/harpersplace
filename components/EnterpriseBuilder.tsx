@@ -23,6 +23,8 @@ import {
 } from '../constants';
 import { generateConfigFromPrompt } from '../services/geminiService';
 import LivePowerGauge from './LivePowerGauge';
+import ROICalculator from './ROICalculator';
+import ShareModal from './ShareModal';
 
 const ShowroomCard: React.FC<{ item: typeof SHOWROOM_ITEMS[0], onSelect: () => void }> = ({ item, onSelect }) => (
     <div
@@ -53,8 +55,10 @@ const ShowroomCard: React.FC<{ item: typeof SHOWROOM_ITEMS[0], onSelect: () => v
 
 interface EnterpriseBuilderProps {
     initialStyle?: ShedStyleType;
+    initialSpec?: ShedSpec;
     onBack?: () => void;
     onCheckout?: (spec: ShedSpec, costs: CostEstimate) => void;
+    onSpecChange?: (spec: ShedSpec) => void;
 }
 
 const UNIT_PRICES = {
@@ -67,8 +71,8 @@ const UNIT_PRICES = {
     felt: 25.00
 };
 
-const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'Modern Studio', onBack, onCheckout }) => {
-    const [spec, setSpec] = useState<ShedSpec>({
+const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'Modern Studio', initialSpec, onBack, onCheckout, onSpecChange }) => {
+    const [spec, setSpec] = useState<ShedSpec>(initialSpec || {
         style: initialStyle,
         material: initialStyle === 'Modern Studio' ? 'Metal' : 'Vinyl',
         terrain: 'grass',
@@ -88,6 +92,10 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         electricalTier: null
     });
 
+    useEffect(() => {
+        if (onSpecChange) onSpecChange(spec);
+    }, [spec, onSpecChange]);
+
     const [weather, setWeather] = useState<WeatherType>('clear');
     const [activePanelTab, setActivePanelTab] = useState<'lunai' | 'structure' | 'metrics'>('lunai');
     const [chat, setChat] = useState<ChatMessage[]>([
@@ -95,8 +103,32 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
     ]);
     const [isThinking, setIsThinking] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
-    const [showShowroom, setShowShowroom] = useState(!initialStyle);
+    const [showShowroom, setShowShowroom] = useState(!initialStyle && !initialSpec);
     const [focalPoint, setFocalPoint] = useState<string | null>(null);
+    const [showROI, setShowROI] = useState(false);
+    const [showShare, setShowShare] = useState(false);
+    const [showNudge, setShowNudge] = useState(false);
+    const idleTimer = useRef<NodeJS.Timeout | null>(null);
+
+    // Smart Nudge Logic
+    useEffect(() => {
+        const resetTimer = () => {
+            if (idleTimer.current) clearTimeout(idleTimer.current);
+            idleTimer.current = setTimeout(() => {
+                if (!showROI) setShowNudge(true);
+            }, 30000); // 30 seconds idle
+        };
+
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('keypress', resetTimer);
+        resetTimer();
+
+        return () => {
+            if (idleTimer.current) clearTimeout(idleTimer.current);
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('keypress', resetTimer);
+        };
+    }, [showROI]);
 
     useEffect(() => {
         if (focalPoint) {
@@ -447,6 +479,22 @@ Total: $${costs.total.toLocaleString()}
                                     ))}
                                 </div>
                             </section>
+
+                            <section>
+                                <button
+                                    onClick={() => {
+                                        setShowROI(true);
+                                        setShowNudge(false);
+                                    }}
+                                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white shadow-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform group"
+                                >
+                                    <span className="text-xl group-hover:rotate-12 transition-transform">💰</span>
+                                    <div className="flex flex-col items-start leading-none">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400">Smart Finance</span>
+                                        <span className="text-sm font-bold">Stop Renting Storage</span>
+                                    </div>
+                                </button>
+                            </section>
                         </div>
                     )}
                 </div>
@@ -496,7 +544,10 @@ Total: $${costs.total.toLocaleString()}
 
             <div className="flex-1 relative flex flex-col items-center justify-center overflow-hidden z-10">
                 <div className="absolute top-8 left-12 right-12 z-50 flex justify-between items-start">
-                    <button onClick={onBack} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors bg-white/5 backdrop-blur px-6 py-2 rounded-full border border-white/10">← BACK</button>
+                    <div className="flex gap-4">
+                        <button onClick={onBack} className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors bg-white/5 backdrop-blur px-6 py-2 rounded-full border border-white/10">← BACK</button>
+                        <button onClick={() => setShowShare(true)} className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 hover:text-white transition-colors bg-cyan-500/10 backdrop-blur px-6 py-2 rounded-full border border-cyan-500/20 hover:bg-cyan-500">SHARE</button>
+                    </div>
                     <div className="flex items-center gap-2 bg-black/40 backdrop-blur-2xl border border-white/10 p-1.5 rounded-full">
                         {(['3D', 'BLUEPRINT'] as RenderMode[]).map(m => (
                             <button key={m} onClick={() => setSpec(s => ({ ...s, renderMode: m }))} className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${spec.renderMode === m ? 'bg-white text-slate-900 shadow-xl' : 'text-slate-500 hover:text-white'}`}>{m}</button>
@@ -512,6 +563,41 @@ Total: $${costs.total.toLocaleString()}
 
                 <ShedVisualizer spec={spec} weather={weather} focalFeature={focalPoint} />
             </div>
+
+            {showROI && (
+                <div className="fixed inset-0 z-[250] bg-[#020617] animate-in slide-in-from-bottom-10 fade-in duration-500">
+                    <ROICalculator onClose={() => setShowROI(false)} />
+                </div>
+            )}
+
+            {showShare && (
+                <ShareModal
+                    onClose={() => setShowShare(false)}
+                    url={window.location.href}
+                />
+            )}
+
+            {showNudge && (
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
+                    <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-2xl border border-white/10 flex items-center gap-6 max-w-sm">
+                        <div className="w-12 h-12 bg-cyan-500/10 rounded-full flex items-center justify-center text-2xl">💡</div>
+                        <div>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1">Investment Tip</div>
+                            <p className="text-sm font-medium leading-tight text-white/80">Comparing this to a storage unit? See how fast it pays for itself.</p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setShowROI(true);
+                                setShowNudge(false);
+                            }}
+                            className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-cyan-400 transition-colors"
+                        >
+                            Calc ROI
+                        </button>
+                        <button onClick={() => setShowNudge(false)} className="text-white/20 hover:text-white text-xl">×</button>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };

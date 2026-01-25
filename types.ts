@@ -88,6 +88,7 @@ export interface ShedSpec {
   doorType: DoorType;
   width: number;
   depth: number;
+  electricalTier: '20A' | '30A' | 'offgrid' | null;
 }
 
 export interface ChatMessage {
