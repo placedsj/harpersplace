@@ -14,6 +14,7 @@ interface CheckoutFlowProps {
 const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onComplete }) => {
   const [step, setStep] = useState<'review' | 'delivery' | 'payment' | 'confirm'>('review');
   const [showPowerOptions, setShowPowerOptions] = useState(false);
+  const [shedCare, setShedCare] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -88,6 +89,15 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
         }
       }
     });
+
+    if (shedCare) {
+      y += 10;
+      doc.setTextColor(0, 100, 0);
+      doc.setFont("helvetica", "bold");
+      doc.text("ShedCare Subscription (Monthly)", 20, y);
+      doc.text("$19.00/mo", 170, y, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
+    }
 
     y += 10;
     doc.setDrawColor(200, 200, 200);
@@ -207,6 +217,27 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
                         <p className="text-xs text-orange-700/80 font-medium">Your location qualifies for free localized delivery within the Saint John city limits.</p>
                       </div>
                     </div>
+                  </div>
+
+                  {/* ShedCare Subscription */}
+                  <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer ${shedCare ? 'bg-green-50 border-green-500' : 'bg-white border-slate-100 hover:border-green-200'}`} onClick={() => setShedCare(!shedCare)}>
+                      <div className="flex justify-between items-start">
+                          <div className="flex items-start gap-4">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg ${shedCare ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                  {shedCare ? '✓' : '+'}
+                              </div>
+                              <div>
+                                  <h4 className="text-lg font-black uppercase tracking-tight text-slate-900">ShedCare™ Protection</h4>
+                                  <p className="text-xs text-slate-500 font-medium max-w-sm mt-1">
+                                      Proactive maintenance, 24/7 power monitoring alerts, and priority storm response.
+                                  </p>
+                              </div>
+                          </div>
+                          <div className="text-right">
+                              <div className="text-xl font-black text-slate-900">$19<span className="text-xs text-slate-400 font-bold">/mo</span></div>
+                              {shedCare && <div className="text-[10px] font-black uppercase text-green-600 tracking-widest mt-1">Active</div>}
+                          </div>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -346,6 +377,12 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
                   <span className="font-bold text-slate-500">Tax (HST)</span>
                   <span className="font-black font-mono">${Math.ceil(costs.total * 0.15).toLocaleString()}</span>
                 </div>
+                {shedCare && (
+                    <div className="flex justify-between text-sm py-3 border-t border-slate-100 border-dashed">
+                        <span className="font-bold text-green-600">ShedCare™ (Monthly)</span>
+                        <span className="font-black font-mono text-green-600">$19.00</span>
+                    </div>
+                )}
               </div>
               <div className="pt-8 border-t border-slate-100">
                 <div className="flex justify-between items-end mb-8">

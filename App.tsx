@@ -22,6 +22,8 @@ import PaymentSuccessPage from './components/PaymentSuccessPage';
 import BossQuarters from './components/StaffDashboard';
 import ShedLanding from './components/ShedLanding';
 import RoofingLanding from './components/RoofingLanding';
+import PowerLanding from './components/PowerLanding';
+import ElectricianPortal from './components/ElectricianPortal';
 
 import { SHOWROOM_ITEMS, PRICING_PACKAGES, TESTIMONIALS } from './constants';
 import { ShedStyleType, ShedSpec, CostEstimate } from './types';
@@ -109,7 +111,7 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
 );
 
 const App: React.FC = () => {
-    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'blog' | 'blog-post'>('landing');
+    const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'blog' | 'blog-post' | 'power' | 'partners'>('landing');
     const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
     // URL State Parsing
@@ -147,6 +149,15 @@ const App: React.FC = () => {
         if (initialSpecFromURL) {
             setView('builder');
         }
+
+        const handlePowerNav = () => setView('power');
+        const handlePartnerNav = () => setView('partners');
+        window.addEventListener('nav-power', handlePowerNav);
+        window.addEventListener('nav-partners', handlePartnerNav);
+        return () => {
+            window.removeEventListener('nav-power', handlePowerNav);
+            window.removeEventListener('nav-partners', handlePartnerNav);
+        };
     }, []);
 
     const updateURL = (spec: ShedSpec) => {
@@ -227,6 +238,11 @@ const App: React.FC = () => {
                     {view === 'handbook' && <Handbook />}
                     {view === 'calculator' && <ROICalculator />}
                     {view === 'contact' && <Contact />}
+                    {view === 'handbook' && <Handbook />}
+                    {view === 'calculator' && <ROICalculator />}
+                    {view === 'contact' && <Contact />}
+                    {view === 'power' && <PowerLanding onBack={() => setView('landing')} onBuild={() => setView('showroom')} />}
+                    {view === 'partners' && <ElectricianPortal onBack={() => setView('landing')} />}
                     {view === 'blog' && (
                         <BlogIndex
                             onHome={() => setView('landing')}
@@ -308,7 +324,10 @@ const App: React.FC = () => {
                                             <div className="space-y-2">
                                                 <div className="text-white font-black text-xs">ID: SHED_802_NB</div>
                                                 <div className="text-slate-500 text-[10px] font-bold">Firmware: v1.2.0-placed</div>
-                                                <div className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-2">Connected via Local Wi-Fi</div>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                                    <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Connected (Signal: -42dBm)</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

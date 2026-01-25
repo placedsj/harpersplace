@@ -481,11 +481,17 @@ Total: $${costs.total.toLocaleString()}
                                             onClick={() => setSpec(s => ({ ...s, electricalTier: tier.id as any }))}
                                             className={`w-full p-5 rounded-2xl border flex items-center justify-between transition-all ${spec.electricalTier === tier.id ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' : 'border-white/10 text-slate-500 hover:bg-white/5'}`}
                                         >
-                                            <div className="flex flex-col items-start">
-                                                <span className="text-[10px] font-black uppercase">{tier.name}</span>
-                                                <span className="text-[9px] opacity-60">{tier.desc}</span>
+                                            <div className="flex flex-col items-start w-full">
+                                                <div className="flex justify-between w-full mb-1">
+                                                    <span className="text-[10px] font-black uppercase flex items-center gap-2">
+                                                        {tier.name}
+                                                        {tier.id === '30A' && <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">POPULAR</span>}
+                                                        {tier.id === 'offgrid' && <span className="bg-green-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">ECO</span>}
+                                                    </span>
+                                                    <span className="text-[10px] font-black">{tier.cost > 0 ? `+$${tier.cost}` : 'FREE'}</span>
+                                                </div>
+                                                <span className="text-[9px] opacity-60 text-left">{tier.desc}</span>
                                             </div>
-                                            <span className="text-[10px] font-black">{tier.cost > 0 ? `+$${tier.cost}` : 'FREE'}</span>
                                         </button>
                                     ))}
                                 </div>
