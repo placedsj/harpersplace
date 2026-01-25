@@ -12,6 +12,12 @@ import ExteriorInspectionPage from './components/ExteriorInspectionPage';
 import BlogIndex from './components/BlogIndex';
 import BlogPost from './components/BlogPost';
 import PaymentPage from './components/PaymentPage';
+import { Amplify } from 'aws-amplify';
+import outputs from './amplify_outputs.json';
+import '@aws-amplify/ui-react/styles.css';
+
+Amplify.configure(outputs);
+
 import PaymentSuccessPage from './components/PaymentSuccessPage';
 import BossQuarters from './components/StaffDashboard';
 import ShedLanding from './components/ShedLanding';
