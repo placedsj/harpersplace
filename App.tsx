@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import EnterpriseBuilder from './components/EnterpriseBuilder';
 import Handbook from './components/Handbook';
 import ROICalculator from './components/ROICalculator';
@@ -300,6 +301,7 @@ const App: React.FC = () => {
                     <span className="group-hover:rotate-12 transition-transform uppercase font-black text-xs">Help</span>
                 </button>
             </div>
+            <SpeedInsights />
         </main>
     );
 };
