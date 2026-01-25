@@ -1,6 +1,6 @@
 export type BrandId = 'HARPERS_PLACE' | 'PAULS_ROOFING';
 
-export const CURRENT_BRAND: BrandId = 'PAULS_ROOFING'; // Change this line to switch brands
+export const CURRENT_BRAND: BrandId = 'HARPERS_PLACE'; // Change this line to switch brands
 
 export const BRAND_CONFIG = {
     HARPERS_PLACE: {
