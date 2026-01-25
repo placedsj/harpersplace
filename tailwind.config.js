@@ -4,7 +4,7 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
         "./components/**/*.{js,ts,jsx,tsx}",
-        "./**/*.{js,ts,jsx,tsx}" // Catch-all for root files like App.tsx
+        "./*.{js,ts,jsx,tsx}"
     ],
     theme: {
         extend: {
