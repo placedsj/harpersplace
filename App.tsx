@@ -171,8 +171,57 @@ const Showroom = ({ onSelect }: { onSelect: (style: ShedStyleType) => void }) =>
 
 const App: React.FC = () => {
     const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin'>('landing');
-    const [initialStyle, setInitialStyle] = useState<ShedStyleType>('Modern Studio');
-    const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(null);
+
+    // URL State Parsing
+    const getInitialSpecFromURL = (): ShedSpec | null => {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('style')) return null;
+
+        return {
+            style: params.get('style') as ShedStyleType || 'Modern Studio',
+            width: parseInt(params.get('width') || '10'),
+            depth: parseInt(params.get('depth') || '12'),
+            wallColor: params.get('color') ? `#${params.get('color')}` : '#f8fafc',
+            sidingType: (params.get('siding') as any) || 'lap',
+            addons: {
+                ramp: params.get('ramp') === 'true',
+                solar: params.get('solar') === 'true',
+                ac: params.get('ac') === 'true',
+                loft: params.get('loft') === 'true',
+                workbench: params.get('workbench') === 'true',
+                shedLoo: params.get('shedLoo') === 'true'
+            },
+            electricalTier: params.get('power') as any || null,
+            // Defaults
+            material: 'Metal', terrain: 'grass', time: 50, viewMode: 'exterior',
+            renderMode: '3D', inventory: [], landscape: [], pitch: 6, trimColor: '#334155', doorType: 'single'
+        };
+    };
+
+    const initialSpecFromURL = getInitialSpecFromURL();
+    const [initialStyle, setInitialStyle] = useState<ShedStyleType>(initialSpecFromURL?.style || 'Modern Studio');
+    const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(initialSpecFromURL);
+
+    // Auto-launch builder if URL params exist
+    React.useEffect(() => {
+        if (initialSpecFromURL) {
+            setView('builder');
+        }
+    }, []);
+
+    const updateURL = (spec: ShedSpec) => {
+        const params = new URLSearchParams();
+        params.set('style', spec.style);
+        params.set('width', spec.width.toString());
+        params.set('depth', spec.depth.toString());
+        params.set('color', spec.wallColor.replace('#', ''));
+        params.set('siding', spec.sidingType);
+        if (spec.electricalTier) params.set('power', spec.electricalTier);
+        Object.entries(spec.addons).forEach(([k, v]) => {
+            if (v) params.set(k, 'true');
+        });
+        window.history.replaceState({}, '', `?${params.toString()}`);
+    };
     const [currentCosts, setCurrentCosts] = useState<CostEstimate | null>(null);
     const [chatbotOpen, setChatbotOpen] = useState(false);
     const [activeLoads, setActiveLoads] = useState<string[]>(['Idle']);
@@ -214,7 +263,21 @@ const App: React.FC = () => {
                 <div key={view} className="animate-in fade-in duration-700">
                     {view === 'landing' && <Landing onStart={() => setView('showroom')} onHandbook={() => setView('handbook')} onCalculator={() => setView('calculator')} />}
                     {view === 'showroom' && <Showroom onSelect={handleSelect} />}
-                    {view === 'builder' && <EnterpriseBuilder initialStyle={initialStyle} onBack={() => setView('showroom')} onCheckout={handleCheckout} />}
+                    {view === 'builder' && (
+                        <EnterpriseBuilder
+                            initialStyle={initialStyle}
+                            initialSpec={initialSpecFromURL || undefined}
+                            onBack={() => {
+                                window.history.replaceState({}, '', '/');
+                                setView('showroom');
+                            }}
+                            onCheckout={handleCheckout}
+                            onSpecChange={(s) => {
+                                setCurrentSpec(s);
+                                updateURL(s);
+                            }}
+                        />
+                    )}
                     {view === 'handbook' && <Handbook />}
                     {view === 'calculator' && <ROICalculator />}
                     {view === 'contact' && <Contact />}

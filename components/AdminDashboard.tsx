@@ -14,9 +14,44 @@ const COLUMNS = [
     { id: 'ready', label: 'Ready for Delivery', color: 'bg-green-500' }
 ];
 
+const LeadDetailModal = ({ lead, onClose }: { lead: any, onClose: () => void }) => (
+    <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-10 animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-[#0f172a] border border-white/10 w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl relative overflow-hidden">
+            <button onClick={onClose} className="absolute top-8 right-8 text-white/40 hover:text-white text-2xl">×</button>
+            <div className="mb-10">
+                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-2 block">Lead Spec # {lead.id}</span>
+                <h2 className="text-4xl font-black text-white">{lead.name}</h2>
+                <div className="flex gap-4 mt-4">
+                    <span className="bg-white/5 px-4 py-2 rounded-full text-[10px] font-bold uppercase text-slate-400 border border-white/10">{lead.date}</span>
+                    <span className="bg-green-500/20 px-4 py-2 rounded-full text-[10px] font-black uppercase text-green-400 border border-green-500/30">Valor: ${lead.value.toLocaleString()}</span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 mb-10">
+                <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                    <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-4">Structure</h4>
+                    <div className="text-xl font-bold text-white mb-1">{lead.model}</div>
+                    <div className="text-sm text-slate-400">Standard Framing</div>
+                </div>
+                <div className="bg-white/5 p-6 rounded-3xl border border-white/5">
+                    <h4 className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-4">Contact</h4>
+                    <div className="text-lg font-bold text-white mb-1">user@{lead.id.toLowerCase()}.com</div>
+                    <div className="text-sm text-slate-400">+1 (506) 555-0123</div>
+                </div>
+            </div>
+
+            <div className="flex gap-4">
+                <button className="flex-1 bg-cyan-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-cyan-500 transition-colors">Print Work Order</button>
+                <button className="flex-1 bg-white/5 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-white/10 transition-colors border border-white/10">Email Client</button>
+            </div>
+        </div>
+    </div>
+);
+
 const AdminDashboard: React.FC = () => {
     const [leads, setLeads] = useState(MOCK_LEADS);
     const [draggedItem, setDraggedItem] = useState<string | null>(null);
+    const [selectedLead, setSelectedLead] = useState<any>(null);
 
     const onDragStart = (e: React.DragEvent, id: string) => {
         setDraggedItem(id);
@@ -86,7 +121,8 @@ const AdminDashboard: React.FC = () => {
                                         key={lead.id}
                                         draggable
                                         onDragStart={(e) => onDragStart(e, lead.id)}
-                                        className="bg-[#1e293b] p-6 rounded-3xl border border-white/5 hover:border-cyan-500/50 cursor-grab active:cursor-grabbing shadow-xl transition-all group"
+                                        onClick={() => setSelectedLead(lead)}
+                                        className="bg-[#1e293b] p-6 rounded-3xl border border-white/5 hover:border-cyan-500/50 cursor-grab active:cursor-grabbing shadow-xl transition-all group hover:scale-[1.02]"
                                     >
                                         <div className="flex justify-between items-start mb-4">
                                             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{lead.id}</span>
@@ -105,6 +141,8 @@ const AdminDashboard: React.FC = () => {
                     ))}
                 </div>
             </div>
+
+            {selectedLead && <LeadDetailModal lead={selectedLead} onClose={() => setSelectedLead(null)} />}
         </div>
     );
 };
