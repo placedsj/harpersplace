@@ -74,8 +74,8 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
     y += 10;
 
     if (spec.electricalTier) {
-      doc.text(`Power Kit: ${spec.electricalTier === '20A' ? '20A Weekender' : '30A Smart'}`, 20, y);
-      doc.text(`$${(spec.electricalTier === '20A' ? 300 : 900).toLocaleString()}`, 170, y, { align: 'right' });
+      doc.text(`Power Kit: ${spec.electricalTier === '20A' ? '20A Creator' : '30A Comfort'}`, 20, y);
+      doc.text(`$${(spec.electricalTier === '20A' ? 1200 : 1850).toLocaleString()}`, 170, y, { align: 'right' });
       y += 10;
     }
 
@@ -95,7 +95,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
       doc.setTextColor(0, 100, 0);
       doc.setFont("helvetica", "bold");
       doc.text("ShedCare Subscription (Monthly)", 20, y);
-      doc.text("$19.00/mo", 170, y, { align: 'right' });
+      doc.text("$29.00/mo", 170, y, { align: 'right' });
       doc.setTextColor(0, 0, 0);
     }
 
@@ -193,9 +193,9 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
                     ) : (
                       <div className="space-y-3">
                         {[
-                          { t: "20A Weekender", d: "Lights, laptop, light tools", p: "+$300" },
-                          { t: "30A Workshop", d: "Heater, PC, serious tools, no trenching", p: "+$900" },
-                          { t: "50A Guest House", d: "Heavy heating/cooling (Requires Permit)", p: "+$1,500" }
+                          { t: "20A Creator Kit", d: "Lights, laptop, light tools", p: "+$1,200" },
+                          { t: "30A Comfort Kit", d: "Heater, PC, serious tools, fully active", p: "+$1,850" },
+                          { t: "50A Pro Service", d: "Heavy heating/cooling (Requires Permit)", p: "+$3,500" }
                         ].map((opt, i) => (
                           <button key={i} className="w-full flex justify-between items-center p-4 bg-white border border-slate-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all text-left group">
                             <div>
@@ -221,23 +221,23 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
 
                   {/* ShedCare Subscription */}
                   <div className={`p-8 rounded-[2rem] border-2 transition-all cursor-pointer ${shedCare ? 'bg-green-50 border-green-500' : 'bg-white border-slate-100 hover:border-green-200'}`} onClick={() => setShedCare(!shedCare)}>
-                      <div className="flex justify-between items-start">
-                          <div className="flex items-start gap-4">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg ${shedCare ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                  {shedCare ? '✓' : '+'}
-                              </div>
-                              <div>
-                                  <h4 className="text-lg font-black uppercase tracking-tight text-slate-900">ShedCare™ Protection</h4>
-                                  <p className="text-xs text-slate-500 font-medium max-w-sm mt-1">
-                                      Proactive maintenance, 24/7 power monitoring alerts, and priority storm response.
-                                  </p>
-                              </div>
-                          </div>
-                          <div className="text-right">
-                              <div className="text-xl font-black text-slate-900">$19<span className="text-xs text-slate-400 font-bold">/mo</span></div>
-                              {shedCare && <div className="text-[10px] font-black uppercase text-green-600 tracking-widest mt-1">Active</div>}
-                          </div>
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-start gap-4">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg ${shedCare ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                          {shedCare ? '✓' : '+'}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-black uppercase tracking-tight text-slate-900">ShedCare™ Protection</h4>
+                          <p className="text-xs text-slate-500 font-medium max-w-sm mt-1">
+                            Proactive maintenance, 24/7 power monitoring alerts, and priority storm response.
+                          </p>
+                        </div>
                       </div>
+                      <div className="text-right">
+                        <div className="text-xl font-black text-slate-900">$19<span className="text-xs text-slate-400 font-bold">/mo</span></div>
+                        {shedCare && <div className="text-[10px] font-black uppercase text-green-600 tracking-widest mt-1">Active</div>}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -378,10 +378,10 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ spec, costs, onCancel, onCo
                   <span className="font-black font-mono">${Math.ceil(costs.total * 0.15).toLocaleString()}</span>
                 </div>
                 {shedCare && (
-                    <div className="flex justify-between text-sm py-3 border-t border-slate-100 border-dashed">
-                        <span className="font-bold text-green-600">ShedCare™ (Monthly)</span>
-                        <span className="font-black font-mono text-green-600">$19.00</span>
-                    </div>
+                  <div className="flex justify-between text-sm py-3 border-t border-slate-100 border-dashed">
+                    <span className="font-bold text-green-600">ShedCare™ (Monthly)</span>
+                    <span className="font-black font-mono text-green-600">$29.00</span>
+                  </div>
                 )}
               </div>
               <div className="pt-8 border-t border-slate-100">

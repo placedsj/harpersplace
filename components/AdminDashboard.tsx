@@ -95,7 +95,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-2">LUNAI Insight</h3>
                     <p className="text-lg font-medium text-white/80 leading-relaxed max-w-lg">
-                        "80% of customers this week asked about the <span className="text-white font-bold">30A Power Kit</span>. Suggest bundling it with the Home Office package for Q2."
+                        "The new <span className="text-white font-bold">$1,850 Comfort Kit</span> has seen a 45% lift in conversion since prioritizing the 'Plug-In Lifestyle' messaging. ShedCare adoption is at 60%."
                     </p>
                 </div>
             </div>

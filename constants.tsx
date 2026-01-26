@@ -69,11 +69,12 @@ export const COLOR_PALETTE = [
 
 export const UPGRADES: UpgradeItem[] = [
     { id: 'ramp', name: 'Aluminium Ramp', cost: 450, icon: '🪜', description: 'Heavy-duty 4ft ramp for easy mower access.' },
-    { id: 'solar', name: 'Solar Energy Kit', cost: 1200, icon: '☀️', description: 'Off-grid lighting and power station.' },
-    { id: 'ac', name: 'Climate Control', cost: 850, icon: '❄️', description: 'Through-wall AC/Heating unit for workshops.' },
+    { id: 'power_20a', name: '20A Creator Kit', cost: 1200, icon: '⚡', description: 'Power for laptop, lights, & fan. Professional hookup included.' },
+    { id: 'power_30a', name: '30A Comfort Kit', cost: 1850, icon: '🔥', description: 'Heat-pump ready. Integrated sub-panel + sub-service connection.' },
+    { id: 'power_50a', name: '50A Pro Service', cost: 3500, icon: '🛠️', description: 'Full workshop power. EV-capable connection. Permits included.' },
+    { id: 'shedcare', name: 'ShedCare (Year 1)', cost: 299, icon: '🛡️', description: 'Bi-annual professional maintenance & foundation level check.' },
     { id: 'loft', name: 'Lofted Storage', cost: 600, icon: '📦', description: 'Built-in overhead storage mezzanine.' },
-    { id: 'workbench', name: 'Smart Workbench', cost: 350, icon: '🛠️', description: '8ft custom workbench with tool storage.' },
-    { id: 'shedLoo', name: 'The "Loo" Edition', cost: 1500, icon: '🚽', description: 'Self-contained composting system with privacy screen.' }
+    { id: 'workbench', name: 'Smart Workbench', cost: 350, icon: '🛠️', description: '8ft custom workbench with tool storage.' }
 ];
 
 export const TERRAINS: TerrainData[] = [
@@ -117,9 +118,9 @@ export const calculateMaterials = (w: number, d: number, h: number, pitch: numbe
 };
 
 export const PRICING_PACKAGES: PricingPackage[] = [
-    { id: 'basic', name: 'Shell Only', price: '$4,630', description: 'Base structure with standard door and window.', features: ['2x4 Framework', 'OSB Floor', 'Asphalt Shingles'] },
-    { id: 'pro', name: 'Workshop Pro', price: '$7,975', description: 'Fully insulated with electrical prep and workbench.', features: ['R12 Insulation', 'Smart Panel Siding', 'Double Doors', 'Lofted Mezzanine'], isPopular: true },
-    { id: 'elite', name: 'Superstar Elite', price: '$14,950', description: 'Maximum volume (12x28) with premium architectural finishes.', features: ['Huge 336sqft Floor', 'French Glass Doors', 'Solar Power Kit', 'Climate Prep'] }
+    { id: 'basic', name: 'Raw Shell', price: '$4,630', description: 'Weather-tight structure ready for your DIY finish.', features: ['2x4 Framework', 'OSB Floor', 'Asphalt Shingles'] },
+    { id: 'pro', name: 'Office Ready', price: '$8,950', description: 'The "Plug-in" flagship. Fully powered, insulated, and active.', features: ['R12 Insulation', '20A Power Kit', 'Smart Panel Siding', 'ShedCare Year 1'], isPopular: true },
+    { id: 'elite', name: 'Command Elite', price: '$15,950', description: 'Maximum volume (12x28) with 30A Climate Kit and architectural finish.', features: ['Huge 336sqft Floor', '30A Workshop Kit', 'French Glass Doors', 'Heat Pump Prep'] }
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
