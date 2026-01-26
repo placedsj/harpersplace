@@ -13,7 +13,11 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
     const isBlueprint = spec.renderMode === 'BLUEPRINT';
     const terrainData = TERRAINS.find(t => t.id === spec.terrain) || TERRAINS[0];
 
-    // SCALE ENGINE: 1ft = 15 units
+    // Seasonal Logic
+    const currentMonth = new Date().getMonth(); // 0-11
+    const isWinter = currentMonth <= 2 || currentMonth >= 10; // Nov - Mar
+    const effectiveWeather = weather === 'clear' && isWinter ? 'snow' : weather;
+
     const sW = spec.width * 15;
     const sD = spec.depth * 15;
     const wTop = -120;
@@ -79,7 +83,7 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
 
     const wallColor = isBlueprint ? '#1e3a8a' : spec.wallColor;
     const trimColor = isBlueprint ? 'white' : spec.trimColor;
-    const roofColor = isBlueprint ? 'none' : (weather === 'snow' ? '#f8fafc' : '#1e293b');
+    const roofColor = isBlueprint ? 'none' : (effectiveWeather === 'snow' ? '#e2e8f0' : '#1e293b');
     const lineColor = isBlueprint ? 'white' : '#020617';
 
     const env = useMemo(() => {
@@ -149,11 +153,19 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
             >
                 {!isBlueprint && (
                     <g transform={`skewX(${env.shadowSkew}) translate(${env.shadowSkew * -1.5}, 0)`}>
-                        <ellipse cx="0" cy="10" rx={sW / 1.5} ry="35" fill="#000" opacity={weather === 'clear' ? "0.4" : "0.15"} filter="url(#blurShadow)" />
+                        <ellipse cx="0" cy="10" rx={sW / 1.5} ry="35" fill="#000" opacity={effectiveWeather === 'clear' ? "0.4" : "0.15"} filter="url(#blurShadow)" />
                     </g>
                 )}
 
-                {!isBlueprint && <path d="M-220 0 L0 80 L220 0 L0 -80 Z" fill={terrainData.color} className="transition-colors duration-1000" />}
+                {!isBlueprint && <path d="M-220 0 L0 80 L220 0 L0 -80 Z" fill={effectiveWeather === 'snow' ? '#f1f5f9' : terrainData.color} className="transition-colors duration-1000" />}
+
+                {effectiveWeather === 'snow' && !isBlueprint && (
+                    <g opacity="0.6">
+                        <circle cx="-150" cy="40" r="2" fill="white" className="animate-pulse" />
+                        <circle cx="120" cy="-20" r="3" fill="white" className="animate-bounce" style={{ animationDuration: '3s' }} />
+                        <circle cx="-80" cy="-60" r="2" fill="white" className="animate-pulse" style={{ animationDelay: '1s' }} />
+                    </g>
+                )}
 
                 {renderQueue.map((obj, index) => {
                     if (obj.type === 'shed') {
