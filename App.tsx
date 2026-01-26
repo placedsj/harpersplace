@@ -133,9 +133,13 @@ const App: React.FC = () => {
                 ac: params.get('ac') === 'true',
                 loft: params.get('loft') === 'true',
                 workbench: params.get('workbench') === 'true',
-                shedLoo: params.get('shedLoo') === 'true'
+                shedLoo: params.get('shedLoo') === 'true',
+                power_20a: params.get('power_20a') === 'true',
+                power_30a: params.get('power_30a') === 'true',
+                power_50a: params.get('power_50a') === 'true',
+                shedcare: params.get('shedcare') === 'true'
             },
-            electricalTier: params.get('power') as any || null,
+            electricalTier: null,
             // Defaults
             material: 'Metal', terrain: 'grass', time: 50, viewMode: 'exterior',
             renderMode: '3D', inventory: [], landscape: [], pitch: 6, trimColor: '#334155', doorType: 'single'
@@ -237,9 +241,6 @@ const App: React.FC = () => {
                             }}
                         />
                     )}
-                    {view === 'handbook' && <Handbook />}
-                    {view === 'calculator' && <ROICalculator />}
-                    {view === 'contact' && <Contact />}
                     {view === 'handbook' && <Handbook />}
                     {view === 'calculator' && <ROICalculator />}
                     {view === 'contact' && <Contact />}

@@ -83,7 +83,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         renderMode: '3D',
         inventory: [],
         landscape: [],
-        addons: { ramp: false, solar: false, ac: false, loft: false, workbench: false, shedLoo: false },
+        addons: { ramp: false, solar: false, ac: false, loft: false, workbench: false, shedLoo: false, power_20a: false, power_30a: false, power_50a: false, shedcare: false },
         pitch: 6,
         wallColor: '#f8fafc',
         trimColor: '#334155',
@@ -196,15 +196,14 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
             base = 6531;
         }
 
-        const addonTotal = UPGRADES.reduce((acc, curr) => spec.addons[curr.id] ? acc + curr.cost : acc, 0);
-        const powerCost = spec.electricalTier === '20A' ? 300 : spec.electricalTier === '30A' ? 900 : spec.electricalTier === 'offgrid' ? 2500 : 0;
-        const materialTotal = (Object.values(detailedCosts) as number[]).reduce((a, b) => a + b, 0) + addonTotal + base + powerCost;
+        const addonTotal = UPGRADES.reduce((acc, curr) => spec.addons[curr.id as keyof typeof spec.addons] ? acc + curr.cost : acc, 0);
+        const materialTotal = (Object.values(detailedCosts) as number[]).reduce((a, b) => a + b, 0) + addonTotal + base;
         const laborTotal = materialTotal * 0.40;
         return { material: materialTotal, labor: laborTotal, total: materialTotal + laborTotal };
     }, [spec, detailedCosts]);
 
     const powerMetrics = useMemo(() => {
-        const max = spec.electricalTier === '20A' ? 20 : (spec.electricalTier === '30A' ? 30 : 15);
+        const max = spec.addons.power_50a ? 50 : (spec.addons.power_30a ? 30 : (spec.addons.power_20a ? 20 : 15));
         let baseLoad = 2.0; // Minimal idle load
         if (spec.addons.ac) baseLoad += 8.5;
         if (spec.addons.workbench) baseLoad += 4.0;
@@ -214,7 +213,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
             maxAmps: max,
             loadFactor: Math.max(0.1, Math.min(0.95, baseLoad / max))
         };
-    }, [spec.electricalTier, spec.addons]);
+    }, [spec.addons]);
 
     const downloadSpec = () => {
         const content = `
@@ -472,21 +471,25 @@ Total: $${costs.total.toLocaleString()}
                                 <div className="space-y-4">
                                     {[
                                         { id: null, name: 'Basic (Extension Cord)', cost: 0, desc: 'Simple pass-through port.' },
-                                        { id: '20A', name: '20A Weekender', cost: 300, desc: 'Lights, laptop, light tools.' },
-                                        { id: '30A', name: 'Current Command (Smart)', cost: 900, desc: '30A Umbilical with smart load manager.' },
-                                        { id: 'offgrid', name: 'Off-Grid / Solar', cost: 2500, desc: 'PointGuard system for remote areas.' }
+                                        { id: 'power_20a', name: '20A Weekender', cost: 1200, desc: 'Lights, laptop, light tools.' },
+                                        { id: 'power_30a', name: 'Current Command (Smart)', cost: 1850, desc: '30A Umbilical with smart load manager.' },
+                                        { id: 'power_50a', name: '50A Pro Service', cost: 3500, desc: 'Full workshop power. EV-capable connection. Permits included.' }
                                     ].map(tier => (
                                         <button
                                             key={tier.id === null ? 'null' : tier.id}
-                                            onClick={() => setSpec(s => ({ ...s, electricalTier: tier.id as any }))}
-                                            className={`w-full p-5 rounded-2xl border flex items-center justify-between transition-all ${spec.electricalTier === tier.id ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' : 'border-white/10 text-slate-500 hover:bg-white/5'}`}
+                                            onClick={() => {
+                                                const newAddons = { ...spec.addons, power_20a: false, power_30a: false, power_50a: false };
+                                                if (tier.id) (newAddons as any)[tier.id] = true;
+                                                setSpec(s => ({ ...s, addons: newAddons }));
+                                            }}
+                                            className={`w-full p-5 rounded-2xl border flex items-center justify-between transition-all ${((tier.id === null && !spec.addons.power_20a && !spec.addons.power_30a && !spec.addons.power_50a) || (tier.id && spec.addons[tier.id as keyof typeof spec.addons])) ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400' : 'border-white/10 text-slate-500 hover:bg-white/5'}`}
                                         >
                                             <div className="flex flex-col items-start w-full">
                                                 <div className="flex justify-between w-full mb-1">
                                                     <span className="text-[10px] font-black uppercase flex items-center gap-2">
                                                         {tier.name}
-                                                        {tier.id === '30A' && <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">POPULAR</span>}
-                                                        {tier.id === 'offgrid' && <span className="bg-green-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">ECO</span>}
+                                                        {tier.id === 'power_30a' && <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">POPULAR</span>}
+                                                        {tier.id === 'power_50a' && <span className="bg-green-500 text-white px-2 py-0.5 rounded-full xs:text-[6px]">TITAN</span>}
                                                     </span>
                                                     <span className="text-[10px] font-black">{tier.cost > 0 ? `+$${tier.cost}` : 'FREE'}</span>
                                                 </div>
@@ -551,7 +554,7 @@ Total: $${costs.total.toLocaleString()}
                         <div className="text-right">
                             <span className="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-1">Status</span>
                             <div className="flex items-center gap-2 text-green-500 text-[10px] font-black uppercase tracking-widest justify-end">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> {spec.electricalTier ? `${spec.electricalTier} Power` : 'Standard Unit'}
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> {spec.addons.power_50a ? '50A Power' : (spec.addons.power_30a ? '30A Power' : (spec.addons.power_20a ? '20A Power' : 'Standard Unit'))}
                             </div>
                         </div>
                     </div>

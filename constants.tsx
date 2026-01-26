@@ -72,9 +72,12 @@ export const UPGRADES: UpgradeItem[] = [
     { id: 'power_20a', name: '20A Creator Kit', cost: 1200, icon: '⚡', description: 'Power for laptop, lights, & fan. Professional hookup included.' },
     { id: 'power_30a', name: '30A Comfort Kit', cost: 1850, icon: '🔥', description: 'Heat-pump ready. Integrated sub-panel + sub-service connection.' },
     { id: 'power_50a', name: '50A Pro Service', cost: 3500, icon: '🛠️', description: 'Full workshop power. EV-capable connection. Permits included.' },
-    { id: 'shedcare', name: 'ShedCare (Year 1)', cost: 299, icon: '🛡️', description: 'Bi-annual professional maintenance & foundation level check.' },
+    { id: 'ac', name: 'Climate Control (AC)', cost: 1450, icon: '❄️', description: 'Split-unit AC for summer comfort.' },
+    { id: 'solar', name: 'Solar Array', cost: 2200, icon: '☀️', description: 'Roof-mounted solar panels for off-grid lighting.' },
     { id: 'loft', name: 'Lofted Storage', cost: 600, icon: '📦', description: 'Built-in overhead storage mezzanine.' },
-    { id: 'workbench', name: 'Smart Workbench', cost: 350, icon: '🛠️', description: '8ft custom workbench with tool storage.' }
+    { id: 'workbench', name: 'Smart Workbench', cost: 350, icon: '🛠️', description: '8ft custom workbench with tool storage.' },
+    { id: 'shedLoo', name: 'The Shed Loo', cost: 850, icon: '🚽', description: 'Composting toilet system with privacy screen.' },
+    { id: 'shedcare', name: 'ShedCare (Year 1)', cost: 299, icon: '🛡️', description: 'Bi-annual professional maintenance & foundation level check.' }
 ];
 
 export const TERRAINS: TerrainData[] = [

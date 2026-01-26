@@ -216,12 +216,53 @@ const ShedVisualizer: React.FC<ShedVisualizerProps> = ({ spec, weather, focalFea
                         const asset = NATURE_ASSETS.find(n => n.id === p.id);
                         if (!asset) return null;
                         return (
-                            <g key={`prop-${index}`} transform={`translate(${p.x}, ${p.y}) scale(${p.scale})`}>
+                            <g key={`prop-${index}`} transform={`translate(${p.x}, ${p.y}) scale(${p.scale})`} className="animate-sway origin-bottom">
                                 <path d={asset.path} fill={isBlueprint ? "none" : asset.color} stroke={lineColor} strokeWidth={isBlueprint ? 1 : 0} />
                             </g>
                         );
                     }
                 })}
+
+                {/* VISUAL ADDONS (LEVEL 10) */}
+                {!env.isInterior && !isBlueprint && (
+                    <g>
+                        {/* 4ft Aluminium Ramp */}
+                        {spec.addons.ramp && (
+                            <g transform={`translate(${spec.doorType === 'double' ? -35 : -20}, 0)`}>
+                                <path d="M0 0 L40 0 L45 15 L-5 15 Z" fill="#94a3b8" stroke={lineColor} strokeWidth="1" />
+                                <line x1="5" y1="2" x2="35" y2="2" stroke="white" strokeOpacity="0.2" />
+                                <line x1="10" y1="7" x2="30" y2="7" stroke="white" strokeOpacity="0.2" />
+                            </g>
+                        )}
+
+                        {/* Solar Array */}
+                        {spec.addons.solar && (
+                            <g transform={`translate(${wL + 20}, ${wTop - 80}) rotate(-15)`}>
+                                <rect width="40" height="25" fill="#1e293b" stroke="#3b82f6" strokeWidth="2" rx="1" />
+                                <path d="M0 8 H40 M0 16 H40 M13 0 V25 M26 0 V25" stroke="#3b82f6" strokeOpacity="0.3" strokeWidth="1" />
+                                <circle cx="35" cy="5" r="2" fill="#3b82f6" fillOpacity="0.4" />
+                            </g>
+                        )}
+
+                        {/* AC Unit */}
+                        {spec.addons.ac && (
+                            <g transform={`translate(${wR + 5}, -40)`}>
+                                <rect width="20" height="25" fill="#e2e8f0" stroke={lineColor} strokeWidth="1" rx="2" />
+                                <circle cx="10" cy="12" r="7" fill="none" stroke={lineColor} strokeWidth="1" strokeDasharray="2 2" />
+                                <rect width="12" height="2" x="4" y="20" fill={lineColor} fillOpacity="0.2" />
+                            </g>
+                        )}
+
+                        {/* Power Kit Inlets */}
+                        {(spec.addons.power_20a || spec.addons.power_30a || spec.addons.power_50a) && (
+                            <g transform={`translate(${wR - 15}, -20)`}>
+                                <circle r="5" fill="#1e293b" stroke={lineColor} strokeWidth="1" />
+                                <path d="M-2 -2 L2 2 M-2 2 L2 -2" stroke="white" strokeOpacity="0.4" strokeWidth="1" />
+                                <path d="M0 0 L0 8" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" opacity="0.6" className="animate-pulse" />
+                            </g>
+                        )}
+                    </g>
+                )}
 
                 {/* Dimension Overlays */}
                 {isBlueprint && (

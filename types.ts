@@ -69,6 +69,10 @@ export interface ShedAddons {
   loft: boolean;
   workbench: boolean;
   shedLoo: boolean;
+  power_20a: boolean;
+  power_30a: boolean;
+  power_50a: boolean;
+  shedcare: boolean;
 }
 
 export interface ShedSpec {

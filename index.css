@@ -1,6 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-sway: sway 4s ease-in-out infinite;
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.3; transform: scale(1) translate(-50%, -50%); }
+    50% { opacity: 0.6; transform: scale(1.1) translate(-50%, -50%); }
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: skewX(0deg); }
+    50% { transform: skewX(2deg); }
+  }
+}
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
