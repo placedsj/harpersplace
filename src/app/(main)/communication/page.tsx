@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { coParentingActions } from '@/ai/flows/co-parenting-actions';
 import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 import { childsBestInterestCheck, ChildsBestInterestCheckOutput } from '@/ai/flows/childs-best-interest-check';
+import { useVideoCall } from '@/hooks/use-video-call';
 
 import {
   Dialog,
@@ -107,13 +108,14 @@ function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSug
     );
 }
 
-function CommunicationPageInternal({ setLaunchVideo }: { setLaunchVideo?: (open: boolean) => void }) {
+function CommunicationPageInternal() {
     const [messages, setMessages] = React.useState<Message[]>(initialMessages);
     const [newMessage, setNewMessage] = React.useState('');
     const [isSending, setIsSending] = React.useState(false);
     const [isCoachOpen, setIsCoachOpen] = React.useState(false);
     const { toast } = useToast();
     const searchParams = useSearchParams();
+    const { setIsVideoOpen } = useVideoCall();
 
     React.useEffect(() => {
         const draftMessage = searchParams.get('draft');
@@ -221,7 +223,7 @@ function CommunicationPageInternal({ setLaunchVideo }: { setLaunchVideo?: (open:
                     <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
                     <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
                 </div>
-                <Button variant="outline" onClick={() => setLaunchVideo && setLaunchVideo(true)}>
+                <Button variant="outline" onClick={() => setIsVideoOpen(true)}>
                     <Video />
                     <span>Video Call</span>
                 </Button>
@@ -334,5 +336,3 @@ export default function CommunicationPage() {
         </React.Suspense>
     );
 }
-
-    

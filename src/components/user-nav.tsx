@@ -17,10 +17,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/hooks/use-auth"
+import { useVideoCall } from "@/hooks/use-video-call";
 import { useRouter } from "next/navigation";
 
-export function UserNav({ onVideoCallClick }: { onVideoCallClick: () => void }) {
+export function UserNav() {
     const { user, logOut, loading } = useAuth();
+    const { setIsVideoOpen } = useVideoCall();
     const router = useRouter();
 
     const getInitials = (name: string | null | undefined) => {
@@ -78,7 +80,7 @@ export function UserNav({ onVideoCallClick }: { onVideoCallClick: () => void }) 
            <DropdownMenuItem onClick={() => router.push('/blueprint')}>
             📋 Stability Blueprint
           </DropdownMenuItem>
-           <DropdownMenuItem onClick={onVideoCallClick}>
+           <DropdownMenuItem onClick={() => setIsVideoOpen(true)}>
             📹 Video Call
           </DropdownMenuItem>
            <DropdownMenuItem onClick={() => router.push('/about')}>
