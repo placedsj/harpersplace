@@ -19,6 +19,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import placeholderImages from '@/app/lib/placeholder-images.json';
 
 // --- Schemas & Types ---
 
@@ -139,13 +140,13 @@ export default function SharedListsPage() {
                         <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity z-10" onClick={() => deleteWishlistItem(collectionName, item.id)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
-                        <Image src={item.imageUrl || 'https://picsum.photos/seed/placeholder/200/200'} alt={item.name} data-ai-hint={item.dataAiHint} width={200} height={200} className="w-full h-40 object-cover rounded-t-lg" />
+                        <Image src={item.imageUrl || placeholderImages.wishlist.blocks.url} alt={item.name} data-ai-hint={item.dataAiHint || 'toy'} width={200} height={200} className="w-full h-40 object-cover rounded-t-lg" />
                         <CardHeader>
                             <CardTitle>{item.name}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">{item.description}</p>
-                            <Button asChild variant="outline" className="w-full">
+                            <Button asChild variant="outline" className="w-full" disabled={!item.link}>
                                 <a href={item.link || '#'} target="_blank" rel="noopener noreferrer">View Item</a>
                             </Button>
                         </CardContent>
@@ -177,7 +178,17 @@ export default function SharedListsPage() {
 
         const handleAddItem = async (values: z.infer<typeof wishlistItemSchema>) => {
             if (!user || !db) return;
-            const newItem = { ...values, userId: user.uid, timestamp: serverTimestamp() };
+
+            const randomPlaceholderKey = Object.keys(placeholderImages.wishlist)[Math.floor(Math.random() * Object.keys(placeholderImages.wishlist).length)] as keyof typeof placeholderImages.wishlist;
+            const placeholder = placeholderImages.wishlist[randomPlaceholderKey];
+
+            const newItem = { 
+                ...values, 
+                imageUrl: values.imageUrl || placeholder.url,
+                dataAiHint: values.dataAiHint || placeholder.dataAiHint,
+                userId: user.uid, 
+                timestamp: serverTimestamp() 
+            };
             try {
                 await addDoc(collection(db, `users/${user.uid}/${collectionName}`), newItem);
                 toast({ title: 'Wishlist Item Added' });
@@ -192,7 +203,7 @@ export default function SharedListsPage() {
         return (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Card className="flex items-center justify-center border-dashed hover:border-primary hover:text-primary transition-colors cursor-pointer min-h-[200px]">
+                    <Card className="flex items-center justify-center border-dashed hover:border-primary hover:text-primary transition-colors cursor-pointer min-h-[358px]">
                         <div className="flex flex-col h-full w-full items-center justify-center gap-2 p-8">
                             <PlusCircle className="w-8 h-8 text-muted-foreground" />
                             <span className="text-muted-foreground font-semibold">Add Item</span>
@@ -208,7 +219,7 @@ export default function SharedListsPage() {
                             <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Item Name</FormLabel><FormControl><Input placeholder="e.g., Lego Set" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="A short description of the item." {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={form.control} name="link" render={({ field }) => (<FormItem><FormLabel>Link to Item (Optional)</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name="imageUrl" render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input placeholder="https://example.com/image.jpg" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="imageUrl" render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input placeholder="https://example.com/image.jpg" /></FormControl><FormMessage /></FormItem>)} />
                             <DialogFooter>
                                 <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                                 <Button type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? <Loader2 className="animate-spin" /> : 'Add Item'}</Button>
@@ -231,8 +242,8 @@ export default function SharedListsPage() {
       </div>
       <Tabs defaultValue="groceries">
         <TabsList>
-          <TabsTrigger value="groceries">Grocery List</TabsTrigger>
-          <TabsTrigger value="wishlists">Wishlists</TabsTrigger>
+          <TabsTrigger value="groceries"><ShoppingCart className="mr-2 h-4 w-4"/>Grocery List</TabsTrigger>
+          <TabsTrigger value="wishlists"><Gift className="mr-2 h-4 w-4"/>Wishlists</TabsTrigger>
         </TabsList>
 
         <TabsContent value="groceries" className="mt-6">
