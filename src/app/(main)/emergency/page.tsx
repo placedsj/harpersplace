@@ -1,3 +1,4 @@
+
 // src/app/(main)/emergency/page.tsx
 'use client';
 

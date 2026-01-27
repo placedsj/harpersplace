@@ -1,3 +1,4 @@
+
 // src/components/main-nav.tsx
 'use client';
 
@@ -26,6 +27,7 @@ const toolsMenuItems = [
     { href: '/shared-lists', label: 'Shared Lists', group: 'Planning' },
     { href: '/family-tree', label: 'Family Tree', group: 'Planning' },
     { href: '/legal-export', label: 'Legal Export Center', group: 'Planning' },
+    { href: '/emergency', label: 'Emergency Contacts', group: 'Planning' },
     { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer', group: 'AI Tools' },
     { href: '/ai-tools/communication-coach', label: 'Communication Coach', group: 'AI Tools' },
     { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker', group: 'AI Tools' },

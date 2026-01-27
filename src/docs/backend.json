@@ -229,6 +229,10 @@
     "/users/{userId}/profile/main": {
         "schema": { "$ref": "#/entities/profile" },
         "description": "Stores the main profile for a user's child."
+    },
+    "/users/{userId}/medicalNotes/main": {
+        "schema": { "$ref": "#/entities/medicalNotes" },
+        "description": "Stores the main medical notes for a user's child."
     }
   }
 }
