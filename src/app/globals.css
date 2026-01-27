@@ -71,6 +71,18 @@
     --mom: 340 60% 60%; /* Softer Pink */
     --dad: 210 60% 60%; /* Calmer Blue */
   }
+
+  @page {
+    size: A4;
+    margin: 1.5cm;
+
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Open Sans', sans-serif;
+        font-size: 10pt;
+        color: #666;
+    }
+  }
 }
 
 @layer base {
@@ -169,26 +181,25 @@
     }
 
     /* Print-specific styles */
-    .print-hidden {
-        @media print {
-            display: none;
-        }
-    }
-    .print-only {
-        display: none;
-        @media print {
-            display: block;
-        }
-    }
-
     @media print {
         body {
-            background-color: white;
-            font-size: 12pt;
+            background-image: none !important;
+            font-size: 11pt;
+            color: black;
         }
+
         #legal-export-page {
             padding: 0;
             margin: 0;
+        }
+
+        .avoid-break {
+            page-break-inside: avoid;
+        }
+
+        /* Ensure links are printed with text */
+        a:link:after, a:visited:after {
+            content: "" !important;
         }
     }
 }

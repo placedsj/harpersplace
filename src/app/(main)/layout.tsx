@@ -41,7 +41,7 @@ export default function AppLayout({
   return (
     <VideoCallProvider>
       <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-          <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100 dark:bg-gray-900/95 dark:border-gray-800">
+          <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100 dark:bg-gray-900/95 dark:border-gray-800 print:hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 
@@ -73,12 +73,12 @@ export default function AppLayout({
                 {children}
               </VideoCallManager>
             </ErrorBoundary>
-            <div className="pt-8">
+            <div className="pt-8 print:hidden">
               <CoParentingTip />
             </div>
           </main>
           
-          <SiteFooter />
+          <SiteFooter className="print:hidden" />
       </div>
     </VideoCallProvider>
   );

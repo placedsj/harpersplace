@@ -1,4 +1,3 @@
-
 // src/app/(main)/legal-export/page.tsx
 'use client';
 
@@ -13,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, FileDown, Loader2, BookLock, Printer } from 'lucide-react';
+import { CalendarIcon, Loader2, BookLock, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestore } from '@/firebase';
@@ -85,7 +84,7 @@ export default function LegalExportPage() {
             if (results.length === 0) {
                  toast({ title: 'No Data Found', description: 'There are no evidence entries in the selected date range.' });
             } else {
-                toast({ title: 'Report Generated', description: `Found ${results.length} entries.` });
+                toast({ title: 'Report Generated', description: `Found ${results.length} entries. Click 'Print or Save' to continue.` });
             }
         } catch (error) {
             console.error(error);
@@ -96,163 +95,172 @@ export default function LegalExportPage() {
     };
     
     const handleDownload = () => {
-        toast({ title: 'Preparing Printable Report...', description: 'Your report is being prepared for printing or saving as a PDF.' });
+        toast({ title: 'Preparing Report...', description: 'Your browser\'s print dialog will open. Use "Save as PDF" to create a file.' });
         setTimeout(() => window.print(), 500);
     };
 
     return (
-        <div className="space-y-8" id="legal-export-page">
-             <div className="print-hidden">
-                <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Legal Export Center</h1>
-                <p className="text-muted-foreground mt-1">
-                    Generate professional, court-ready reports from your logged data.
-                </p>
-            </div>
-            
-            <div className="grid lg:grid-cols-3 gap-8 items-start print-hidden">
-                <div className="lg:col-span-1">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Generate Evidence Report</CardTitle>
-                            <CardDescription>Select a date range to generate a chronological report of all logged evidence.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                     <FormField
-                                        control={form.control}
-                                        name="startDate"
-                                        render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>Start Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="endDate"
-                                        render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>End Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <Button type="submit" className="w-full" disabled={isLoading}>
-                                        {isLoading ? <Loader2 className="animate-spin" /> : <span>Generate Report</span>}
-                                    </Button>
-                                </form>
-                            </Form>
-                        </CardContent>
-                    </Card>
+        <div id="legal-export-page">
+            <div className="space-y-8 print:hidden">
+                 <div>
+                    <h1 className="text-3xl font-headline font-extrabold uppercase tracking-tight">Legal Export Center</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Generate professional, court-ready reports from your logged data.
+                    </p>
                 </div>
-                 <div className="lg:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Report Preview</CardTitle>
-                            <CardDescription>A preview of your generated report will appear here. Use the button at the bottom to print or save as a PDF.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {isLoading && (
-                                <div className="flex items-center justify-center h-48">
-                                    <Loader2 className="animate-spin text-primary" />
-                                </div>
-                            )}
-                            {!isLoading && !reportData && (
-                                <div className="text-center text-muted-foreground py-10">
-                                    <BookLock className="mx-auto h-12 w-12" />
-                                    <p className="mt-2 font-semibold">Select a date range to generate a report.</p>
-                                </div>
-                            )}
-                            {reportData && reportData.length === 0 && (
-                                <div className="text-center text-muted-foreground py-10">
-                                     <BookLock className="mx-auto h-12 w-12" />
-                                     <p className="mt-2 font-semibold">No evidence found in this date range.</p>
-                                </div>
-                            )}
-                             {reportData && reportData.length > 0 && (
-                                 <div className="space-y-4">
-                                    <div className="text-right">
+                
+                <div className="grid lg:grid-cols-3 gap-8 items-start">
+                    <div className="lg:col-span-1">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>1. Generate Report</CardTitle>
+                                <CardDescription>Select a date range to generate a chronological report of all logged evidence.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="startDate"
+                                            render={({ field }) => (
+                                            <FormItem className="flex flex-col">
+                                                <FormLabel>Start Date</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage />
+                                            </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="endDate"
+                                            render={({ field }) => (
+                                            <FormItem className="flex flex-col">
+                                                <FormLabel>End Date</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button variant="outline" className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                                                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage />
+                                            </FormItem>
+                                            )}
+                                        />
+                                        <Button type="submit" className="w-full" disabled={isLoading}>
+                                            {isLoading ? <Loader2 className="animate-spin" /> : <span>Generate Report</span>}
+                                        </Button>
+                                    </form>
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="lg:col-span-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>2. Preview & Save</CardTitle>
+                                <CardDescription>A preview of your report will appear here. Click the button to print or save it as a PDF.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {isLoading && (
+                                    <div className="flex items-center justify-center h-48">
+                                        <Loader2 className="animate-spin text-primary" />
+                                    </div>
+                                )}
+                                {!isLoading && !reportData && (
+                                    <div className="text-center text-muted-foreground py-10">
+                                        <BookLock className="mx-auto h-12 w-12" />
+                                        <p className="mt-2 font-semibold">Select a date range to generate a report.</p>
+                                    </div>
+                                )}
+                                {reportData && reportData.length === 0 && (
+                                    <div className="text-center text-muted-foreground py-10">
+                                        <BookLock className="mx-auto h-12 w-12" />
+                                        <p className="mt-2 font-semibold">No evidence found in this date range.</p>
+                                    </div>
+                                )}
+                                {reportData && reportData.length > 0 && (
+                                    <div className="space-y-4">
                                         <Button className="w-full sm:w-auto" onClick={handleDownload}>
                                             <Printer />
                                             <span>Print or Save as PDF</span>
                                         </Button>
-                                    </div>
-                                    <div id="report-content" className="border rounded-lg p-4 max-h-[60vh] overflow-y-auto">
-                                        <div className="text-center border-b pb-4 mb-4">
-                                            <h3 className="font-bold text-lg font-headline uppercase text-primary">Evidence Log Report</h3>
-                                            <p className="text-sm text-muted-foreground">Generated by Placed.ca</p>
-                                            <p className="text-sm text-muted-foreground">For the period of {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            {reportData.map(entry => (
-                                                <div key={entry.id} className="border-b pb-3 last:border-b-0">
-                                                    <p className="font-semibold text-base">{entry.description}</p>
-                                                    <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                                                        <p><strong>Event Date:</strong> {format(new Date(entry.date), 'PP')}</p>
-                                                        <p><strong>Logged On:</strong> {format(entry.timestamp.toDate(), 'PPp')}</p>
-                                                        <Badge variant="secondary">{entry.category}</Badge>
+                                        <div id="report-content" className="border rounded-lg p-4 max-h-[60vh] overflow-y-auto">
+                                            <div className="text-center border-b pb-4 mb-4">
+                                                <h3 className="font-bold text-lg font-headline uppercase text-primary">Evidence Log Report</h3>
+                                                <p className="text-sm text-muted-foreground">For {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
+                                            </div>
+                                            <div className="space-y-4">
+                                                {reportData.map(entry => (
+                                                    <div key={entry.id} className="border-b pb-3 last:border-b-0">
+                                                        <p className="font-semibold text-base">{entry.description}</p>
+                                                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                                                            <p><strong>Event Date:</strong> {format(new Date(entry.date), 'PP')}</p>
+                                                            <p><strong>Logged:</strong> {format(entry.timestamp.toDate(), 'PPp')}</p>
+                                                            <Badge variant="secondary">{entry.category}</Badge>
+                                                        </div>
+                                                        <div className="mt-2 text-sm whitespace-pre-wrap bg-muted/50 p-2 rounded-md">{entry.evidence}</div>
                                                     </div>
-                                                    <div className="mt-2 text-sm whitespace-pre-wrap bg-muted/50 p-2 rounded-md">{entry.evidence}</div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                 </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                 </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
 
             {/* Hidden, print-only version of the report */}
-            <div className="print-only">
+            <div className="hidden print:block">
                 {reportData && reportData.length > 0 && (
-                    <div id="print-report-content" className="p-4">
-                        <div className="text-center border-b pb-4 mb-4">
-                            <h3 className="font-bold text-xl font-headline uppercase text-primary">Evidence Log Report</h3>
-                            <p className="text-md text-muted-foreground">Generated by Placed.ca</p>
-                            <p className="text-md text-muted-foreground">For the period of {format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
+                     <div id="print-report-content">
+                        <div className="text-center border-b-2 border-black pb-4 mb-8">
+                            <h1 className="text-2xl font-bold">Placed.ca Evidence Report</h1>
+                            <p className="text-sm">CONFIDENTIAL DOCUMENT</p>
                         </div>
+                        <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+                            <div>
+                                <p><strong>Report For:</strong> {user?.displayName}</p>
+                                <p><strong>Date Generated:</strong> {format(new Date(), 'PPP')}</p>
+                            </div>
+                            <div className="text-right">
+                                <p><strong>Reporting Period:</strong></p>
+                                <p>{format(form.getValues('startDate'), 'PPP')} to {format(form.getValues('endDate'), 'PPP')}</p>
+                            </div>
+                        </div>
+                        <h2 className="text-lg font-bold border-b border-black pb-2 mb-4">Chronological Evidence Log</h2>
                         <div className="space-y-6">
                             {reportData.map(entry => (
-                                <div key={entry.id} className="pb-4 break-inside-avoid">
-                                    <h4 className="font-semibold text-lg">{entry.description}</h4>
-                                    <div className="flex items-center gap-6 text-sm text-muted-foreground my-1">
-                                        <span><strong>Event Date:</strong> {format(new Date(entry.date), 'PPP')}</span>
-                                        <span><strong>Category:</strong> {entry.category}</span>
+                                <div key={entry.id} className="avoid-break border-b border-gray-200 pb-4">
+                                    <h3 className="font-bold text-base">{entry.description}</h3>
+                                    <div className="grid grid-cols-3 gap-4 text-xs text-gray-600 mt-1 mb-2">
+                                        <p><strong>Event Date:</strong> {format(new Date(entry.date), 'yyyy-MM-dd')}</p>
+                                        <p><strong>Category:</strong> {entry.category}</p>
+                                        <p><strong>Logged:</strong> {format(entry.timestamp.toDate(), 'yyyy-MM-dd, p')}</p>
                                     </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        <span><strong>Logged On:</strong> {format(entry.timestamp.toDate(), 'PPPp')}</span>
+                                    <div className="mt-2 text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded-md border border-gray-200">
+                                        {entry.evidence}
                                     </div>
-                                    <div className="mt-2 text-md border p-3 rounded-md bg-gray-50">{entry.evidence}</div>
                                 </div>
                             ))}
                         </div>
@@ -262,4 +270,3 @@ export default function LegalExportPage() {
         </div>
     );
 }
-
