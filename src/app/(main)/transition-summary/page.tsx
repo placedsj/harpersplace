@@ -11,10 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Clipboard, ClipboardCheck, X, Upload } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth, useStorage } from '@/firebase';
 import Image from 'next/image';
-import { generateSummaryAction, getSignedUrlAction } from './actions';
+import { generateSummaryAction } from './actions';
 import { Input } from '@/components/ui/input';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 const questionnaireSchema = z.object({
   childsMood: z.string().min(3, 'Please describe their mood.'),
@@ -38,6 +39,7 @@ type Summary = {
 
 export default function TransitionSummaryPage() {
   const { user } = useAuth();
+  const { storage } = useStorage();
   const { toast } = useToast();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +66,7 @@ export default function TransitionSummaryPage() {
   }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user) {
+    if (!user || !storage) {
         toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to upload files.' });
         return;
     }
@@ -75,28 +77,32 @@ export default function TransitionSummaryPage() {
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
     setFilePreviews(prev => [...prev, ...newPreviews]);
+    
+    const uploadedUrls: string[] = [];
 
-    const uploadPromises = files.map(async file => {
+    for (const file of files) {
         try {
-            const { signedUrl, publicUrl } = await getSignedUrlAction(file.name, file.type, user.uid);
+            const filePath = `users/${user.uid}/transitions/${Date.now()}-${file.name}`;
+            const fileRef = ref(storage, filePath);
+            const uploadTask = uploadBytesResumable(fileRef, file);
 
-            await fetch(signedUrl, {
-                method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type },
-            });
-            return publicUrl;
+            await uploadTask;
+            
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            uploadedUrls.push(downloadURL);
+            
         } catch (error: any) {
             console.error('Upload failed for', file.name, error);
-            toast({ variant: 'destructive', title: 'Upload Failed', description: error.message || `Could not upload ${file.name}. Please try again.` });
-            return null;
+            toast({ variant: 'destructive', title: 'Upload Failed', description: `Could not upload ${file.name}. Please try again.` });
         }
-    });
-
-    const results = await Promise.all(uploadPromises);
-    const successfulUploads = results.filter((url): url is string => url !== null);
-    setUploadedFiles(prev => [...prev, ...successfulUploads]);
+    }
+    
+    setUploadedFiles(prev => [...prev, ...uploadedUrls]);
     setIsUploading(false);
+
+    if (uploadedUrls.length < files.length) {
+        toast({ variant: 'destructive', title: 'Some uploads failed', description: 'Not all files could be uploaded. Please try again.' });
+    }
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -179,6 +185,7 @@ ${summary.fullSummary}
                                     className="hidden" 
                                     accept="image/*" 
                                     multiple 
+                                    disabled={isUploading}
                                 />
                             </div>
                              {filePreviews.length > 0 && (
