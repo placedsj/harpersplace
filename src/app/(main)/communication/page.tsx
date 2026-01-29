@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useForm, useWatch } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,10 @@ import { coParentingActions } from '@/ai/flows/co-parenting-actions';
 import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 import { childsBestInterestCheck, ChildsBestInterestCheckOutput } from '@/ai/flows/childs-best-interest-check';
 import { useVideoCall } from '@/hooks/use-video-call';
+import { useAuth, useCollection, useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
+import { format } from 'date-fns';
+
 
 import {
   Dialog,
@@ -25,34 +30,21 @@ import {
 } from '@/components/ui/dialog';
 
 type Message = {
-    id: number;
-    user: 'Mom' | 'Dad' | 'AI_MEDIATOR' | 'AI_ADVOCATE';
-    avatar: string;
-    initials: string;
+    id: string;
+    userId: string;
+    userInitials: string;
     text: string;
-    timestamp: string;
+    timestamp: Timestamp;
+    type: 'USER' | 'AI_MEDIATOR' | 'AI_ADVOCATE';
     actions?: any[];
     advice?: ChildsBestInterestCheckOutput;
 };
 
-const initialMessages: Message[] = [
-    {
-        id: 1,
-        user: 'Dad',
-        avatar: '',
-        initials: 'C',
-        text: "Hey, just wanted to confirm you're picking up Harper from school today?",
-        timestamp: "10:30 AM"
-    },
-    {
-        id: 2,
-        user: 'Mom',
-        avatar: '',
-        initials: 'E',
-        text: "Yes, I'll be there to pick her up. She has her soccer practice afterwards, so I'll take her to that as well.",
-        timestamp: "10:32 AM"
-    },
-];
+const otherUser = {
+    uid: 'emma-placeholder-uid',
+    initials: 'E',
+    displayName: 'Emma'
+}
 
 function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSuggestion: (suggestion: string) => void }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -108,15 +100,38 @@ function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSug
     );
 }
 
+const getInitials = (name: string | null | undefined) => {
+    if (!name) return 'U';
+    const names = name.split(' ');
+    if (names.length > 1) {
+        return names[0][0] + names[names.length - 1][0];
+    }
+    return name.length > 0 ? name[0] : 'U';
+}
+
+
 function CommunicationPageInternal() {
-    const [messages, setMessages] = React.useState<Message[]>(initialMessages);
-    const [newMessage, setNewMessage] = React.useState('');
+    const { user } = useAuth();
+    const { db } = useFirestore();
     const [isSending, setIsSending] = React.useState(false);
     const [isCoachOpen, setIsCoachOpen] = React.useState(false);
     const { toast } = useToast();
     const searchParams = useSearchParams();
     const { setIsVideoOpen } = useVideoCall();
+    const [newMessage, setNewMessage] = React.useState('');
+    
+    const conversationId = React.useMemo(() => {
+        if (!user) return null;
+        return [user.uid, otherUser.uid].sort().join('_');
+    }, [user]);
 
+    const messagesQuery = React.useMemo(() => {
+        if (!db || !conversationId) return null;
+        return query(collection(db, 'conversations', conversationId, 'messages'), orderBy('timestamp', 'asc'));
+    }, [db, conversationId]);
+
+    const { data: messages, loading: messagesLoading } = useCollection<Message>(messagesQuery);
+    
     React.useEffect(() => {
         const draftMessage = searchParams.get('draft');
         if (draftMessage) {
@@ -124,34 +139,46 @@ function CommunicationPageInternal() {
         }
     }, [searchParams]);
 
+    const addMessageToFirestore = async (messageData: Omit<Message, 'id' | 'timestamp'> & { timestamp: any }) => {
+        if (!db || !conversationId) return;
+        try {
+            await addDoc(collection(db, 'conversations', conversationId, 'messages'), messageData);
+        } catch (error) {
+             console.error("Error adding message to firestore:", error);
+             toast({
+                variant: 'destructive',
+                title: 'Message Error',
+                description: 'Could not save message.'
+            });
+        }
+    };
+
     const handleSendMessage = async () => {
-        if (newMessage.trim() === '') return;
+        if (newMessage.trim() === '' || !user) return;
         setIsSending(true);
 
-        const userMessage: Message = {
-            id: messages.length + 1,
-            user: 'Dad', // Assuming 'Dad' is the current user for demo
-            avatar: '',
-            initials: 'C',
+        const userMessageData = {
+            userId: user.uid,
+            userInitials: getInitials(user.displayName),
             text: newMessage,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestamp: serverTimestamp(),
+            type: 'USER' as const,
         };
 
-        setMessages(prev => [...prev, userMessage]);
         setNewMessage('');
+        await addMessageToFirestore(userMessageData);
 
         try {
-            const result = await coParentingActions({ text: userMessage.text });
-            const aiResponse: Message = {
-                id: messages.length + 2,
-                user: 'AI_MEDIATOR',
-                avatar: '',
-                initials: 'AI',
+            const result = await coParentingActions({ text: userMessageData.text });
+            const aiResponseData = {
+                userId: 'AI_MEDIATOR',
+                userInitials: 'AI',
                 text: result.text,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                timestamp: serverTimestamp(),
+                type: 'AI_MEDIATOR' as const,
                 actions: result.tool_requests
             };
-            setMessages(prev => [...prev, aiResponse]);
+            await addMessageToFirestore(aiResponseData);
         } catch (error) {
             console.error("Error with co-parenting actions:", error);
             toast({
@@ -172,16 +199,15 @@ function CommunicationPageInternal() {
 
         try {
             const result = await childsBestInterestCheck({ dilemma });
-            const aiAdvocateResponse: Message = {
-                id: messages.length + 1,
-                user: 'AI_ADVOCATE',
-                avatar: '',
-                initials: 'AD',
-                text: '', // Text is unused for advocate messages
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            const aiAdvocateResponseData = {
+                userId: 'AI_ADVOCATE',
+                userInitials: 'AD',
+                text: '',
+                timestamp: serverTimestamp(),
+                type: 'AI_ADVOCATE' as const,
                 advice: result,
             };
-            setMessages(prev => [...prev, aiAdvocateResponse]);
+            await addMessageToFirestore(aiAdvocateResponseData);
 
         } catch (error) {
             console.error("Error with AI Advocate:", error);
@@ -207,8 +233,6 @@ function CommunicationPageInternal() {
         setIsCoachOpen(false);
     };
 
-    const currentUser = 'Dad'; // For styling purposes
-    
   return (
     <div className="space-y-8">
         <div>
@@ -220,7 +244,7 @@ function CommunicationPageInternal() {
         <Card className="shadow-lg border-2 border-primary/40">
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                    <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH EMMA</CardTitle>
+                    <CardTitle className="font-headline uppercase text-primary tracking-widest">CONVERSATION WITH {otherUser.displayName.toUpperCase()}</CardTitle>
                     <CardDescription className="font-sans text-accent">All messages are timestamped and analyzed by the AI Mediator to suggest actions and improvements.</CardDescription>
                 </div>
                 <Button variant="outline" onClick={() => setIsVideoOpen(true)}>
@@ -230,27 +254,32 @@ function CommunicationPageInternal() {
             </CardHeader>
             <CardContent className="flex flex-col h-[65vh]">
                 <div className="flex-grow space-y-6 overflow-y-auto p-4 border rounded-md bg-muted/20">
-                    {messages.map(msg => (
+                    {messagesLoading && (
+                        <div className="flex justify-center items-center h-full">
+                            <Loader2 className="animate-spin text-primary" />
+                        </div>
+                    )}
+                    {!messagesLoading && messages?.map(msg => (
                         <div key={msg.id}>
                             <div className={cn(
                                 "flex items-end gap-3",
-                                msg.user === currentUser ? "justify-end" : "justify-start"
+                                msg.userId === user?.uid ? "justify-end" : "justify-start"
                             )}>
-                                 {msg.user !== currentUser && (
+                                 {msg.userId !== user?.uid && (
                                     <Avatar className="h-8 w-8">
                                         <AvatarFallback className={cn(
-                                            (msg.user === 'AI_MEDIATOR' || msg.user === 'AI_ADVOCATE') && 'bg-primary/20 text-primary'
-                                        )}>{msg.initials}</AvatarFallback>
+                                            (msg.type === 'AI_MEDIATOR' || msg.type === 'AI_ADVOCATE') && 'bg-primary/20 text-primary'
+                                        )}>{msg.userInitials}</AvatarFallback>
                                     </Avatar>
                                  )}
                                  <div className={cn(
                                     "max-w-xs md:max-w-md lg:max-w-lg p-3 rounded-lg",
-                                    msg.user === currentUser && "bg-primary text-primary-foreground",
-                                    msg.user === 'Mom' && "bg-muted",
-                                    msg.user === 'AI_MEDIATOR' && "bg-accent text-accent-foreground",
-                                    msg.user === 'AI_ADVOCATE' && "bg-transparent border-none p-0"
+                                    msg.userId === user?.uid && "bg-primary text-primary-foreground",
+                                    msg.userId === otherUser.uid && "bg-muted",
+                                    msg.type === 'AI_MEDIATOR' && "bg-accent text-accent-foreground",
+                                    msg.type === 'AI_ADVOCATE' && "bg-transparent border-none p-0"
                                  )}>
-                                    {msg.user === 'AI_ADVOCATE' && msg.advice ? (
+                                    {msg.type === 'AI_ADVOCATE' && msg.advice ? (
                                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-400 w-full">
                                             <h4 className="font-semibold text-blue-800 dark:text-blue-200 flex items-center gap-2"><ShieldCheck className="w-5 h-5"/> AI Advocate's Perspective</h4>
                                             <p className="text-base text-blue-900 dark:text-blue-100 my-2">{msg.advice.advice}</p>
@@ -259,11 +288,11 @@ function CommunicationPageInternal() {
                                     ) : (
                                         <p className="text-sm">{msg.text}</p>
                                     )}
-                                    <p className="text-xs mt-1 text-right opacity-70">{msg.timestamp}</p>
+                                    <p className="text-xs mt-1 text-right opacity-70">{msg.timestamp ? format(msg.timestamp.toDate(), 'p') : ''}</p>
                                  </div>
-                                 {msg.user === currentUser && (
+                                 {msg.userId === user?.uid && (
                                     <Avatar className="h-8 w-8">
-                                        <AvatarFallback>{msg.initials}</AvatarFallback>
+                                        <AvatarFallback>{msg.userInitials}</AvatarFallback>
                                     </Avatar>
                                  )}
                             </div>

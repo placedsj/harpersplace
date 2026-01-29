@@ -172,6 +172,32 @@
             "medicalConditions": { "type": "string" },
             "currentMedications": { "type": "string" }
         }
+    },
+    "conversation": {
+        "title": "Conversation",
+        "description": "Represents a communication thread between users.",
+        "type": "object",
+        "properties": {
+            "participants": { "type": "array", "items": { "type": "string" }, "description": "Array of user UIDs in the conversation." },
+            "lastMessage": { "type": "string" },
+            "lastUpdated": { "type": "string", "format": "date-time" }
+        },
+        "required": ["participants", "lastUpdated"]
+    },
+    "message": {
+        "title": "Message",
+        "description": "A single message within a conversation.",
+        "type": "object",
+        "properties": {
+            "text": { "type": "string" },
+            "userId": { "type": "string" },
+            "userInitials": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" },
+            "type": { "type": "string", "enum": ["USER", "AI_MEDIATOR", "AI_ADVOCATE"], "default": "USER" },
+            "actions": { "type": "array", "items": { "type": "object" } },
+            "advice": { "type": "object" }
+        },
+        "required": ["text", "userId", "timestamp", "type"]
     }
   },
   "auth": {
@@ -233,6 +259,14 @@
     "/users/{userId}/medicalNotes/main": {
         "schema": { "$ref": "#/entities/medicalNotes" },
         "description": "Stores the main medical notes for a user's child."
+    },
+    "/conversations/{conversationId}": {
+        "schema": { "$ref": "#/entities/conversation" },
+        "description": "Represents a conversation thread between two or more users."
+    },
+    "/conversations/{conversationId}/messages": {
+        "schema": { "$ref": "#/entities/message" },
+        "description": "Stores all messages for a given conversation."
     }
   }
 }
