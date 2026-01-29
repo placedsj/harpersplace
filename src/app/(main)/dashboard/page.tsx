@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore, useDoc } from '@/firebase';
-import { collection, query, orderBy, limit, doc } from 'firebase/firestore';
+import { collection, query, orderBy, limit, doc, Timestamp } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 import type { Profile } from '@/app/(main)/profile/page';
@@ -40,7 +40,12 @@ const MainDashboard = () => {
     
     useEffect(() => {
         if (profile?.dob) {
-            setHarperAgeInMonths(differenceInMonths(new Date(), profile.dob.toDate()));
+            // Ensure profile.dob is a valid Date object before using it.
+            // Firestore Timestamps need to be converted to Dates.
+            const dobDate = profile.dob instanceof Timestamp ? profile.dob.toDate() : new Date(profile.dob);
+            if (!isNaN(dobDate.getTime())) {
+                setHarperAgeInMonths(differenceInMonths(new Date(), dobDate));
+            }
         }
     }, [profile]);
     
