@@ -122,7 +122,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         }
 
         try {
-            await client.models.ShedDesign.create({
+            const shedData: any = {
                 style: spec.style,
                 width: spec.width,
                 depth: spec.depth,
@@ -131,7 +131,9 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
                 addonsJson: JSON.stringify(spec.addons),
                 specJson: JSON.stringify(spec),
                 name: `My ${spec.style} - ${new Date().toLocaleDateString()}`
-            });
+            };
+
+            await client.models.ShedDesign.create(shedData);
             alert('Design saved successfully!');
             setShowLogin(false);
         } catch (error) {
