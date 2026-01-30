@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 import EnterpriseBuilder from './components/EnterpriseBuilder';
@@ -30,6 +30,7 @@ import ElectricianPortal from './components/ElectricianPortal';
 import { SHOWROOM_ITEMS, PRICING_PACKAGES, TESTIMONIALS } from './constants';
 import { ShedStyleType, ShedSpec, CostEstimate } from './types';
 import { BRAND_CONFIG, CURRENT_BRAND } from './config/branding';
+import { parseShedSpecFromSearchString } from './lib/urlUtils';
 
 const Header = ({ onHome, onBuild, onHandbook, onCalculator, onContact, onDashboard, onProcess, onInspection, onBlog }: any) => {
     const [secretCount, setSecretCount] = useState(0);
@@ -116,37 +117,7 @@ const App: React.FC = () => {
     const [view, setView] = useState<'landing' | 'showroom' | 'builder' | 'handbook' | 'calculator' | 'checkout' | 'tracking' | 'contact' | 'dashboard' | 'admin' | 'blog' | 'blog-post' | 'power' | 'partners'>('landing');
     const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
-    // URL State Parsing
-    const getInitialSpecFromURL = (): ShedSpec | null => {
-        const params = new URLSearchParams(window.location.search);
-        if (!params.has('style')) return null;
-
-        return {
-            style: params.get('style') as ShedStyleType || 'Modern Studio',
-            width: parseInt(params.get('width') || '10'),
-            depth: parseInt(params.get('depth') || '12'),
-            wallColor: params.get('color') ? `#${params.get('color')}` : '#f8fafc',
-            sidingType: (params.get('siding') as any) || 'lap',
-            addons: {
-                ramp: params.get('ramp') === 'true',
-                solar: params.get('solar') === 'true',
-                ac: params.get('ac') === 'true',
-                loft: params.get('loft') === 'true',
-                workbench: params.get('workbench') === 'true',
-                shedLoo: params.get('shedLoo') === 'true',
-                power_20a: params.get('power_20a') === 'true',
-                power_30a: params.get('power_30a') === 'true',
-                power_50a: params.get('power_50a') === 'true',
-                shedcare: params.get('shedcare') === 'true'
-            },
-            electricalTier: null,
-            // Defaults
-            material: 'Metal', terrain: 'grass', time: 50, viewMode: 'exterior',
-            renderMode: '3D', inventory: [], landscape: [], pitch: 6, trimColor: '#334155', doorType: 'single'
-        };
-    };
-
-    const initialSpecFromURL = getInitialSpecFromURL();
+    const initialSpecFromURL = useMemo(() => parseShedSpecFromSearchString(window.location.search), []);
     const [initialStyle, setInitialStyle] = useState<ShedStyleType>(initialSpecFromURL?.style || 'Modern Studio');
     const [currentSpec, setCurrentSpec] = useState<ShedSpec | null>(initialSpecFromURL);
 
