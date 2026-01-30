@@ -40,4 +40,15 @@ describe('geminiService', () => {
         // Assert it was called 1 time (Target behavior)
         expect(GoogleGenAI).toHaveBeenCalledTimes(1);
     });
+
+    it('should not instantiate GoogleGenAI on module import', async () => {
+        // Reset modules to clear the singleton
+        vi.resetModules();
+
+        // Import the module
+        await import('./geminiService');
+
+        // Should not have been called yet
+        expect(GoogleGenAI).not.toHaveBeenCalled();
+    });
 });
