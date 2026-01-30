@@ -251,7 +251,7 @@ const Handbook = () => {
                                 </div>
                             </div>
                             <div className="bg-orange-600 rounded-[3rem] p-10 flex flex-col justify-center relative overflow-hidden">
-                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549643276-fbc2bd580dbf?q=80&w=2670&auto=format&fit=crop')] opacity-20 bg-cover bg-center mix-blend-overlay" />
+                                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549643276-fbc2bd580dbf?q=80&w=1600&auto=format&fit=crop')] opacity-20 bg-cover bg-center mix-blend-overlay" />
                                 <div className="relative z-10">
                                     <h3 className="text-3xl font-black text-white mb-6 uppercase tracking-tighter">The Thermal Audit Report</h3>
                                     <ul className="space-y-4 mb-10">

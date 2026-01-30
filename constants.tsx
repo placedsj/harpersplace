@@ -26,7 +26,7 @@ export const SHOWROOM_ITEMS = [
         title: "12' x 28' Lofted Barn",
         label: "STORAGE SUPERSTAR",
         description: "The ultimate flagship. Massive footprint, double lofts, and Canadian-tough construction. Ready to become a heated workshop, backyard office, or plug-in guest space.",
-        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=3432&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=1200&auto=format&fit=crop",
         badge: "Power Ready: Ideal for 30A Workshop Kit"
     },
     {
@@ -35,7 +35,7 @@ export const SHOWROOM_ITEMS = [
         title: "10' x 16' Quaker Shed",
         label: "SHEDLOAD OF AWESOME",
         description: "A fan favorite with saltbox-style asymmetric roof. Perfect for keeping your yard neat while adding a touch of classic charm.",
-        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=2574&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?q=80&w=1200&auto=format&fit=crop",
         badge: "STARTING $7,975"
     },
     {
@@ -44,7 +44,7 @@ export const SHOWROOM_ITEMS = [
         title: "10' x 18' A-Frame Classic",
         label: "BACKYARD MVP",
         description: "Standard vertical framing with a sharp peak. Solid, reliable, and big enough for everything from mowers to gnomes.",
-        image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=2574&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=1200&auto=format&fit=crop",
         badge: "STARTING $6,531"
     },
     {
@@ -53,7 +53,8 @@ export const SHOWROOM_ITEMS = [
         title: "10' x 20' Utility Shed",
         label: "ORGANIZED BLISS",
         description: "Twice as organized as your junk drawer. The efficient workspace for sports gear and gardening tools.",
-        image: "https://images.unsplash.com/photo-1525936534217-15b9c14828dd?q=80&w=2574&auto=format&fit=crop",
+        // Replaced broken URL (original: 1525936534217-15b9c14828dd)
+        image: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=1200&auto=format&fit=crop",
         badge: "STARTING $9,185"
     }
 ];
@@ -127,8 +128,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
-    { id: 1, name: "David M.", role: "Saint John Homeowner", text: "Survived the 2024 blizzard without a scratch. Placed builds different.", stars: 5, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop" },
-    { id: 2, name: "Sarah L.", role: "Atlantic Artist", text: "My Quaker shed is the perfect studio. The light from that saltbox roof is amazing.", stars: 5, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2574&auto=format&fit=crop" }
+    { id: 1, name: "David M.", role: "Saint John Homeowner", text: "Survived the 2024 blizzard without a scratch. Placed builds different.", stars: 5, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" },
+    { id: 2, name: "Sarah L.", role: "Atlantic Artist", text: "My Quaker shed is the perfect studio. The light from that saltbox roof is amazing.", stars: 5, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop" }
 ];
 
 export const ROOFING_JOKES: RoofingJoke[] = [
@@ -139,8 +140,8 @@ export const ROOFING_JOKES: RoofingJoke[] = [
 ];
 
 export const HANDBOOK_ARTICLES: Article[] = [
-    { id: '1', title: "Winterizing Your Shed", subtitle: "Atlantic Ready", excerpt: "How to prepare your structure for heavy snow, ice damming, and low-draw electric heat in New Brunswick.", category: "MAINTENANCE", image: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=2670&auto=format&fit=crop" },
-    { id: '2', title: "Solar Power 101", subtitle: "Off-Grid Dreams", excerpt: "A guide to installing solar kits on small structures for lighting, tool charging, and even feeding the house with the right power kit.", category: "UPGRADES", image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=2672&auto=format&fit=crop" },
-    { id: '3', title: "Permit Guide", subtitle: "Local Regulations", excerpt: "When a plug-in kit is enough, when you need a full wired feed, and how local inspectors tend to view each option in Atlantic Canada.", category: "PLANNING", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2831&auto=format&fit=crop" },
-    { id: '4', title: "Plug-In Shed 101", subtitle: "Backyard Power", excerpt: "A homeowner-friendly guide to powering a backyard office or workshop with a heavy-duty tether instead of a trench.", category: "GUIDE", image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=2574&auto=format&fit=crop" }
+    { id: '1', title: "Winterizing Your Shed", subtitle: "Atlantic Ready", excerpt: "How to prepare your structure for heavy snow, ice damming, and low-draw electric heat in New Brunswick.", category: "MAINTENANCE", image: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=1200&auto=format&fit=crop" },
+    { id: '2', title: "Solar Power 101", subtitle: "Off-Grid Dreams", excerpt: "A guide to installing solar kits on small structures for lighting, tool charging, and even feeding the house with the right power kit.", category: "UPGRADES", image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1200&auto=format&fit=crop" },
+    { id: '3', title: "Permit Guide", subtitle: "Local Regulations", excerpt: "When a plug-in kit is enough, when you need a full wired feed, and how local inspectors tend to view each option in Atlantic Canada.", category: "PLANNING", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop" },
+    { id: '4', title: "Plug-In Shed 101", subtitle: "Backyard Power", excerpt: "A homeowner-friendly guide to powering a backyard office or workshop with a heavy-duty tether instead of a trench.", category: "GUIDE", image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=1200&auto=format&fit=crop" }
 ];

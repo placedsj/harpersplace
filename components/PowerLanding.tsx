@@ -5,7 +5,7 @@ const PowerLanding = ({ onBack, onBuild }: { onBack: () => void, onBuild: () => 
         <div className="min-h-screen bg-[#020617] text-white selection:bg-orange-600 overflow-y-auto no-scrollbar pb-40">
             {/* HERO */}
             <header className="relative pt-40 pb-20 px-10 border-b border-white/5">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544724569-5f546fd6dd2d?q=80&w=2544&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544724569-5f546fd6dd2d?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
 
                 <div className="max-w-7xl mx-auto relative z-10 text-center">
@@ -52,7 +52,7 @@ const PowerLanding = ({ onBack, onBuild }: { onBack: () => void, onBuild: () => 
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-[3rem] p-10 relative overflow-hidden group">
                         <div className="absolute inset-0 bg-red-600/5 group-hover:bg-red-600/10 transition-colors" />
-                        <img src="https://images.unsplash.com/photo-1544724569-5f546fd6dd2d?q=80&w=2544&auto=format&fit=crop" className="w-full h-96 object-cover rounded-2xl grayscale mix-blend-luminosity opacity-50 group-hover:opacity-80 transition-opacity" alt="Messy cords" />
+                        <img src="https://images.unsplash.com/photo-1544724569-5f546fd6dd2d?q=80&w=1600&auto=format&fit=crop" className="w-full h-96 object-cover rounded-2xl grayscale mix-blend-luminosity opacity-50 group-hover:opacity-80 transition-opacity" alt="Messy cords" />
                     </div>
                 </div>
             </section>

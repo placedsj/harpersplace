@@ -346,7 +346,7 @@ const App: React.FC = () => {
                     <div className="absolute bottom-full right-0 mb-6 w-96 bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 animate-in slide-in-from-bottom-10 fade-in duration-500">
                         <button onClick={() => setChatbotOpen(false)} className="absolute top-6 right-8 text-slate-300 hover:text-slate-900 transition-colors text-xl">✕</button>
                         <div className="flex items-center gap-5 mb-8">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop" className="w-16 h-16 rounded-2xl shadow-xl" alt="Harper" />
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop" className="w-16 h-16 rounded-2xl shadow-xl" alt="Harper" />
                             <div>
                                 <div className="font-black text-slate-900 text-lg leading-none mb-1 uppercase tracking-tighter">Harper AI</div>
                                 <div className="text-[10px] font-bold text-green-500 uppercase tracking-widest flex items-center gap-1">

@@ -57,19 +57,19 @@ export default function ShedLanding({ onStart, onHandbook, onCalculator }: { onS
                                 title: "The Modern Shed Office",
                                 tag: "Work From Home",
                                 desc: "A 10' x 16' backyard studio powered by a 30A plug-in kit—quiet, heated, and just a short walk from the back door.",
-                                img: "https://images.unsplash.com/photo-1518481852452-9415b262eba4?q=80&w=2670&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1518481852452-9415b262eba4?q=80&w=1200&auto=format&fit=crop"
                             },
                             {
                                 title: "The Lofted Barn",
                                 tag: "Maximum Storage",
                                 desc: "The ultimate flagship. Massive footprint, double lofts, and Canadian-tough construction.",
-                                img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=3432&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=1200&auto=format&fit=crop"
                             },
                             {
                                 title: "The Garden Retreat",
                                 tag: "Backyard Escape",
                                 desc: "Standard vertical framing with a sharp peak. Solid, reliable, and big enough for everything.",
-                                img: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=2574&auto=format&fit=crop"
+                                img: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?q=80&w=1200&auto=format&fit=crop"
                             }
                         ].map((item, i) => (
                             <div key={i} className={`group relative aspect-[3/4] rounded-[2.5rem] overflow-hidden cursor-pointer shadow-2xl shadow-slate-200 ${i === 1 ? 'md:-mt-16' : ''}`}>
