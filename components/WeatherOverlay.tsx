@@ -19,6 +19,11 @@ interface Particle {
 
 const WeatherOverlay: React.FC<WeatherOverlayProps> = ({ type, time }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const timeRef = useRef(time);
+
+    useEffect(() => {
+        timeRef.current = time;
+    }, [time]);
     
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -41,7 +46,7 @@ const WeatherOverlay: React.FC<WeatherOverlayProps> = ({ type, time }) => {
         
         const createParticle = (isInitial = false): Particle => {
             const size = type === 'snow' ? Math.random() * 3 + 1 : Math.random() * 1.5 + 0.5;
-            const opacityMod = time > 80 || time < 20 ? 0.3 : 0.6; // Slightly less visible at night for realism
+            const opacityMod = timeRef.current > 80 || timeRef.current < 20 ? 0.3 : 0.6; // Slightly less visible at night for realism
             return {
                 x: Math.random() * w,
                 y: isInitial ? Math.random() * h : -20,
@@ -98,7 +103,7 @@ const WeatherOverlay: React.FC<WeatherOverlayProps> = ({ type, time }) => {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationFrameId);
         };
-    }, [type, time]);
+    }, [type]);
 
     return (
         <canvas 
