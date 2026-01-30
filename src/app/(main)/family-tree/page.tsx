@@ -1,11 +1,15 @@
-
 // src/app/(main)/family-tree/page.tsx
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useAuth, useDoc, useFirestore } from '@/firebase';
+import { doc, Timestamp } from 'firebase/firestore';
+import type { Profile } from '@/app/(main)/profile/page';
+import { differenceInYears, format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
 
-
-export const familyMembers = {
-    harper: { name: "Harper Ryan", dob: "11/12/2024" },
+export const staticFamilyMembers = {
     parents: [
         { name: "Dad (Craig)", dob: "03/23/1990", side: 'paternal' as const },
         { name: "Mom (Jules)", dob: "07/21/1992", side: 'maternal' as const },
@@ -38,19 +42,24 @@ type FamilyMember = {
     dob?: string;
 };
 
-const FamilyMemberCard = ({ name, dob, side }: FamilyMember & { side: 'maternal' | 'paternal' | 'child' }) => (
-    <div className={cn(
-        "flex flex-col items-center text-center p-3 rounded-lg shadow-sm w-full",
-        side === 'child' && 'bg-accent/20 border-2 border-accent',
-        side === 'maternal' && 'bg-mom/10 border border-mom/20',
-        side === 'paternal' && 'bg-dad/10 border border-dad/20',
-    )}>
-        <div className="leading-tight">
-            <p className="font-semibold font-sans">{name}</p>
-            {dob && <p className="text-xs text-muted-foreground">{dob}</p>}
+const FamilyMemberCard = ({ name, dob, side, isLoading }: FamilyMember & { side: 'maternal' | 'paternal' | 'child', isLoading?: boolean }) => {
+    if (isLoading) {
+        return <Skeleton className="h-16 w-full" />
+    }
+    return (
+        <div className={cn(
+            "flex flex-col items-center text-center p-3 rounded-lg shadow-sm w-full",
+            side === 'child' && 'bg-accent/20 border-2 border-accent',
+            side === 'maternal' && 'bg-mom/10 border border-mom/20',
+            side === 'paternal' && 'bg-dad/10 border border-dad/20',
+        )}>
+            <div className="leading-tight">
+                <p className="font-semibold font-sans">{name}</p>
+                {dob && <p className="text-xs text-muted-foreground">{dob}</p>}
+            </div>
         </div>
-    </div>
-);
+    );
+}
 
 
 const FamilyBranch = ({ title, members, side }: { title: string, members: FamilyMember[], side: 'maternal' | 'paternal' }) => {
@@ -69,8 +78,20 @@ const FamilyBranch = ({ title, members, side }: { title: string, members: Family
 }
 
 export default function FamilyTreePage() {
-  const paternalParent = familyMembers.parents.find(p => p.side === 'paternal');
-  const maternalParent = familyMembers.parents.find(p => p.side === 'maternal');
+  const { user } = useAuth();
+  const { db } = useFirestore();
+  
+  const { data: profile, loading: profileLoading } = useDoc<Profile>(
+      user && db ? doc(db, `users/${user.uid}/profile`, 'main') : null
+  );
+
+  const harperData = {
+      name: profile?.name || "Harper",
+      dob: profile?.dob ? format(profile.dob.toDate(), 'MM/dd/yyyy') : "11/12/2024"
+  };
+
+  const paternalParent = staticFamilyMembers.parents.find(p => p.side === 'paternal');
+  const maternalParent = staticFamilyMembers.parents.find(p => p.side === 'maternal');
 
   return (
     <div className="space-y-8">
@@ -84,7 +105,7 @@ export default function FamilyTreePage() {
         <div className="flex flex-col items-center space-y-8">
             {/* Child */}
             <div className="w-48">
-                 <FamilyMemberCard name={familyMembers.harper.name} dob={familyMembers.harper.dob} side="child" />
+                 <FamilyMemberCard name={harperData.name} dob={harperData.dob} side="child" isLoading={profileLoading} />
             </div>
 
              {/* Connecting Lines to Parents */}
@@ -112,9 +133,9 @@ export default function FamilyTreePage() {
                         <CardTitle className="text-center text-dad font-headline uppercase tracking-widest">Dad's Family</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FamilyBranch title="Grandparents" members={familyMembers.paternalGrandparents} side="paternal" />
-                        <FamilyBranch title="Aunts & Uncles" members={familyMembers.paternalAuntsUncles} side="paternal" />
-                        <FamilyBranch title="Cousins" members={familyMembers.paternalCousins} side="paternal" />
+                        <FamilyBranch title="Grandparents" members={staticFamilyMembers.paternalGrandparents} side="paternal" />
+                        <FamilyBranch title="Aunts & Uncles" members={staticFamilyMembers.paternalAuntsUncles} side="paternal" />
+                        <FamilyBranch title="Cousins" members={staticFamilyMembers.paternalCousins} side="paternal" />
                     </CardContent>
                 </Card>
 
@@ -123,9 +144,9 @@ export default function FamilyTreePage() {
                         <CardTitle className="text-center text-mom font-headline uppercase tracking-widest">Mom's Family</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                       <FamilyBranch title="Grandparents" members={familyMembers.maternalGrandparents} side="maternal" />
-                       <FamilyBranch title="Aunts & Uncles" members={familyMembers.maternalAuntsUncles} side="maternal" />
-                       <FamilyBranch title="Cousins" members={familyMembers.maternalCousins} side="maternal" />
+                       <FamilyBranch title="Grandparents" members={staticFamilyMembers.maternalGrandparents} side="maternal" />
+                       <FamilyBranch title="Aunts & Uncles" members={staticFamilyMembers.maternalAuntsUncles} side="maternal" />
+                       <FamilyBranch title="Cousins" members={staticFamilyMembers.maternalCousins} side="maternal" />
                     </CardContent>
                 </Card>
             </div>
