@@ -4,12 +4,12 @@ import { GoogleGenAI, Type } from "@google/genai";
 // Initializing GoogleGenAI client lazily
 let ai: GoogleGenAI | null = null;
 
-const getAI = () => {
+const getAI = (): GoogleGenAI => {
     if (!ai) {
         const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
         ai = new GoogleGenAI({ apiKey });
     }
-    return ai;
+    return ai!;
 };
 
 export const generateConfigFromPrompt = async (prompt: string, currentSpec: any) => {
