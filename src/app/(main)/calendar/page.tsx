@@ -1,3 +1,4 @@
+
 // src/app/(main)/calendar/page.tsx
 'use client';
 
@@ -26,7 +27,7 @@ const familyBirthdays = [
 
 const custodyParents = {
     dad: { name: "Dad", color: "bg-dad" },
-    mom: { name: "Mom", color: "bg-mom" },
+    mom: { name: "Mom (Jules)", color: "bg-mom" },
     alternate: { name: "Alternate Block", color: "bg-gray-200 dark:bg-gray-700"}
 };
 

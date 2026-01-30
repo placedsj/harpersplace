@@ -1,3 +1,4 @@
+
 // src/app/(main)/family-tree/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -7,7 +8,7 @@ export const familyMembers = {
     harper: { name: "Harper Ryan", dob: "11/12/2024" },
     parents: [
         { name: "Dad (Craig)", dob: "03/23/1990", side: 'paternal' as const },
-        { name: "Mom (Emma)", dob: "12/15/1995", side: 'maternal' as const },
+        { name: "Mom (Jules)", dob: "07/21/1992", side: 'maternal' as const },
     ],
     maternalGrandparents: [
         { name: "Nanny Ryan (Jane)", side: 'maternal' as const },

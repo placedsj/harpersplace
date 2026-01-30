@@ -1,3 +1,4 @@
+
 // src/app/(main)/communication/page.tsx
 'use client';
 
@@ -41,9 +42,9 @@ type Message = {
 };
 
 const otherUser = {
-    uid: 'emma-placeholder-uid',
-    initials: 'E',
-    displayName: 'Emma'
+    uid: 'jules-placeholder-uid',
+    initials: 'J',
+    displayName: 'Jules'
 }
 
 function AiCoachDialog({ message, onUseSuggestion }: { message: string; onUseSuggestion: (suggestion: string) => void }) {
