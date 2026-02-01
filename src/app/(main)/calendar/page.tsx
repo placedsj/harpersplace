@@ -5,12 +5,15 @@
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
-import { format, isSameDay, getDay, isTuesday, isThursday, isSunday, getWeek, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
-import { Cake, Users, Handshake, Phone } from 'lucide-react';
+import { format, getDay, isTuesday, isThursday, isSunday, startOfMonth, endOfMonth, eachDayOfInterval, differenceInCalendarWeeks, parse, isValid } from 'date-fns';
+import { Cake, Users, Handshake, Phone, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { familyMembers } from '@/app/(main)/family-tree/page';
+import { staticFamilyMembers } from '@/app/(main)/family-tree/page';
 import { cn } from '@/lib/utils';
+import { useAuth, useDoc, useFirestore } from '@/firebase';
+import { doc, Timestamp } from 'firebase/firestore';
+import type { Profile } from '@/app/(main)/profile/page';
 
 
 type CalendarEvent = {
@@ -19,27 +22,27 @@ type CalendarEvent = {
   title: string;
 };
 
-// --- Data based on family tree and user request ---
-const familyBirthdays = [
-    { name: familyMembers.harper.name, date: new Date(2025, 10, 12) }, // Nov 12
-    ...familyMembers.parents.map(p => ({ name: p.name, date: new Date(new Date().getFullYear(), parseInt(p.dob.split('/')[0]) - 1, parseInt(p.dob.split('/')[1])) }))
-];
-
 const custodyParents = {
-    dad: { name: "Dad", color: "bg-dad" },
+    dad: { name: "Dad (Craig)", color: "bg-dad" },
     mom: { name: "Mom (Jules)", color: "bg-mom" },
     alternate: { name: "Alternate Block", color: "bg-gray-200 dark:bg-gray-700"}
 };
 
-
 // --- "Dad's Plan" Schedule Logic ---
+// Use a fixed anchor date to make week calculations deterministic and not locale-dependent.
+const ANCHOR_DATE = new Date('2025-01-05T00:00:00Z'); // An "on-week" Sunday for Dad
+
 const isDadsOnWeek = (date: Date) => {
-    // Assuming week starts on Sunday. An even week number is an "on-week" for Dad's FaceTime.
-    const weekNumber = getWeek(date, { weekStartsOn: 0 });
-    return weekNumber % 2 === 0;
+    const weekDifference = differenceInCalendarWeeks(date, ANCHOR_DATE, { weekStartsOn: 0 });
+    return weekDifference % 2 === 0;
 }
 
-const getEventsForDate = (date: Date): CalendarEvent[] => {
+const isBirthday = (date: Date, bdayDate: Date | undefined) => {
+    if (!bdayDate || !isValid(bdayDate)) return false;
+    return date.getMonth() === bdayDate.getMonth() && date.getDate() === bdayDate.getDate();
+}
+
+const getEventsForDate = (date: Date, familyBirthdays: { name: string, date?: Date }[]): CalendarEvent[] => {
     const dayOfWeek = getDay(date); // Sunday = 0, Monday = 1, ...
     const events: CalendarEvent[] = [];
 
@@ -64,11 +67,7 @@ const getEventsForDate = (date: Date): CalendarEvent[] => {
 
     // 3. Birthdays
     familyBirthdays.forEach(bday => {
-        const today = new Date(date);
-        const birthdayDate = new Date(bday.date);
-        today.setFullYear(1900); // Normalize year to avoid year-specific issues
-        birthdayDate.setFullYear(1900);
-        if (isSameDay(today, birthdayDate)) {
+        if (isBirthday(date, bday.date)) {
              events.push({ date, type: 'birthday', title: `${bday.name}'s Birthday` });
         }
     });
@@ -82,6 +81,30 @@ export default function CalendarPage() {
   const [monthEvents, setMonthEvents] = React.useState<CalendarEvent[]>([]);
   const router = useRouter();
 
+  const { user } = useAuth();
+  const { db } = useFirestore();
+  const { data: profile, loading: profileLoading } = useDoc<Profile>(
+      user && db ? doc(db, `users/${user.uid}/profile`, 'main') : null
+  );
+
+  const familyBirthdays = React.useMemo(() => {
+    const birthdays: { name: string, date?: Date }[] = [];
+    
+    if (profile) {
+        birthdays.push({ name: profile.name, date: profile.dob instanceof Timestamp ? profile.dob.toDate() : new Date(profile.dob) });
+    }
+
+    staticFamilyMembers.parents.forEach(p => {
+        if (p.dob) {
+             const [month, day, year] = p.dob.split('/');
+             birthdays.push({ name: p.name, date: new Date(parseInt(year), parseInt(month) - 1, parseInt(day)) });
+        }
+    });
+
+    return birthdays;
+  }, [profile]);
+
+
   React.useEffect(() => {
     // Set initial date only on client to avoid hydration mismatch
     setDate(new Date("2025-09-06T12:00:00Z"));
@@ -93,10 +116,10 @@ export default function CalendarPage() {
     const start = startOfMonth(today);
     const end = endOfMonth(today);
 
-    const events = eachDayOfInterval({ start, end }).flatMap(day => getEventsForDate(day));
+    const events = eachDayOfInterval({ start, end }).flatMap(day => getEventsForDate(day, familyBirthdays));
     setMonthEvents(events);
 
-  }, [date]);
+  }, [date, familyBirthdays]);
 
   const handleRequestChange = () => {
     if (!date) return;
@@ -108,14 +131,14 @@ export default function CalendarPage() {
   };
   
   const dayHasEventType = (day: Date, eventType: CalendarEvent['type']) => {
-      return monthEvents.some(e => isSameDay(e.date, day) && e.type === eventType);
+      return monthEvents.some(e => isBirthday(e.date, day) && e.type === eventType);
   }
 
   const modifiers = {
-      mom: (day: Date) => dayHasEventType(day, 'custody') && !isSunday(day) && !isTuesday(day) && !isThursday(day),
-      dad: isSunday,
-      alternate: (day: Date) => isTuesday(day) || isThursday(day),
-      birthday: (day: Date) => dayHasEventType(day, 'birthday'),
+      mom: (day: Date) => getEventsForDate(day, []).some(e => e.type === 'custody' && e.title.includes(custodyParents.mom.name)),
+      dad: (day: Date) => getEventsForDate(day, []).some(e => e.type === 'custody' && e.title.includes(custodyParents.dad.name)),
+      alternate: (day: Date) => getEventsForDate(day, []).some(e => e.type === 'alternate'),
+      birthday: (day: Date) => familyBirthdays.some(bday => isBirthday(day, bday.date)),
   };
   
   const modifiersClassNames = {
@@ -125,8 +148,7 @@ export default function CalendarPage() {
       birthday: 'font-bold border-2 border-accent rounded-full',
   };
 
-  const selectedDayEvents = date ? monthEvents.filter(e => isSameDay(e.date, date)) : [];
-
+  const selectedDayEvents = date ? getEventsForDate(date, familyBirthdays) : [];
 
   return (
         <div className="space-y-8">
@@ -139,16 +161,18 @@ export default function CalendarPage() {
             <div className="grid gap-8 md:grid-cols-3">
                 <Card className="md:col-span-2 shadow-lg border-2 border-primary/40">
                     <CardContent className="p-0">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            className="p-4"
-                            modifiers={modifiers}
-                            modifiersClassNames={modifiersClassNames}
-                            month={date}
-                            onMonthChange={(month) => setDate(new Date(month.getFullYear(), month.getMonth(), 1))}
-                        />
+                        {profileLoading ? <div className="h-[400px] flex items-center justify-center"><Loader2 className="animate-spin" /></div> : (
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                className="p-4"
+                                modifiers={modifiers}
+                                modifiersClassNames={modifiersClassNames}
+                                month={date}
+                                onMonthChange={(month) => setDate(new Date(month.getFullYear(), month.getMonth(), 1))}
+                            />
+                        )}
                     </CardContent>
         </Card>
         <div className="space-y-6">
@@ -184,7 +208,7 @@ export default function CalendarPage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {selectedDayEvents.length > 0 ? (
+                    {profileLoading ? <Loader2 className="animate-spin"/> : selectedDayEvents.length > 0 ? (
                         <ul className="space-y-3">
                             {selectedDayEvents.map((event, index) => (
                                 <li key={index} className="flex items-center gap-3">
