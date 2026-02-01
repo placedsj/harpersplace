@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { ArrowLeft, FileDown } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Generate static pages for each blog post
 export async function generateStaticParams() {
@@ -47,6 +48,20 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           </div>
         </header>
 
+        {post.image && (
+            <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
+                <Image 
+                    src={post.image} 
+                    alt={post.title}
+                    width={896}
+                    height={400}
+                    className="w-full h-auto object-cover"
+                    data-ai-hint={post.dataAiHint}
+                    priority
+                />
+            </div>
+        )}
+
         {post.audioUrl && (
           <Card className="mb-8 bg-muted/30">
             <CardContent className="p-4 flex items-center gap-4">
@@ -64,7 +79,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           
           <aside className="md:col-span-1 space-y-6">
             {post.resources && post.resources.length > 0 && (
-                <Card className="border-primary/20">
+                <Card className="border-primary/20 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="font-headline uppercase text-primary text-base">Court-Ready Resources</CardTitle>
                     </CardHeader>
@@ -86,7 +101,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     </CardContent>
                 </Card>
             )}
-             <Card>
+             <Card className="bg-muted/50">
                 <CardHeader>
                     <CardTitle className="font-headline uppercase text-base">About the Author</CardTitle>
                 </CardHeader>

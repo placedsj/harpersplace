@@ -1,3 +1,4 @@
+
 // src/lib/blog-data.ts
 import placeholderImages from '@/app/lib/placeholder-images.json';
 
@@ -7,12 +8,14 @@ type Post = {
     summary: string;
     contentHtml: string;
     date: string;
-    category: 'Finances' | 'Communication' | 'Legal' | 'Parenting' | 'Wellness';
+    category: 'Finances' | 'Communication' | 'Legal' | 'Parenting' | 'Wellness' | 'Family' | 'Planning';
     author: {
         name: string;
         avatar: string;
         bio: string;
     };
+    image?: string;
+    dataAiHint?: string;
     audioUrl?: string;
     resources?: {
         title: string;
@@ -32,6 +35,8 @@ const posts: Post[] = [
         slug: 'the-reloction-audit',
         title: 'The Longest Bridge: The Relocation Audit',
         summary: 'A move-away is the ultimate test of your co-parenting structure. Learn how to navigate this "heavy load" with the raw, bare-boned honesty of the Steel Bridge philosophy.',
+        image: 'https://picsum.photos/seed/bridge/896/400',
+        dataAiHint: 'steel bridge',
         contentHtml: `
             <p>The news landed like a structural impact test: one parent got a job offer in Halifax. A great one. In the "covered bridge" days, this would have been a declaration of war. Lawyers would be called, threats would be made, and the bridge would have been torn apart by the "scary as fuck" tension, with Harper caught in the middle.</p>
             <p>But this is 2026. This is the era of the Steel Bridge.</p>
@@ -60,6 +65,8 @@ const posts: Post[] = [
         slug: 'the-summer-load',
         title: 'The Summer Load: Navigating the 119 Exit with a Boat in Tow',
         summary: 'Summer vacation can collapse a "covered bridge" of unspoken expectations. Learn how to build a summer plan out of raw, bare-boned steel that can handle the heaviest loads.',
+        image: 'https://picsum.photos/seed/summer/896/400',
+        dataAiHint: 'summer boat',
         contentHtml: `
             <p>In the old days—Nanny’s days—summer was a "covered bridge" of uncertainty. Mom and Dad would wait until the last week of June to argue about who got the week at the cottage. It was painted over with "we'll just see how it goes," but inside, the stress was scary as fuck for Harper.</p>
             <p>In 2026, we’ve stripped the roof off. The Hammond River Bridge doesn't care about "vibes"; it cares about structure.</p>
@@ -80,6 +87,8 @@ const posts: Post[] = [
         slug: 'adding-a-new-beam-new-partners',
         title: 'Adding a New Beam: The Raw Truth About New Partners',
         summary: 'Introducing a new partner is a heavy load for the bridge. Learn how to reinforce the structure with raw honesty, leaving the "covered bridge" of secrets and jealousy behind.',
+        image: 'https://picsum.photos/seed/partners/896/400',
+        dataAiHint: 'happy couple',
         contentHtml: `
             <p>In the old "covered bridge" days, Dad would have hidden his new girlfriend for a year, terrified of the "scary as fuck" fallout. It was painted over with lies like "Oh, she’s just a friend from work," until the rot of the secret made Harper feel like she couldn't trust her own eyes.</p>
             <p>In 2026, we’ve stripped the roof off. We don’t hide behind the paint.</p>
@@ -101,6 +110,8 @@ const posts: Post[] = [
         slug: 'the-parent-teacher-standoff',
         title: 'The Structural Audit: The Parent-Teacher Stand-off',
         summary: 'Forget the "covered bridge" awkwardness of sitting in tiny chairs together. We’re moving to the high-tensile strength of Parallel Educational Support.',
+        image: 'https://picsum.photos/seed/classroom/896/400',
+        dataAiHint: 'teacher classroom',
         contentHtml: `
              <p>In the old days, Nanny thought it was best if both parents sat together at the tiny classroom desk. It was "pretty on the outside" for the teacher, but inside, it was scary as fuck. The tension was so thick the teacher could barely talk about Harper’s math progress.</p>
             <p>In 2026, we’ve stripped the roof off that tradition.</p>
@@ -121,6 +132,8 @@ const posts: Post[] = [
         slug: 'nannys-guide-to-the-new-bridge',
         title: 'Nanny’s Guide to the New Bridge: Why Steel is Safer than Paint',
         summary: 'This one is for the family members who remember the "Old Way." An explanation of why we stripped off the red paint and wooden roof to reveal the raw steel that keeps Harper safe.',
+        image: 'https://picsum.photos/seed/oldbridge/896/400',
+        dataAiHint: 'covered bridge',
         contentHtml: `
             <p>Nanny loves a good story, and she loves the old covered bridges that dot the New Brunswick landscape. To her, those bridges represent a time when things were simpler. But Nanny also remembers the "creaks"—the way the air felt inside those covered bridges when Harper’s parents first separated—dark, uncertain, and a little bit scary.</p>
             <p>We had to tell Nanny: "The red paint was beautiful, but the wood couldn't hold the weight anymore."</p>
@@ -142,6 +155,8 @@ const posts: Post[] = [
         slug: 'the-heavy-load-holidays',
         title: 'The Heavy Load: Surviving the KV Holidays with a Steel Bridge',
         summary: 'We’re stripping away the painted-on "perfect family" expectations and building a holiday strategy out of high-tensile steel. No makeup, no pretending, just a solid plan.',
+        image: 'https://picsum.photos/seed/holidays/896/400',
+        dataAiHint: 'holiday lights',
         contentHtml: `
             <p>For years, the KV Santa Claus Parade was a source of "covered bridge" anxiety. Nanny wanted everyone in the same row of lawn chairs, wearing matching mittens, pretending the rot wasn't there. It was pretty for the Facebook photos, but inside, the tension was "scary as fuck."</p>
             <p>This year, we’re doing the Steel Bridge version. No more hiding.</p>
@@ -162,6 +177,8 @@ const posts: Post[] = [
         slug: 'hammond-river-bridge',
         title: 'The Hammond River Bridge: The Real "Safe Harbor"',
         summary: 'You can\'t talk about a "New Brunswick Blueprint" in Quispamsis without the Hammond River Bridge. This is the literal steel backbone of the Valley and the metaphorical bridge for every family navigating "Two Roofs, One Home."',
+        image: 'https://picsum.photos/seed/riverbridge/896/400',
+        dataAiHint: 'river bridge',
         contentHtml: `
             <p>For Harper, the Hammond River Bridge is the signal. When she sees those steel trusses reflecting off the water, she knows she’s almost "home," whichever roof that happens to be tonight. It’s the two-minute warning to finish her book and transition from "Dad’s World" to "Mom’s World."</p>
             <p>In the old days, that bridge felt like a gauntlet. But now, her parents treat the bridge like a neutral zone. Because they use <strong>Harper’s Place</strong>, the "business" of parenting stays off the bridge. The <strong>Section 7</strong> expenses for her soccer cleats are already logged. Her <strong>Parenting Time</strong> schedule is synced. By the time the tires hum over the bridge deck, the only thing Harper has to worry about is being a kid.</p>
@@ -180,6 +197,8 @@ const posts: Post[] = [
         slug: 'harpers-bridge-two-roofs-one-bridge',
         title: 'Two Roofs, One Bridge: Welcome to Harper’s Bridge',
         summary: 'If Harper’s Place is the home, the Bridge is the connection that makes "Two Roofs, One Home" possible. In the "New Brunswick Blueprint," we don’t just focus on where the child sleeps; we focus on the safe passage between those spaces.',
+        image: 'https://picsum.photos/seed/tworoofs/896/400',
+        dataAiHint: 'two houses',
         contentHtml: `
             <p>In New Brunswick, the "Sunday Drive" is a tradition, but for Harper, it’s the most important part of her week. As she crosses the bridge, she isn't thinking about "custody" or "access"—terms the law has rightfully left behind. She’s thinking about how her life feels like one continuous story, even if the setting changes.</p>
             <p>Because her parents use the <strong>Harper’s Place AI Communication Coach</strong>, the bridge is clear of the "emotional fog" that once made these trips scary. There are no tense conversations at the curb. Instead, there is a "handshake" of data: her medication schedule is logged, her school project is in the backpack, and her parents have already shared a "success note" in the journal about her winning the science fair.</p>
@@ -200,6 +219,8 @@ const posts: Post[] = [
         slug: 'what-not-to-do-at-exchanges',
         title: 'The Handover Handbook: 7 Things to Never Do at a Custody Exchange',
         summary: 'Custody exchanges are a major source of stress for children. Learn the key mistakes to avoid to ensure every handover is peaceful, positive, and conflict-free.',
+        image: 'https://picsum.photos/seed/handshake/896/400',
+        dataAiHint: 'handshake deal',
         contentHtml: `
             <p>The moment of exchange—when a child transitions from one parent to the other—is one of the most emotionally charged moments in co-parenting. For a child, this brief interaction can be filled with anxiety and loyalty conflicts. Your number one job is to make it boring, predictable, and safe. Here are 7 things to absolutely avoid.</p>
             <ol class="list-decimal list-inside space-y-3 my-4">
@@ -221,6 +242,8 @@ const posts: Post[] = [
         slug: 'helping-children-with-anxiety',
         title: 'Your Child\'s Safe Harbor: 5 Ways to Help a Child Navigate Anxiety',
         summary: 'Separation is stressful for children. Learn five actionable strategies to help your child feel secure, understood, and confident amidst family changes.',
+        image: 'https://picsum.photos/seed/harbor/896/400',
+        dataAiHint: 'safe harbor',
         contentHtml: `
             <p>Anxiety in children, especially during a family separation, often looks like anger, defiance, or withdrawal. Their world feels unpredictable, and they lack the tools to express their big feelings. Your role is to be their safe harbor—the calm, predictable anchor in their emotional storm. Here are five practical ways to help.</p>
             <ol class="list-decimal list-inside space-y-3 my-4">
@@ -240,6 +263,8 @@ const posts: Post[] = [
         slug: 'navigating-section-7-expenses',
         title: 'Stop Fighting About Who Pays: Navigating Section 7 Expenses in New Brunswick',
         summary: 'A clear guide to understanding, tracking, and documenting extraordinary expenses to reduce conflict and ensure fairness.',
+        image: 'https://picsum.photos/seed/receipts/896/400',
+        dataAiHint: 'receipt money',
         contentHtml: `
             <p>One of the most common sources of conflict between co-parents is money—specifically, who pays for what. In New Brunswick, these are often referred to as "Section 7 expenses" or "extraordinary expenses." These are costs that go beyond basic child support, like sports fees, tutoring, or medical bills.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">What Qualifies as a Section 7 Expense?</h3>
@@ -281,6 +306,8 @@ const posts: Post[] = [
         slug: 'i-statement-advantage',
         title: 'The "I Statement" Advantage: Fulfilling the Duty to Protect Children from Parental Conflict',
         summary: 'Learn how to rephrase your communication to be more effective, less accusatory, and centered on your child\'s well-being, as required by the Divorce Act.',
+        image: 'https://picsum.photos/seed/conversation/896/400',
+        dataAiHint: 'calm conversation',
         contentHtml: `
             <p>The federal <em>Divorce Act</em> places a legal responsibility on parents to protect their children from conflict arising from a separation. Section 7.1 outlines this as a primary duty. But what does that look like in practice? It starts with how you communicate.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Problem with "You Statements"</h3>
@@ -310,6 +337,8 @@ const posts: Post[] = [
         slug: 'why-judges-love-timestamps',
         title: 'Why Judges Love Timestamps: Making Your Records Court-Admissible in NB',
         summary: 'In a "he said, she said" dispute, verifiable data wins. Discover why timestamped, unalterable records are your most powerful tool in family court.',
+        image: 'https://picsum.photos/seed/courthouse/896/400',
+        dataAiHint: 'courthouse gavel',
         contentHtml: `
             <p>When family court matters become contentious, a judge\'s decision often comes down to credibility. Who can provide the most reliable account of events? Vague recollections and conflicting stories create doubt, but verifiable data provides clarity.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Problem with Screenshots and Emails</h3>
@@ -332,6 +361,8 @@ const posts: Post[] = [
         slug: 'parenting-time-vs-decision-making',
         title: 'Beyond the Schedule: Understanding Parenting Time vs. Decision-Making Responsibility in NB',
         summary: 'The law in New Brunswick has changed. It\'s no longer about "custody" and "access." Learn what "parenting time" and "decision-making responsibility" mean for your family.',
+        image: 'https://picsum.photos/seed/calendar/896/400',
+        dataAiHint: 'calendar schedule',
         contentHtml: `
             <p>The language we use to talk about parenting after separation has changed, and for a good reason. The old terms "custody" and "access" often created a sense of "winning" or "losing." The updated <em>Divorce Act</em> shifts the focus to the child\'s experience by using two new key terms: <strong>Parenting Time</strong> and <strong>Decision-Making Responsibility</strong>.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">Parenting Time</h3>
@@ -355,6 +386,8 @@ const posts: Post[] = [
         slug: 'new-brunswick-blueprint-guide',
         title: 'The New Brunswick Blueprint: Your Guide to Co-Parenting with Our App',
         summary: 'An introduction to the philosophy behind Harper\'s Place and how our tools are designed to build a stable, child-focused future for your family.',
+        image: 'https://picsum.photos/seed/blueprint/896/400',
+        dataAiHint: 'blueprint plans',
         contentHtml: `
             <p>Welcome to Harper\'s Place. We\'re not just another app; we\'re a comprehensive platform designed with a "child-first" philosophy. Our goal is to provide you with the tools to create what we call a "Stability Blueprint"—a clear, documented, and positive co-parenting plan that stands up to legal scrutiny and, more importantly, supports your child\'s well-being.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Four Pillars of the Stability Blueprint</h3>
@@ -375,6 +408,8 @@ const posts: Post[] = [
         slug: 'peaceful-bedtime-routine',
         title: 'From Chaos to Calm: Creating a Peaceful Bedtime Routine for Your Child',
         summary: 'Tired of bedtime battles? Discover simple, effective strategies to create a calming and consistent bedtime routine that helps your child (and you!) get the rest they need.',
+        image: 'https://picsum.photos/seed/bedtime/896/400',
+        dataAiHint: 'sleeping child',
         contentHtml: `
             <p>For many parents, bedtime can be the most stressful part of the day. But it doesn\'t have to be. A consistent and calming bedtime routine can make a world of difference, helping your child wind down and prepare for a restful night\'s sleep.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Magic of Consistency</h3>
@@ -397,6 +432,8 @@ const posts: Post[] = [
         slug: 'digital-wellness-for-modern-family',
         title: 'Digital Wellness for the Modern Family: A Guide to Managing Screen Time',
         summary: 'In a world of endless scrolling and constant notifications, learn how to build a healthy relationship with technology for you and your children.',
+        image: 'https://picsum.photos/seed/screentime/896/400',
+        dataAiHint: 'tablet screen',
         contentHtml: `
             <p>Screens are everywhere. From tablets and TVs to phones and computers, managing technology has become one of the biggest challenges for modern parents. How do you find the right balance? It starts with a plan and a commitment to digital wellness.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Goal Isn\'t to Eliminate Screens, It\'s to Be Intentional</h3>
@@ -418,6 +455,8 @@ const posts: Post[] = [
         slug: 'the-oxygen-mask-first-why-parental-self-care-isnt-selfish',
         title: 'The Oxygen Mask First: Why Parental Self-Care Isn\'t Selfish',
         summary: 'You can\'t pour from an empty cup. Learn why taking time for yourself is one of the most important things you can do for your children.',
+        image: 'https://picsum.photos/seed/selfcare/896/400',
+        dataAiHint: 'relaxing yoga',
         contentHtml: `
             <p>We\'ve all heard the flight attendant\'s instruction: "Secure your own oxygen mask before assisting others." This isn\'t a selfish act; it\'s a practical one. You can\'t help anyone if you are not in a position to do so. The same principle applies to parenting.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">Why Parental Burnout is a Real Risk</h3>
@@ -447,6 +486,8 @@ const posts: Post[] = [
         slug: 'picky-eaters-unite',
         title: 'Picky Eaters Unite: Tips and Tricks for Happier, Healthier Mealtimes',
         summary: 'From food chaining to a \'no-pressure\' approach, learn how to navigate the challenges of picky eating and make mealtimes more enjoyable for everyone.',
+        image: 'https://picsum.photos/seed/vegetables/896/400',
+        dataAiHint: 'vegetables kids',
         contentHtml: `
             <p>Is every meal a battle? You are not alone. Picky eating is a normal phase for many children, but it can be a major source of stress for parents. The good news is that there are strategies you can use to encourage your child to try new foods and make mealtimes more peaceful.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The \'No-Pressure\' Approach</h3>
@@ -469,6 +510,8 @@ const posts: Post[] = [
         slug: 'the-power-of-play',
         title: 'The Power of Play: How Unstructured Play Helps Your Child Thrive',
         summary: 'In a world of scheduled activities, discover the importance of unstructured play for your child\'s development and well-being.',
+        image: 'https://picsum.photos/seed/play/896/400',
+        dataAiHint: 'kids playing',
         contentHtml: `
             <p>In our increasingly scheduled world, it can be easy to forget the importance of simple, unstructured play. But play is not just a way for children to pass the time; it is essential for their development. It is how they learn about the world, develop social and emotional skills, and build a strong sense of self.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">What is Unstructured Play?</h3>
@@ -499,6 +542,8 @@ const posts: Post[] = [
         slug: 'talking-about-tough-topics',
         title: 'How to Talk to Your Kids About Tough Topics',
         summary: 'From divorce and death to bullying and bad news, here\'s how to approach difficult conversations in a way that is honest, reassuring, and age-appropriate.',
+        image: 'https://picsum.photos/seed/talk/896/400',
+        dataAiHint: 'serious talk',
         contentHtml: `
             <p>As a parent, you will inevitably have to talk to your children about difficult topics. Whether it\'s a family separation, a death in the family, or a scary news event, these conversations can be challenging. But with a little preparation and a lot of love, you can navigate them in a way that is honest, reassuring, and age-appropriate.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">Create a Safe Space</h3>
@@ -520,6 +565,8 @@ const posts: Post[] = [
         slug: 'the-magic-of-reading-aloud',
         title: 'The Magic of Reading Aloud: More Than Just a Bedtime Story',
         summary: 'Discover the profound impact that reading to your child has on their development, from language and literacy to emotional bonding and a lifelong love of learning.',
+        image: 'https://picsum.photos/seed/reading/896/400',
+        dataAiHint: 'child reading',
         contentHtml: `
             <p>Reading aloud to your child is one of the most powerful things you can do to support their development. It is a simple act with profound benefits, laying the foundation for a lifelong love of learning and a strong parent-child bond.</p>
             <h3 class="font-headline uppercase text-xl mt-6 mb-2">The Many Benefits of Reading Aloud</h3>
