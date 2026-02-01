@@ -1,6 +1,17 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
+/**
+ * Generates a shed configuration based on a natural language prompt using Google Gemini.
+ *
+ * This service leverages the `gemini-3-pro-preview` model to interpret user intent
+ * and map it to valid `ShedSpec` properties. It provides structural advice and
+ * optimizes material selection based on the user's description.
+ *
+ * @param prompt - The user's natural language input (e.g., "I need a 12x20 workshop for woodworking").
+ * @param currentSpec - The current state of the shed specification to provide context for the AI.
+ * @returns A partial configuration object or null if parsing fails. The object may include updated dimensions, style, and explanation.
+ */
 export const generateConfigFromPrompt = async (prompt: string, currentSpec: any) => {
     // Initializing GoogleGenAI client
     const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;

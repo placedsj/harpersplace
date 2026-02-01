@@ -281,7 +281,7 @@ const App: React.FC = () => {
                                 </header>
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                                     <div className="lg:col-span-1">
-                                        <LivePowerGauge baseLoad={totalVirtualLoad} status={totalVirtualLoad > 14 ? "SHEDDING LOAD" : "All Systems Go"} />
+                                        <LivePowerGauge maxAmps={15} loadFactor={totalVirtualLoad / 15} status={totalVirtualLoad > 14 ? "SHEDDING LOAD" : "All Systems Go"} />
 
                                         <div className="mt-8 bg-white/5 border border-white/10 p-8 rounded-[3rem]">
                                             <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 font-mono">Virtual Workday Simulator</h4>

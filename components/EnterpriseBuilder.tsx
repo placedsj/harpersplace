@@ -1,7 +1,6 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
-import { client } from '../lib/amplify';
 import WeatherOverlay from './WeatherOverlay';
 import ShedVisualizer from './ShedVisualizer';
 import {
@@ -24,6 +23,7 @@ import {
     SHOWROOM_ITEMS
 } from '../constants';
 import { generateConfigFromPrompt } from '../services/geminiService';
+import { saveShedDesign } from '../services/shedDesignService';
 import LivePowerGauge from './LivePowerGauge';
 import ROICalculator from './ROICalculator';
 import ShareModal from './ShareModal';
@@ -122,16 +122,7 @@ const EnterpriseBuilder: React.FC<EnterpriseBuilderProps> = ({ initialStyle = 'M
         }
 
         try {
-            await client.models.ShedDesign.create({
-                style: spec.style,
-                width: spec.width,
-                depth: spec.depth,
-                wallColor: spec.wallColor,
-                sidingType: spec.sidingType,
-                addonsJson: JSON.stringify(spec.addons),
-                specJson: JSON.stringify(spec),
-                name: `My ${spec.style} - ${new Date().toLocaleDateString()}`
-            });
+            await saveShedDesign(spec);
             alert('Design saved successfully!');
             setShowLogin(false);
         } catch (error) {
