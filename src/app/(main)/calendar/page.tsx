@@ -1,11 +1,10 @@
-
 // src/app/(main)/calendar/page.tsx
 'use client';
 
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
-import { format, getDay, isTuesday, isThursday, isSunday, startOfMonth, endOfMonth, eachDayOfInterval, differenceInCalendarWeeks, parse, isValid } from 'date-fns';
+import { format, getDay, isTuesday, isThursday, isSunday, startOfMonth, endOfMonth, eachDayOfInterval, differenceInCalendarWeeks, isValid } from 'date-fns';
 import { Cake, Users, Handshake, Phone, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,9 +22,9 @@ type CalendarEvent = {
 };
 
 const custodyParents = {
-    dad: { name: "Dad (Craig)", color: "bg-dad" },
-    mom: { name: "Mom (Jules)", color: "bg-mom" },
-    alternate: { name: "Alternate Block", color: "bg-gray-200 dark:bg-gray-700"}
+    dad: { name: "Dad (Craig)" },
+    mom: { name: "Mom (Jules)" },
+    alternate: { name: "Alternate Block" }
 };
 
 // --- "Dad's Plan" Schedule Logic ---
@@ -78,7 +77,6 @@ const getEventsForDate = (date: Date, familyBirthdays: { name: string, date?: Da
 
 export default function CalendarPage() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [monthEvents, setMonthEvents] = React.useState<CalendarEvent[]>([]);
   const router = useRouter();
 
   const { user } = useAuth();
@@ -91,13 +89,19 @@ export default function CalendarPage() {
     const birthdays: { name: string, date?: Date }[] = [];
     
     if (profile) {
-        birthdays.push({ name: profile.name, date: profile.dob instanceof Timestamp ? profile.dob.toDate() : new Date(profile.dob) });
+        const dob = profile.dob instanceof Timestamp ? profile.dob.toDate() : new Date(profile.dob);
+        if (isValid(dob)) {
+            birthdays.push({ name: profile.name, date: dob });
+        }
     }
 
     staticFamilyMembers.parents.forEach(p => {
         if (p.dob) {
              const [month, day, year] = p.dob.split('/');
-             birthdays.push({ name: p.name, date: new Date(parseInt(year), parseInt(month) - 1, parseInt(day)) });
+             const dob = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+             if (isValid(dob)) {
+                birthdays.push({ name: p.name, date: dob });
+             }
         }
     });
 
@@ -110,17 +114,6 @@ export default function CalendarPage() {
     setDate(new Date("2025-09-06T12:00:00Z"));
   }, []);
 
-  React.useEffect(() => {
-    document.title = "Calendar | Harper's Home";
-    const today = date || new Date("2025-09-06T12:00:00Z");
-    const start = startOfMonth(today);
-    const end = endOfMonth(today);
-
-    const events = eachDayOfInterval({ start, end }).flatMap(day => getEventsForDate(day, familyBirthdays));
-    setMonthEvents(events);
-
-  }, [date, familyBirthdays]);
-
   const handleRequestChange = () => {
     if (!date) return;
     const formattedDate = format(date, "MMMM do");
@@ -129,10 +122,6 @@ export default function CalendarPage() {
     const encodedMessage = encodeURIComponent(message);
     router.push(`/communication?draft=${encodedMessage}`);
   };
-  
-  const dayHasEventType = (day: Date, eventType: CalendarEvent['type']) => {
-      return monthEvents.some(e => isBirthday(e.date, day) && e.type === eventType);
-  }
 
   const modifiers = {
       mom: (day: Date) => getEventsForDate(day, []).some(e => e.type === 'custody' && e.title.includes(custodyParents.mom.name)),
@@ -142,8 +131,8 @@ export default function CalendarPage() {
   };
   
   const modifiersClassNames = {
-      mom: cn('bg-mom text-white rounded-md', custodyParents.mom.color),
-      dad: cn('bg-dad text-white rounded-md', custodyParents.dad.color),
+      mom: 'bg-mom/20 text-mom-foreground rounded-md',
+      dad: 'bg-dad/20 text-dad-foreground rounded-md',
       alternate: 'bg-muted text-muted-foreground/80 rounded-md',
       birthday: 'font-bold border-2 border-accent rounded-full',
   };
@@ -182,15 +171,15 @@ export default function CalendarPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <div className={cn("w-4 h-4 rounded-full", custodyParents.mom.color)}></div>
+                        <div className="w-4 h-4 rounded-full bg-mom/30"></div>
                         <span className="text-sm font-medium">{custodyParents.mom.name}'s Time</span>
                     </div>
                      <div className="flex items-center gap-2">
-                        <div className={cn("w-4 h-4 rounded-full", custodyParents.dad.color)}></div>
+                        <div className="w-4 h-4 rounded-full bg-dad/30"></div>
                         <span className="text-sm font-medium">{custodyParents.dad.name}'s Time</span>
                     </div>
                      <div className="flex items-center gap-2">
-                        <div className={cn("w-4 h-4 rounded-full", custodyParents.alternate.color)}></div>
+                        <div className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                         <span className="text-sm font-medium">{custodyParents.alternate.name}</span>
                     </div>
                      <div className="flex items-center gap-2">

@@ -36,6 +36,8 @@
 
     --mom: 340 70% 60%; /* Softer Pink */
     --dad: 210 70% 60%; /* Calmer Blue */
+    --mom-foreground: 340 80% 30%;
+    --dad-foreground: 210 80% 30%;
   }
 
   .dark {
@@ -70,6 +72,8 @@
     
     --mom: 340 60% 60%; /* Softer Pink */
     --dad: 210 60% 60%; /* Calmer Blue */
+    --mom-foreground: 340 70% 70%;
+    --dad-foreground: 210 70% 70%;
   }
 
   @page {

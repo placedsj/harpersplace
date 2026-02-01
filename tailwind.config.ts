@@ -59,7 +59,9 @@ export default {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         mom: 'hsl(var(--mom))',
+        'mom-foreground': 'hsl(var(--mom-foreground))',
         dad: 'hsl(var(--dad))',
+        'dad-foreground': 'hsl(var(--dad-foreground))',
       },
       borderRadius: {
         lg: 'var(--radius)',
