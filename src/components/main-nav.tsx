@@ -32,7 +32,6 @@ const toolsMenuItems = [
     { href: '/ai-tools/best-interest-checker', label: 'Best Interest Checker', group: 'AI Tools' },
     { href: '/transition-summary', label: 'Transition Summary AI', group: 'AI Tools' },
     { href: '/evidence-ai', label: 'Evidence AI Assistant', group: 'AI Tools' },
-    { href: '/communication-platform', label: 'Platform Vision', group: 'AI Tools' },
 ];
 
 

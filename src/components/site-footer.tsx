@@ -14,6 +14,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/about" className="hover:text-primary">About Us</Link>
             <Link href="/blueprint" className="hover:text-primary">The Stability Blueprint</Link>
+            <Link href="/communication-platform" className="hover:text-primary">Platform Vision</Link>
         </div>
       </div>
     </footer>
