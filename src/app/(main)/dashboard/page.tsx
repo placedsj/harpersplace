@@ -82,13 +82,21 @@ const MainDashboard = () => {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-2xl">🧒</span>
-                            <h1 className="text-3xl sm:text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">
-                                {profileLoading ? <Skeleton className="h-10 w-64" /> : `${profile?.name || "Harper's"} Dashboard`}
-                            </h1>
+                            {profileLoading ? (
+                                <Skeleton className="h-10 w-64" />
+                            ) : (
+                                <h1 className="text-3xl sm:text-4xl font-headline uppercase tracking-tight text-primary drop-shadow-md">
+                                    {`${profile?.name || "Harper's"} Dashboard`}
+                                </h1>
+                            )}
                         </div>
-                        <p className="text-base sm:text-lg font-sans text-muted-foreground tracking-wide">
-                            {profileLoading ? <Skeleton className="h-6 w-48 mt-1" /> : `A central hub for Harper, age ${harperAgeInMonths} months.`}
-                        </p>
+                        {profileLoading ? (
+                            <Skeleton className="h-6 w-48 mt-1" />
+                        ) : (
+                            <p className="text-base sm:text-lg font-sans text-muted-foreground tracking-wide">
+                                {`A central hub for Harper, age ${harperAgeInMonths} months.`}
+                            </p>
+                        )}
                     </div>
                      <Avatar className="h-16 w-16 hidden sm:flex">
                         <AvatarImage src="/harper-avatar.png" alt="Harper's avatar" />
