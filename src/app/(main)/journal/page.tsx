@@ -1,3 +1,4 @@
+
 // src/app/(main)/journal/page.tsx
 'use client';
 
@@ -221,9 +222,17 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
+        {loading && (
+            <div className="col-span-full flex items-center justify-center p-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )}
         {!loading && entries?.length === 0 && (
-            <p className="text-muted-foreground col-span-full text-center py-10">No journal entries yet. Add your first memory!</p>
+            <Card className="col-span-full text-center">
+                <CardContent className="p-10">
+                    <p className="text-muted-foreground">No journal entries yet. Add your first memory!</p>
+                </CardContent>
+            </Card>
         )}
         {entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
