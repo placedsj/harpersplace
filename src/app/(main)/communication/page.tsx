@@ -222,12 +222,38 @@ function CommunicationPageInternal() {
         }
     };
     
-    const handleActionClick = (tool: string, args: any) => {
-        toast({
-            title: "Action Logged!",
-            description: `Your proposal '${args.title}' has been officially logged.`
-        });
-    }
+    const handleActionClick = async (tool: string, args: any) => {
+        if (!user || !db) {
+            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to perform this action.' });
+            return;
+        }
+
+        const evidenceEntry = {
+            date: format(new Date(), 'yyyy-MM-dd'),
+            category: 'Communication' as const,
+            description: `Scheduling Action: ${args.title}`,
+            evidence: `The following action was proposed in the Communication Hub:\n\nDetails: ${args.details}`,
+            loggedBy: user.displayName || 'User',
+            userId: user.uid,
+            timestamp: serverTimestamp(),
+        };
+
+        try {
+            const evidenceColRef = collection(db, `users/${user.uid}/evidence`);
+            await addDoc(evidenceColRef, evidenceEntry);
+            toast({
+                title: "Action Logged!",
+                description: `Your proposal has been formally recorded in the Evidence Log.`
+            });
+        } catch (error) {
+            console.error("Error logging action to evidence:", error);
+            toast({
+                variant: "destructive",
+                title: "Logging Error",
+                description: "Could not log this action to the evidence log.",
+            });
+        }
+    };
     
     const handleUseSuggestion = (suggestion: string) => {
         setNewMessage(suggestion);
