@@ -30,6 +30,17 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+type ScheduleActionArgs = {
+    title: string;
+    type: 'request' | 'confirm' | 'propose_swap';
+    details: string;
+};
+
+type ActionPayload = {
+    name: 'scheduleAction';
+    args: ScheduleActionArgs;
+};
+
 type Message = {
     id: string;
     userId: string;
@@ -37,7 +48,7 @@ type Message = {
     text: string;
     timestamp: Timestamp;
     type: 'USER' | 'AI_MEDIATOR' | 'AI_ADVOCATE';
-    actions?: any[];
+    actions?: ActionPayload[];
     advice?: ChildsBestInterestCheckOutput;
 };
 
@@ -179,7 +190,7 @@ function CommunicationPageInternal() {
                 type: 'AI_MEDIATOR' as const,
                 actions: result.tool_requests
             };
-            await addMessageToFirestore(aiResponseData);
+            await addMessageToFirestore(aiResponseData as any);
         } catch (error) {
             console.error("Error with co-parenting actions:", error);
             toast({
@@ -222,7 +233,7 @@ function CommunicationPageInternal() {
         }
     };
     
-    const handleActionClick = async (tool: string, args: any) => {
+    const handleActionClick = async (tool: string, args: ScheduleActionArgs) => {
         if (!user || !db) {
             toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to perform this action.' });
             return;
