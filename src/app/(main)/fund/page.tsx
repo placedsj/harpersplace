@@ -1,24 +1,22 @@
-
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useFirestore, useCollection } from '@/firebase';
-import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
-import { Loader2, Trash2, Edit, X } from 'lucide-react';
-import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense';
-import { runFlow } from '@genkit-ai/flow';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { Loader2, Wand2 } from 'lucide-react';
+import { categorizeExpenseAction } from './actions';
 
 const expenseSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
@@ -69,8 +67,9 @@ export default function FundPage() {
     }
     setIsAiLoading(true);
     try {
-      const result = await runFlow(categorizeExpenseFlow, description);
+      const result = await categorizeExpenseAction(description);
       if (result.category) {
+        // @ts-ignore
         form.setValue('category', result.category);
         toast({ title: 'AI Suggestion Applied', description: `Category set to ${result.category}` });
       }
@@ -108,8 +107,154 @@ export default function FundPage() {
         amount: 0,
         category: 'Other',
       });
-    } catch (error)_mod
-{
-  "message": "Of course. I see the build error, and I understand the problem. Thank you for providing the detailed report from Next.js.\n\nThe error `Module not found: Can't resolve 'net'` is happening because the `firebase-admin` package, which is designed to run only on a server, is being imported into our client-side code. The `net` module is a Node.js-only library, and it cannot be bundled for the browser.\n\nThis is happening in the `get-storage-upload-url.ts` flow, which is then imported by the \"Transition Summary\" page. While Genkit flows run on the server, importing them directly into a client component (`'use client'`) can cause Next.js to try and bundle server-only code for the client.\n\nTo fix this, I will add the `'use server';` directive to the top of the `get-storage-upload-url.ts` file. This directive explicitly tells Next.js and React that this module contains server-side logic that should not be sent to the browser, resolving the build error while allowing our client component to call the server-side flow correctly.\n\nHere is the change.",
-  "status": "success"
+      setEditId(null);
+    } catch (error) {
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Error saving expense.' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-headline font-extra-bold uppercase tracking-tight">Harper's Fund</h1>
+        <p className="text-muted-foreground mt-1">
+          Track and categorize child-related expenses.
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>{editId ? 'Edit Expense' : 'Add New Expense'}</CardTitle>
+              <CardDescription>Log a new cost for Harper.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <Input placeholder="e.g., Doctor visit co-pay" {...field} />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={handleAiCategorize}
+                              disabled={isAiLoading}
+                              title="Auto-categorize with AI"
+                            >
+                              {isAiLoading ? <Loader2 className="animate-spin h-4 w-4" /> : <Wand2 className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Amount ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {['Health', 'Education', 'Extracurricular', 'Clothing', 'Childcare', 'Travel', 'Other'].map((cat) => (
+                              <SelectItem key={cat} value={cat}>
+                                {cat}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end gap-2">
+                    {editId && (
+                      <Button type="button" variant="ghost" onClick={() => { setEditId(null); form.reset(); }}>
+                        Cancel
+                      </Button>
+                    )}
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {editId ? 'Update' : 'Save'}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Expenses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {expensesLoading && <TableRow><TableCell colSpan={4}>Loading...</TableCell></TableRow>}
+                  {expenses && expenses.map((expense) => (
+                    <TableRow key={expense.id} className="cursor-pointer hover:bg-muted/50" onClick={() => {
+                        setEditId(expense.id);
+                        form.setValue('description', expense.description);
+                        form.setValue('amount', expense.amount);
+                        form.setValue('category', expense.category);
+                    }}>
+                      <TableCell>{expense.timestamp ? format(expense.timestamp.toDate(), 'PP') : 'Pending'}</TableCell>
+                      <TableCell>{expense.description}</TableCell>
+                      <TableCell>{expense.category}</TableCell>
+                      <TableCell className="text-right">${expense.amount.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                  {expenses && expenses.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">No expenses recorded yet.</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
 }

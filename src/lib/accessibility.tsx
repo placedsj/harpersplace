@@ -1,3 +1,4 @@
+import React from "react";
 /**
  * Accessibility utilities for Harper's Place
  * Helps ensure WCAG 2.1 AA compliance
