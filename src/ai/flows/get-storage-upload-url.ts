@@ -1,6 +1,6 @@
 'use server';
 
-import { defineFlow, action } from '@genkit-ai/flow';
+import { defineFlow } from '@genkit-ai/flow';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
@@ -52,32 +52,26 @@ export const getStorageUploadUrlFlow = defineFlow(
         inputSchema,
         outputSchema,
     },
-    async (input) => {
-        return await action(
-            { 
-                name: 'generateSignedUrl', 
-                inputSchema, 
-                outputSchema 
-            },
-            async ({ fileName, contentType, userId }) => {
-                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-                if (!bucketName) {
-                    throw new Error("Firebase Storage bucket name is not configured.");
-                }
-                const bucket = storage.bucket(bucketName);
-                const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
-                const file = bucket.file(filePath);
+    async ({ fileName, contentType, userId }) => {
+        const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+        if (!bucketName) {
+            throw new Error("Firebase Storage bucket name is not configured.");
+        }
+        // Use default bucket if not specified in config, or use the configured one
+        // Note: admin.storage().bucket() uses default if no name provided
+        const bucket = bucketName ? storage.bucket(bucketName) : storage.bucket();
 
-                const [signedUrl] = await file.getSignedUrl({
-                    action: 'write',
-                    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-                    contentType,
-                });
+        const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
+        const file = bucket.file(filePath);
 
-                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+        const [signedUrl] = await file.getSignedUrl({
+            action: 'write',
+            expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+            contentType,
+        });
 
-                return { signedUrl, publicUrl };
-            }
-        )(input);
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+
+        return { signedUrl, publicUrl };
     }
 );

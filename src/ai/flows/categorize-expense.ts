@@ -1,6 +1,6 @@
 
 import { z } from 'zod';
-import { defineFlow, action } from '@genkit-ai/flow';
+import { defineFlow } from '@genkit-ai/flow';
 import { googleAI } from '@genkit-ai/googleai';
 
 // Define the expected output format for the AI
@@ -26,39 +26,28 @@ export const categorizeExpenseFlow = defineFlow(
     outputSchema: ExpenseCategorySchema.describe('The categorized expense details.'),
   },
   async (prompt) => {
-    const llmResponse = await action(
-        {
-            name: 'categorizeExpense',
-            inputSchema: z.string(),
-            outputSchema: ExpenseCategorySchema,
-        },
-        async (prompt) => {
-            const llm = googleAI({ model: 'gemini-pro' });
-            const result = await llm.generate({
-                prompt: `
-                    You are an expert at parsing and categorizing expenses for co-parents.
-                    Analyze the following expense description and extract its category and cost.
-                    
-                    Expense Description: "${prompt}"
+    const llm = googleAI({ model: 'gemini-pro' });
+    const result = await llm.generate({
+        prompt: `
+            You are an expert at parsing and categorizing expenses for co-parents.
+            Analyze the following expense description and extract its category and cost.
 
-                    Valid Categories:
-                    - Health (doctor visits, prescriptions, dental, vision)
-                    - Education (school fees, tutors, books, supplies)
-                    - Extracurricular (sports, music lessons, clubs, camps)
-                    - Clothing (new clothes, shoes, uniforms)
-                    - Childcare (babysitting, daycare)
-                    - Travel (costs related to custody exchange or trips)
-                    - Other (anything that doesn't fit elsewhere)
-                `,
-                output: {
-                    schema: ExpenseCategorySchema,
-                }
-            });
+            Expense Description: "${prompt}"
 
-            return result.output() || { category: 'Other' };
+            Valid Categories:
+            - Health (doctor visits, prescriptions, dental, vision)
+            - Education (school fees, tutors, books, supplies)
+            - Extracurricular (sports, music lessons, clubs, camps)
+            - Clothing (new clothes, shoes, uniforms)
+            - Childcare (babysitting, daycare)
+            - Travel (costs related to custody exchange or trips)
+            - Other (anything that doesn't fit elsewhere)
+        `,
+        output: {
+            schema: ExpenseCategorySchema,
         }
-    )(prompt);
+    });
 
-    return llmResponse;
+    return result.output() || { category: 'Other' };
   }
 );
