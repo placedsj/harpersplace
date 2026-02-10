@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 import DashboardCard from '@/components/dashboard-card';
@@ -31,14 +31,31 @@ const MainDashboard = () => {
     const latestStory = journalEntries?.[0];
 
     const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
-        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(20)) : null
     );
 
-    const getLatestLog = (type: string) => logs?.find(log => log.type === type);
+    const [totalLogsCount, setTotalLogsCount] = useState(0);
+    const [totalJournalCount, setTotalJournalCount] = useState(0);
 
-    const latestFeed = getLatestLog('Feeding');
-    const latestNap = getLatestLog('Sleep');
-    const latestDiaper = getLatestLog('Diaper');
+    useEffect(() => {
+        if (!user || !db) return;
+
+        async function fetchCounts() {
+            try {
+                const logsColl = collection(db, `users/${user.uid}/daily-logs`);
+                const logsSnapshot = await getCountFromServer(query(logsColl));
+                setTotalLogsCount(logsSnapshot.data().count);
+
+                const journalColl = collection(db, `users/${user.uid}/journal`);
+                const journalSnapshot = await getCountFromServer(query(journalColl));
+                setTotalJournalCount(journalSnapshot.data().count);
+            } catch (error) {
+                console.error("Error fetching counts:", error);
+            }
+        }
+
+        fetchCounts();
+    }, [user, db]);
     
     useEffect(() => {
         setIsClient(true);
@@ -141,13 +158,13 @@ const MainDashboard = () => {
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {logs?.length || 0}
+                                {totalLogsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {journalEntries?.length || 0}
+                                {totalJournalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>
