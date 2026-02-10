@@ -176,7 +176,7 @@ ${summary.fullSummary}
                                     {filePreviews.map((src, index) => (
                                         <div key={index} className="relative group">
                                             <Image src={src} alt={`preview ${index}`} width={150} height={150} className="rounded-md object-cover w-full h-auto" />
-                                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => removeImage(index)}><X className="h-4 w-4"/></Button>
+                                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => removeImage(index)} aria-label="Remove image"><X className="h-4 w-4"/></Button>
                                         </div>
                                     ))}
                                 </div>
@@ -197,7 +197,7 @@ ${summary.fullSummary}
                             <CardTitle>AI-Generated Summary</CardTitle>
                             <CardDescription>Ready to send to your co-parent.</CardDescription>
                         </div>
-                        <Button variant="outline" size="icon" onClick={handleCopy} disabled={hasCopied}>
+                        <Button variant="outline" size="icon" onClick={handleCopy} disabled={hasCopied} aria-label="Copy summary to clipboard">
                             {hasCopied ? <ClipboardCheck className="h-4 w-4" /> : <Clipboard className="h-4 w-4"/>}
                         </Button>
                     </CardHeader>

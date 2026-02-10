@@ -240,11 +240,11 @@ export default function CommunicationPlatformPage() {
                     {isCallActive ? 'End Call' : 'Start Call'}
                   </Button>
                   
-                  <Button variant="outline" size="icon" disabled={!isCallActive}>
+                  <Button variant="outline" size="icon" disabled={!isCallActive} aria-label="Toggle Microphone">
                     <Mic className="w-4 h-4" />
                   </Button>
                   
-                  <Button variant="outline" size="icon" disabled={!isCallActive}>
+                  <Button variant="outline" size="icon" disabled={!isCallActive} aria-label="Toggle Camera">
                     <Camera className="w-4 h-4" />
                   </Button>
                 </div>
