@@ -28,8 +28,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp, query, orderBy, limit, startAfter, getDocs, Timestamp, DocumentSnapshot } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 
 const entrySchema = z.object({
@@ -44,12 +44,77 @@ const entrySchema = z.object({
 export default function JournalPage() {
     const { user } = useAuth();
     const { db } = useFirestore();
-    const { data: entries, loading } = useCollection<JournalEntry>(
-        user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc')) : null
-    );
+    const [entries, setEntries] = React.useState<JournalEntry[]>([]);
+    const [lastDoc, setLastDoc] = React.useState<DocumentSnapshot | null>(null);
+    const [loading, setLoading] = React.useState(true);
+    const [loadingMore, setLoadingMore] = React.useState(false);
+    const [hasMore, setHasMore] = React.useState(true);
+    const { toast } = useToast();
+
+    const fetchInitial = React.useCallback(async () => {
+        if (!user || !db) return;
+        setLoading(true);
+        try {
+             const q = query(
+                collection(db, `users/${user.uid}/journal`),
+                orderBy('timestamp', 'desc'),
+                limit(10)
+            );
+            const snapshot = await getDocs(q);
+            const newEntries = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data({ serverTimestamps: 'estimate' })
+            })) as JournalEntry[];
+
+            setHasMore(snapshot.docs.length === 10);
+            if (snapshot.docs.length > 0) {
+                setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+            } else {
+                setLastDoc(null);
+            }
+            setEntries(newEntries);
+        } catch (error) {
+            console.error(error);
+             toast({ variant: 'destructive', title: 'Error loading entries.' });
+        } finally {
+            setLoading(false);
+        }
+    }, [user, db, toast]);
+
+    const loadMore = async () => {
+        if (!user || !db || !lastDoc || loadingMore) return;
+        setLoadingMore(true);
+        try {
+             const q = query(
+                collection(db, `users/${user.uid}/journal`),
+                orderBy('timestamp', 'desc'),
+                startAfter(lastDoc),
+                limit(10)
+            );
+            const snapshot = await getDocs(q);
+            const newEntries = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data({ serverTimestamps: 'estimate' })
+            })) as JournalEntry[];
+
+            setHasMore(snapshot.docs.length === 10);
+            if (snapshot.docs.length > 0) {
+                setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+                setEntries(prev => [...prev, ...newEntries]);
+            }
+        } catch (error) {
+             console.error(error);
+             toast({ variant: 'destructive', title: 'Error loading more entries.' });
+        } finally {
+            setLoadingMore(false);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchInitial();
+    }, [fetchInitial]);
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-    const { toast } = useToast();
 
     const form = useForm<z.infer<typeof entrySchema>>({
         resolver: zodResolver(entrySchema),
@@ -69,14 +134,29 @@ export default function JournalPage() {
         }
 
         try {
-            const newEntry = {
+            const newEntryData = {
               ...values,
               image: values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`,
               dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
               timestamp: serverTimestamp(),
             };
-            await addDoc(collection(db, `users/${user.uid}/journal`), newEntry);
+            const docRef = await addDoc(collection(db, `users/${user.uid}/journal`), newEntryData);
+
+            // Optimistically add to UI
+            const newEntry: JournalEntry = {
+                id: docRef.id,
+                title: values.title,
+                content: values.content,
+                image: newEntryData.image,
+                dataAiHint: newEntryData.dataAiHint,
+                userId: user.uid,
+                // Use actual Timestamp for local state compatibility with .toDate() calls
+                date: Timestamp.fromDate(values.date),
+                timestamp: Timestamp.now(),
+            };
+            setEntries(prev => [newEntry, ...prev]);
+
             toast({
                 title: "Journal Entry Added!",
                 description: `Successfully added "${values.title}".`,
@@ -209,8 +289,7 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
-        {entries && entries.map((entry) => (
+        {entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
             <CardHeader>
@@ -223,6 +302,16 @@ export default function JournalPage() {
           </Card>
         ))}
        </div>
+
+       {loading && <div className="text-center py-4"><p>Loading entries...</p></div>}
+
+       {!loading && hasMore && (
+           <div className="flex justify-center mt-8">
+               <Button onClick={loadMore} disabled={loadingMore} variant="outline" size="lg">
+                   {loadingMore ? 'Loading...' : 'Load More Memories'}
+               </Button>
+           </div>
+       )}
     </div>
   );
 }
