@@ -7,7 +7,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
 app.prepare().then(async () => {
   const server = express();
@@ -19,6 +19,18 @@ app.prepare().then(async () => {
 
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
+
+  // Security headers middleware
+  server.use((req, res, next) => {
+    res.setHeader('X-DNS-Prefetch-Control', 'off');
+    res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
 
   const httpServer = await registerRoutes(server);
 
