@@ -1,6 +1,7 @@
 import os
 import json
 import io
+import concurrent.futures
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
@@ -70,6 +71,63 @@ def analyze_and_rename(file_bytes):
     except Exception as e:
         raise Exception(f"Error analyzing file with Gemini: {str(e)}")
 
+def process_single_file(file, drive_service):
+    """
+    Process a single file: download, analyze, and rename.
+    """
+    file_id = file['id']
+    file_name = file['name']
+    mime_type = file.get('mimeType', '')
+
+    print(f"\nProcessing: {file_name} (ID: {file_id})")
+
+    # Skip non-image files
+    if not mime_type.startswith('image/'):
+        print(f"  Skipping non-image file: {mime_type}")
+        return 'skipped'
+
+    try:
+        # Download file bytes
+        request = drive_service.files().get_media(fileId=file_id)
+        file_bytes_io = io.BytesIO()
+        downloader = MediaIoBaseDownload(file_bytes_io, request)
+
+        done = False
+        while not done:
+            status, done = downloader.next_chunk()
+            if status:
+                print(f"  Download progress: {int(status.progress() * 100)}%")
+
+        file_bytes = file_bytes_io.getvalue()
+        print(f"  Downloaded {len(file_bytes)} bytes")
+
+        # Analyze and get new filename
+        new_filename = analyze_and_rename(file_bytes)
+        print(f"  Generated filename: {new_filename}")
+
+        # Add file extension if not present
+        if '.' not in new_filename:
+            # Get extension from original filename
+            if '.' in file_name:
+                ext = file_name.rsplit('.', 1)[1]
+                new_filename = f"{new_filename}.{ext}"
+            else:
+                # Default to jpg for images
+                new_filename = f"{new_filename}.jpg"
+
+        # Rename the file in Google Drive
+        updated_file = drive_service.files().update(
+            fileId=file_id,
+            body={'name': new_filename}
+        ).execute()
+
+        print(f"  ✓ Successfully renamed to: {updated_file.get('name')}")
+        return 'success'
+
+    except Exception as e:
+        print(f"  ✗ Error processing file {file_name}: {str(e)}")
+        return 'failed'
+
 def main():
     """
     Main function to process all files in the Google Drive folder.
@@ -101,59 +159,35 @@ def main():
         
         print(f"Found {len(files)} file(s) to process.")
         
-        # Process each file
-        for file in files:
-            file_id = file['id']
-            file_name = file['name']
-            mime_type = file.get('mimeType', '')
+        # Process each file in parallel
+        # We use a ThreadPoolExecutor to handle I/O bound tasks concurrently
+        # max_workers=5 is a conservative limit to avoid hitting API rate limits
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            # Submit all tasks
+            future_to_file = {
+                executor.submit(process_single_file, file, drive_service): file
+                for file in files
+            }
             
-            print(f"\nProcessing: {file_name} (ID: {file_id})")
-            
-            # Skip non-image files
-            if not mime_type.startswith('image/'):
-                print(f"  Skipping non-image file: {mime_type}")
-                continue
-            
-            try:
-                # Download file bytes
-                request = drive_service.files().get_media(fileId=file_id)
-                file_bytes_io = io.BytesIO()
-                downloader = MediaIoBaseDownload(file_bytes_io, request)
-                
-                done = False
-                while not done:
-                    status, done = downloader.next_chunk()
-                    if status:
-                        print(f"  Download progress: {int(status.progress() * 100)}%")
-                
-                file_bytes = file_bytes_io.getvalue()
-                print(f"  Downloaded {len(file_bytes)} bytes")
-                
-                # Analyze and get new filename
-                new_filename = analyze_and_rename(file_bytes)
-                print(f"  Generated filename: {new_filename}")
-                
-                # Add file extension if not present
-                if '.' not in new_filename:
-                    # Get extension from original filename
-                    if '.' in file_name:
-                        ext = file_name.rsplit('.', 1)[1]
-                        new_filename = f"{new_filename}.{ext}"
+            # Wait for all tasks to complete
+            success_count = 0
+            skipped_count = 0
+            fail_count = 0
+            for future in concurrent.futures.as_completed(future_to_file):
+                file = future_to_file[future]
+                try:
+                    result = future.result()
+                    if result == 'success':
+                        success_count += 1
+                    elif result == 'skipped':
+                        skipped_count += 1
                     else:
-                        # Default to jpg for images
-                        new_filename = f"{new_filename}.jpg"
-                
-                # Rename the file in Google Drive
-                updated_file = drive_service.files().update(
-                    fileId=file_id,
-                    body={'name': new_filename}
-                ).execute()
-                
-                print(f"  ✓ Successfully renamed to: {updated_file.get('name')}")
-                
-            except Exception as e:
-                print(f"  ✗ Error processing file {file_name}: {str(e)}")
-                continue
+                        fail_count += 1
+                except Exception as exc:
+                    print(f"  ✗ Unhandled exception for {file['name']}: {exc}")
+                    fail_count += 1
+
+            print(f"\nProcessing Summary: {success_count} successful, {skipped_count} skipped, {fail_count} failed.")
         
         print("\n" + "="*50)
         print("Processing complete!")
