@@ -16,3 +16,10 @@
 **Prevention:** Lazily initialize services inside the functions/actions that use them, or wrap initialization in a helper function that is only called at runtime.
 **Learning:** Dependencies like `firebase-admin` must be explicitly listed in `package.json` `dependencies`, not just relied upon transitively or installed locally but missing from the manifest. This causes "Module not found" errors in CI/CD environments.
 **Prevention:** Run `npm install <package>` to update `package.json` correctly.
+
+## 2025-02-19 - [Deployment Robustness - Genkit & Next.js Headers]
+**Vulnerability:** Build failures due to missing runtime-only secrets (`GOOGLE_GENAI_API_KEY`) at build time, and potential header conflicts on deployment platforms (Netlify).
+**Learning:** Some libraries (like `googleAI` plugin for Genkit) might require configuration values at initialization time. If initialized at the top level of a module imported during build (even server-side), the build environment must provide these values or a fallback must be used to prevent crashes.
+**Prevention:** Use fallbacks for environment variables (e.g. `process.env.API_KEY || 'dummy'`) for initialization logic that runs at import time but isn't used until runtime.
+**Learning:** Deployment platforms may validate or conflict with certain HTTP headers (e.g. `Permissions-Policy`, `X-DNS-Prefetch-Control`) if syntax varies or defaults clash. Simplifying headers to the core security set (HSTS, X-Frame-Options) can resolve obscure "Deploy failed" errors.
+**Prevention:** Start with a minimal, standard set of security headers and validate platform compatibility before adding complex policies.
