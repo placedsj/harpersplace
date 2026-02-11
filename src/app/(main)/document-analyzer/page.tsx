@@ -6,10 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2, FilePlus, FileText } from 'lucide-react';
-import { processEvidenceText, ProcessEvidenceTextOutput } from '@/ai/flows/process-evidence-text';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { processEvidenceTextAction } from './actions';
+
+// Define the output type locally if not exported from actions, or import from actions if possible.
+// Assuming ProcessEvidenceTextOutput is exported from the flow file, but flow file import is problematic in client component.
+// It's better to redefine or import type only.
+import type { ProcessEvidenceTextOutput } from '@/ai/flows/process-evidence-text';
 
 export default function DocumentAnalyzerPage() {
   const [text, setText] = useState('');
@@ -32,8 +37,17 @@ export default function DocumentAnalyzerPage() {
     setResult(null);
 
     try {
-      const output = await processEvidenceText({ textContent: text });
-      setResult(output);
+      // Use the Server Action instead of direct flow import
+      const output = await processEvidenceTextAction(text);
+      if (output) {
+        setResult(output);
+      } else {
+         toast({
+            variant: 'destructive',
+            title: 'Analysis Failed',
+            description: 'Could not process the text.',
+        });
+      }
     } catch (error) {
       console.error('Error processing evidence text:', error);
       toast({

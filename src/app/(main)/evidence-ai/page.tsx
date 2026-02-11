@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload, Wand2, FilePlus, FileText } from 'lucide-react';
-import { processEvidenceImage, ProcessEvidenceImageOutput } from '@/ai/flows/process-evidence-image';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { processEvidenceImageAction } from './actions';
+import type { ProcessEvidenceImageOutput } from '@/ai/flows/process-evidence-image';
 
 export default function EvidenceAiPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -46,8 +47,16 @@ export default function EvidenceAiPage() {
     setResult(null);
 
     try {
-      const output = await processEvidenceImage({ imageDataUri: previewUrl });
-      setResult(output);
+      const output = await processEvidenceImageAction(previewUrl);
+      if (output) {
+        setResult(output);
+      } else {
+         toast({
+            variant: 'destructive',
+            title: 'Analysis Failed',
+            description: 'Could not process the image.',
+          });
+      }
     } catch (error) {
       console.error('Error processing evidence:', error);
       toast({

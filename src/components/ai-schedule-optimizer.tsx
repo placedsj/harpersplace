@@ -5,14 +5,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { optimizeCustodySchedule, OptimizeCustodyScheduleOutput } from '@/ai/flows/optimize-custody-schedule';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Wand2 } from 'lucide-react';
-import { Separator } from './ui/separator';
+import { optimizeCustodyScheduleAction } from './ai-schedule-optimizer/actions';
+import type { OptimizeCustodyScheduleOutput } from '@/ai/flows/optimize-custody-schedule';
 
 const formSchema = z.object({
   parentalNeeds: z.string().min(10, 'Please describe the parental needs in more detail.'),
@@ -38,8 +38,16 @@ export function AiScheduleOptimizer() {
     setIsLoading(true);
     setResult(null);
     try {
-      const output = await optimizeCustodySchedule(values);
-      setResult(output);
+      const output = await optimizeCustodyScheduleAction(values);
+      if (output) {
+        setResult(output);
+      } else {
+         toast({
+            variant: 'destructive',
+            title: 'An error occurred',
+            description: 'Failed to generate the schedule. Please try again.',
+          });
+      }
     } catch (error) {
       console.error('Error optimizing schedule:', error);
       toast({

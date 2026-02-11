@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { suggestSleepSchedule, SuggestSleepScheduleOutput } from '@/ai/flows/suggest-sleep-schedule';
+import { suggestSleepScheduleAction } from '@/components/ai-sleep-suggestor-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -13,6 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Wand2, Forward } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { differenceInMonths } from 'date-fns';
+
+// Import type only
+import type { SuggestSleepScheduleOutput } from '@/ai/flows/suggest-sleep-schedule';
 
 const formSchema = z.object({
   ageInMonths: z.coerce.number().min(0, 'Age must be a positive number.'),
@@ -43,8 +46,16 @@ export function AiSleepSuggestor({ recentLogs }: AiSleepSuggestorProps) {
     setResult(null);
     try {
       const input = { ...values, recentLogs };
-      const output = await suggestSleepSchedule(input);
-      setResult(output);
+      const output = await suggestSleepScheduleAction(input);
+      if (output) {
+        setResult(output);
+      } else {
+         toast({
+            variant: 'destructive',
+            title: 'An error occurred',
+            description: 'Failed to generate the schedule. Please try again.',
+          });
+      }
     } catch (error) {
       console.error('Error suggesting sleep schedule:', error);
       toast({
