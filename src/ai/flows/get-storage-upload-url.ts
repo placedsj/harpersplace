@@ -1,6 +1,6 @@
 'use server';
 
-import { defineFlow, action } from '@genkit-ai/flow';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
@@ -46,38 +46,29 @@ const outputSchema = z.object({
     publicUrl: z.string(),
 });
 
-export const getStorageUploadUrlFlow = defineFlow(
+export const getStorageUploadUrlFlow = ai.defineFlow(
     {
         name: 'getStorageUploadUrlFlow',
         inputSchema,
         outputSchema,
     },
-    async (input) => {
-        return await action(
-            { 
-                name: 'generateSignedUrl', 
-                inputSchema, 
-                outputSchema 
-            },
-            async ({ fileName, contentType, userId }) => {
-                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-                if (!bucketName) {
-                    throw new Error("Firebase Storage bucket name is not configured.");
-                }
-                const bucket = storage.bucket(bucketName);
-                const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
-                const file = bucket.file(filePath);
+    async ({ fileName, contentType, userId }) => {
+        const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+        if (!bucketName) {
+            throw new Error("Firebase Storage bucket name is not configured.");
+        }
+        const bucket = storage.bucket(bucketName);
+        const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
+        const file = bucket.file(filePath);
 
-                const [signedUrl] = await file.getSignedUrl({
-                    action: 'write',
-                    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-                    contentType,
-                });
+        const [signedUrl] = await file.getSignedUrl({
+            action: 'write',
+            expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+            contentType,
+        });
 
-                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
-                return { signedUrl, publicUrl };
-            }
-        )(input);
+        return { signedUrl, publicUrl };
     }
 );

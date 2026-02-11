@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const scheduleAction = ai.defineTool(
     {
@@ -69,7 +69,7 @@ const coParentingActionsFlow = ai.defineFlow(
   async (input) => {
     const response = await prompt(input);
     const text = response.text;
-    const toolRequests = response.toolRequests;
+    const toolRequests = response.toolRequests || [];
 
     return {
         text: text,
