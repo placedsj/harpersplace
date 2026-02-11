@@ -38,6 +38,25 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: process.env.REPLIT_DEV_DOMAIN 
     ? [`${process.env.REPLIT_DEV_DOMAIN}`] 
     : [],
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve = {
+        ...config.resolve,
+        fallback: {
+          ...config.resolve.fallback,
+          fs: false,
+          net: false,
+          tls: false,
+        },
+      };
+    }
+    // Suppress the "Critical dependency" warning from express/genkit
+    config.ignoreWarnings = [
+      { module: /node_modules\/@genkit-ai\/core\/node_modules\/express\/lib\/view\.js/ },
+      { module: /node_modules\/express\/lib\/view\.js/ },
+    ];
+    return config;
+  },
   async headers() {
     return [
       {
