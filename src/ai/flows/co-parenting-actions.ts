@@ -73,7 +73,7 @@ const coParentingActionsFlow = ai.defineFlow(
 
     return {
         text: text,
-        tool_requests: toolRequests.map(tr => ({name: tr.tool, args: tr.input}))
+        tool_requests: toolRequests.map(tr => ({name: tr.toolRequest.name, args: tr.toolRequest.input}))
     };
   }
 );

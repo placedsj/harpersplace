@@ -58,7 +58,8 @@ export const getStorageUploadUrlFlow = defineFlow(
             { 
                 name: 'generateSignedUrl', 
                 inputSchema, 
-                outputSchema 
+                outputSchema,
+                actionType: 'custom',
             },
             async ({ fileName, contentType, userId }) => {
                 const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;

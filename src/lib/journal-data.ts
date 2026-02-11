@@ -12,7 +12,7 @@ export type JournalEntry = {
   timestamp: Timestamp;
 };
 
-export const journalEntries: Omit<JournalEntry, 'id' | 'userId' | 'timestamp' | 'date'> & { date: Date }[] = [
+export const journalEntries: (Omit<JournalEntry, 'id' | 'userId' | 'timestamp' | 'date'> & { date: Date })[] = [
     {
       title: "Harper's First Soccer Goal!",
       date: new Date("2025-08-26"),

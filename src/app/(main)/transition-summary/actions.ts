@@ -1,5 +1,6 @@
 'use server';
 
+import { runFlow } from '@genkit-ai/flow';
 import { generateTransitionSummaryFlow } from '@/ai/flows/generate-transition-summary';
 import { getStorageUploadUrlFlow } from '@/ai/flows/get-storage-upload-url';
 
@@ -21,7 +22,7 @@ export async function generateSummaryAction(ramble: string, uploadedFiles: strin
     
     // The 'run' and 'runFlow' functions from Genkit should not be used in client components.
     // Instead, we call the flow directly from this server action.
-    const result = await generateTransitionSummaryFlow(prompt);
+    const result = await runFlow(generateTransitionSummaryFlow, prompt);
     
     const finalResult: Summary = {
         ...result,
@@ -33,5 +34,5 @@ export async function generateSummaryAction(ramble: string, uploadedFiles: strin
 
 
 export async function getSignedUrlAction(fileName: string, contentType: string, userId: string) {
-    return await getStorageUploadUrlFlow({ fileName, contentType, userId });
+    return await runFlow(getStorageUploadUrlFlow, { fileName, contentType, userId });
 }

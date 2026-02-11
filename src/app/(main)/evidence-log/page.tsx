@@ -35,7 +35,7 @@
             category: string;
             description: string;
             partiesInvolved?: string;
-            response?: string;
+    yourResponse?: string;
             loggedBy: string;
             userId: string;
             timestamp?: Timestamp
