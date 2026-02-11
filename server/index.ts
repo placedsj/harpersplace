@@ -2,6 +2,7 @@ import express from 'express';
 import next from 'next';
 import cors from 'cors';
 import { registerRoutes } from './routes';
+import { securityHeadersMiddleware, apiSecurityHeadersMiddleware } from './security';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -19,6 +20,12 @@ app.prepare().then(async () => {
 
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
+
+  server.use(securityHeadersMiddleware);
+
+  // Apply security headers to API routes.
+  // Note: Next.js handles security headers for page routes via next.config.ts.
+  server.use('/api', apiSecurityHeadersMiddleware);
 
   const httpServer = await registerRoutes(server);
 
