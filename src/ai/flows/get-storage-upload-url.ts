@@ -4,36 +4,37 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
-// Check for the environment variable, which should contain the JSON string
-const adminCredentialsString = process.env.FIREBASE_ADMIN_CREDENTIALS;
+function getStorage() {
+  // Check for the environment variable, which should contain the JSON string
+  const adminCredentialsString = process.env.FIREBASE_ADMIN_CREDENTIALS;
 
-if (!adminCredentialsString) {
-  // CRITICAL: Fail fast if the secret is missing.
-  console.error("FATAL: FIREBASE_ADMIN_CREDENTIALS environment variable is not set.");
-  // Throwing an error prevents server code from running without credentials.
-  throw new Error("Admin credentials missing. Cannot initialize Firebase Admin SDK.");
-}
-
-// Check if an Admin SDK instance has already been initialized (prevents re-initialization errors in Next.js/serverless)
-if (!admin.apps.length) {
-  try {
-    // 1. Parse the JSON string from the Replit secret into an object
-    const credentials = JSON.parse(adminCredentialsString);
-    
-    // 2. Initialize the Admin SDK using the Certificate (private key)
-    admin.initializeApp({
-      credential: admin.credential.cert(credentials)
-    });
-    
-    console.log("Firebase Admin SDK initialized successfully.");
-
-  } catch (error) {
-    console.error("Error initializing Firebase Admin SDK:", error);
-    throw new Error("Failed to parse or initialize Firebase Admin SDK.");
+  if (!adminCredentialsString) {
+    // CRITICAL: Fail fast if the secret is missing.
+    console.error("FATAL: FIREBASE_ADMIN_CREDENTIALS environment variable is not set.");
+    throw new Error("Admin credentials missing. Cannot initialize Firebase Admin SDK.");
   }
-}
 
-const storage = admin.storage();
+  // Check if an Admin SDK instance has already been initialized (prevents re-initialization errors in Next.js/serverless)
+  if (!admin.apps.length) {
+    try {
+      // 1. Parse the JSON string from the Replit secret into an object
+      const credentials = JSON.parse(adminCredentialsString);
+
+      // 2. Initialize the Admin SDK using the Certificate (private key)
+      admin.initializeApp({
+        credential: admin.credential.cert(credentials)
+      });
+
+      console.log("Firebase Admin SDK initialized successfully.");
+
+    } catch (error) {
+      console.error("Error initializing Firebase Admin SDK:", error);
+      throw new Error("Failed to parse or initialize Firebase Admin SDK.");
+    }
+  }
+
+  return admin.storage();
+}
 
 const inputSchema = z.object({
     fileName: z.string(),
@@ -57,6 +58,7 @@ export const getStorageUploadUrlFlow = ai.defineFlow(
         if (!bucketName) {
             throw new Error("Firebase Storage bucket name is not configured.");
         }
+        const storage = getStorage();
         const bucket = storage.bucket(bucketName);
         const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
         const file = bucket.file(filePath);
