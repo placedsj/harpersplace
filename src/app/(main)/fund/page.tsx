@@ -17,8 +17,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { Loader2, Trash2, Edit, X } from 'lucide-react';
-import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense';
-import { runFlow } from '@genkit-ai/flow';
+import { categorizeExpenseAction } from './actions';
 
 const expenseSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
@@ -69,7 +68,7 @@ export default function FundPage() {
     }
     setIsAiLoading(true);
     try {
-      const result = await runFlow(categorizeExpenseFlow, description);
+      const result = await categorizeExpenseAction(description);
       if (result.category) {
         form.setValue('category', result.category);
         toast({ title: 'AI Suggestion Applied', description: `Category set to ${result.category}` });
