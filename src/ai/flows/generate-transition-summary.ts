@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { defineFlow, action } from '@genkit-ai/flow';
+import { defineFlow } from '@genkit-ai/flow';
+import { action } from '@genkit-ai/core';
 import { googleAI } from '@genkit-ai/googleai';
 
 const TransitionSummarySchema = z.object({
