@@ -2,15 +2,18 @@ import express from 'express';
 import next from 'next';
 import cors from 'cors';
 import { registerRoutes } from './routes';
+import { securityHeaders } from './security';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || "5000", 10);
 
 app.prepare().then(async () => {
   const server = express();
+
+  server.use(securityHeaders);
 
   server.use(cors({
     origin: true,
