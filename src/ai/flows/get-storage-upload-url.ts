@@ -57,6 +57,7 @@ export const getStorageUploadUrlFlow = defineFlow(
         return await action(
             { 
                 name: 'generateSignedUrl', 
+                actionType: 'custom',
                 inputSchema, 
                 outputSchema 
             },

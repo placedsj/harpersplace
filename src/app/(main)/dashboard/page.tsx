@@ -12,9 +12,15 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
+import { useCollection, useFirestore, useCount } from '@/firebase';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+
+export const dynamic = 'force-dynamic';
 import DashboardCard from '@/components/dashboard-card';
+
+export const dynamic = 'force-dynamic';
 
 // --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
 const harper_dob = new Date("2024-11-12T00:00:00Z");
@@ -36,6 +42,21 @@ const MainDashboard = () => {
 
     const [stats, setStats] = useState({ logs: 0, journals: 0 });
 
+    // Fetch separate counts for overview to avoid fetching all data
+    const { count: journalCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
+    );
+
+    // Limit logs fetch to 10 for performance, as we only show top 3.
+    // Fetch total count separately.
+    const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
+    );
+
+    const { count: logsCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
+    );
+    
     useEffect(() => {
         setIsClient(true);
         async function fetchCounts() {
@@ -158,12 +179,14 @@ const MainDashboard = () => {
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                                 {stats.logs}
+                                {logsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
                                 {stats.journals}
+                                {journalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>
