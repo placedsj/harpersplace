@@ -3,6 +3,7 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { firebaseConfig, isFirebaseConfigured } from './config';
 import { useCollection } from './firestore/use-collection';
+import { useCount } from './firestore/use-count';
 import { useDoc } from './firestore/use-doc';
 import { useUser } from './auth/use-user';
 import {
@@ -45,6 +46,7 @@ export {
   useFirebaseAuth,
   useFirestore,
   useCollection,
+  useCount,
   useDoc,
   useUser,
 };

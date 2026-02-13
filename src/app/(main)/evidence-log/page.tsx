@@ -19,6 +19,7 @@
         import { Loader2, CalendarIcon } from 'lucide-react';
         import { useFirestore, useCollection } from '@/firebase';
 
+        export const dynamic = 'force-dynamic';
 export const dynamic = 'force-dynamic';
 
         const logSchema = z.object({
@@ -269,7 +270,8 @@ export const dynamic = 'force-dynamic';
                                     <CardContent>
                                         <p>{event.description}</p>
                                         {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                        {event.yourResponse && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.yourResponse}</p>}
+                                        {/* Use response if available, or fall back to yourResponse if it exists on older data, though type suggests only response */}
+                                        {(event.response || (event as any).yourResponse) && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response || (event as any).yourResponse}</p>}
                                     </CardContent>
                                 </Card>
                             ))}
