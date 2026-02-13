@@ -1,7 +1,8 @@
 
 import { z } from 'zod';
-import { defineFlow, action } from '@genkit-ai/flow';
-import { googleAI } from '@genkit-ai/googleai';
+import { defineFlow } from '@genkit-ai/flow';
+import { action } from '@genkit-ai/core';
+import { ai } from '@/ai/genkit';
 
 // Define the expected output format for the AI
 const ExpenseCategorySchema = z.object({
@@ -29,12 +30,12 @@ export const categorizeExpenseFlow = defineFlow(
     const llmResponse = await action(
         {
             name: 'categorizeExpense',
+            actionType: 'custom',
             inputSchema: z.string(),
             outputSchema: ExpenseCategorySchema,
         },
         async (prompt) => {
-            const llm = googleAI({ model: 'gemini-pro' });
-            const result = await llm.generate({
+            const result = await ai.generate({
                 prompt: `
                     You are an expert at parsing and categorizing expenses for co-parents.
                     Analyze the following expense description and extract its category and cost.
@@ -55,7 +56,7 @@ export const categorizeExpenseFlow = defineFlow(
                 }
             });
 
-            return result.output() || { category: 'Other' };
+            return result.output || { category: 'Other' as const };
         }
     )(prompt);
 

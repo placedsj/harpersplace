@@ -16,6 +16,8 @@ import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 import DashboardCard from '@/components/dashboard-card';
 
+export const dynamic = 'force-dynamic';
+
 // --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
 const harper_dob = new Date("2024-11-12T00:00:00Z");
 
