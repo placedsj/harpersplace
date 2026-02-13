@@ -1,6 +1,7 @@
 'use server';
 
-import { defineFlow, action } from '@genkit-ai/flow';
+import { defineFlow } from '@genkit-ai/flow';
+import { action } from '@genkit-ai/core';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
@@ -56,6 +57,7 @@ export const getStorageUploadUrlFlow = defineFlow(
         return await action(
             { 
                 name: 'generateSignedUrl', 
+                actionType: 'custom',
                 inputSchema, 
                 outputSchema 
             },

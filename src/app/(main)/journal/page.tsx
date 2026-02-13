@@ -32,6 +32,8 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 
+export const dynamic = 'force-dynamic';
+
 const entrySchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   date: z.date(),

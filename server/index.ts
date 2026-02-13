@@ -26,7 +26,7 @@ app.prepare().then(async () => {
     return handle(req, res);
   });
 
-  httpServer.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`> Server ready on http://0.0.0.0:${PORT}`);
   });
 });
