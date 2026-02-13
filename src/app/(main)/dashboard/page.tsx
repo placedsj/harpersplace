@@ -14,6 +14,8 @@ import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+
+export const dynamic = 'force-dynamic';
 import DashboardCard from '@/components/dashboard-card';
 
 export const dynamic = 'force-dynamic';

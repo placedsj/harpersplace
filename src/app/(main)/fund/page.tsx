@@ -86,6 +86,8 @@ export default function FundPage() {
     } finally {
       setIsAiLoading(false);
     }
+    // Feature temporarily disabled
+    toast({ title: 'AI Categorization Coming Soon' });
   };
 
   const onSubmit = async (values: ExpenseFormValues) => {
@@ -286,6 +288,20 @@ export default function FundPage() {
               )}
           </CardContent>
       </Card>
+    </div>
+  );
+}
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Error saving expense' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4 space-y-8">
+        <h1 className="text-3xl font-bold">Fund</h1>
+        <p>Expense tracking temporarily unavailable.</p>
     </div>
   );
 }

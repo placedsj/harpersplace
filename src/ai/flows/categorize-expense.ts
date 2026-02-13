@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { defineFlow } from '@genkit-ai/flow';
 import { action } from '@genkit-ai/core';
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 
 // Define the expected output format for the AI
 const ExpenseCategorySchema = z.object({
