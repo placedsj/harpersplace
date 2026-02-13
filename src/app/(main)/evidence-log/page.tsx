@@ -1,6 +1,8 @@
         // src/app/(main)/evidence-log/page.tsx
         'use client';
 
+export const dynamic = 'force-dynamic';
+
         import React, { useState, useEffect, useMemo } from 'react';
         import { useSearchParams } from 'next/navigation';
         import { useForm } from 'react-hook-form';

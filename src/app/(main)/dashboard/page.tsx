@@ -1,6 +1,8 @@
 // src/app/(main)/dashboard/page.tsx
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';

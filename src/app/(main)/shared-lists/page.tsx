@@ -1,6 +1,8 @@
 // src/app/(main)/shared-lists/page.tsx
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

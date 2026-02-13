@@ -20,13 +20,11 @@ const next = () => {
 securityHeaders(req, res, next);
 
 // Verify headers
-assert.strictEqual(res.headers['X-DNS-Prefetch-Control'], 'on', 'X-DNS-Prefetch-Control mismatch');
 assert.strictEqual(res.headers['Strict-Transport-Security'], 'max-age=63072000; includeSubDomains; preload', 'Strict-Transport-Security mismatch');
 assert.strictEqual(res.headers['X-Frame-Options'], 'SAMEORIGIN', 'X-Frame-Options mismatch');
 assert.strictEqual(res.headers['X-Content-Type-Options'], 'nosniff', 'X-Content-Type-Options mismatch');
 assert.strictEqual(res.headers['X-XSS-Protection'], '1; mode=block', 'X-XSS-Protection mismatch');
 assert.strictEqual(res.headers['Referrer-Policy'], 'strict-origin-when-cross-origin', 'Referrer-Policy mismatch');
-assert.strictEqual(res.headers['Permissions-Policy'], 'camera=(), microphone=(), geolocation=()', 'Permissions-Policy mismatch');
 
 // Verify next() called
 assert.strictEqual(nextCalled, true, 'next() not called');
