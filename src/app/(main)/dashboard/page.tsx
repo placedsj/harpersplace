@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
@@ -30,15 +30,20 @@ const MainDashboard = () => {
     );
     const latestStory = journalEntries?.[0];
 
-    const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
-        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+    // Fetch separate counts for overview to avoid fetching all data
+    const { count: journalCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
     );
 
-    const getLatestLog = (type: string) => logs?.find(log => log.type === type);
+    // Limit logs fetch to 10 for performance, as we only show top 3.
+    // Fetch total count separately.
+    const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
+    );
 
-    const latestFeed = getLatestLog('Feeding');
-    const latestNap = getLatestLog('Sleep');
-    const latestDiaper = getLatestLog('Diaper');
+    const { count: logsCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
+    );
     
     useEffect(() => {
         setIsClient(true);
@@ -141,13 +146,13 @@ const MainDashboard = () => {
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {logs?.length || 0}
+                                {logsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {journalEntries?.length || 0}
+                                {journalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>
