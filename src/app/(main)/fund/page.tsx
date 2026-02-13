@@ -17,8 +17,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { Loader2, Trash2, Edit, X } from 'lucide-react';
-import { categorizeExpenseFlow } from '@/ai/flows/categorize-expense';
-import { runFlow } from '@genkit-ai/flow';
+
+export const dynamic = 'force-dynamic';
 
 const expenseSchema = z.object({
   description: z.string().min(1, 'Description is required.'),
@@ -62,27 +62,8 @@ export default function FundPage() {
   });
 
   const handleAiCategorize = async () => {
-    const description = form.getValues('description');
-    if (!description) {
-      toast({ variant: 'destructive', title: 'Please enter a description first.' });
-      return;
-    }
-    setIsAiLoading(true);
-    try {
-      const result = await runFlow(categorizeExpenseFlow, description);
-      if (result.category) {
-        form.setValue('category', result.category);
-        toast({ title: 'AI Suggestion Applied', description: `Category set to ${result.category}` });
-      }
-      if (result.amount) {
-        form.setValue('amount', result.amount);
-      }
-    } catch (error) {
-      console.error('AI categorization failed:', error);
-      toast({ variant: 'destructive', title: 'AI Failed', description: 'Could not categorize expense.' });
-    } finally {
-      setIsAiLoading(false);
-    }
+    // Feature temporarily disabled
+    toast({ title: 'AI Categorization Coming Soon' });
   };
 
   const onSubmit = async (values: ExpenseFormValues) => {
