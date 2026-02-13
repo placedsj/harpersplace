@@ -19,6 +19,8 @@
         import { Loader2, CalendarIcon } from 'lucide-react';
         import { useFirestore, useCollection } from '@/firebase';
 
+export const dynamic = 'force-dynamic';
+
         const logSchema = z.object({
           eventDate: z.string().min(1, 'Date is required.'),
           category: z.string().min(1, 'Category is required.'),
