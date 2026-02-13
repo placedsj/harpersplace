@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { format, parse } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BedDouble, Utensils, Baby, type LucideIcon } from 'lucide-react';
+import { PlusCircle, BedDouble, Utensils, Baby, Loader2, type LucideIcon } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AiSleepSuggestor } from '@/components/ai-sleep-suggestor';
 import {
@@ -175,9 +175,18 @@ export default function LogPage() {
                         />
                         <DialogFooter>
                           <DialogClose asChild>
-                            <Button type="button" variant="secondary">Cancel</Button>
+                            <Button type="button" variant="secondary" disabled={form.formState.isSubmitting}>Cancel</Button>
                           </DialogClose>
-                          <Button type="submit">Save Entry</Button>
+                          <Button type="submit" disabled={form.formState.isSubmitting}>
+                            {form.formState.isSubmitting ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Saving...
+                              </>
+                            ) : (
+                              'Save Entry'
+                            )}
+                          </Button>
                         </DialogFooter>
                     </form>
                 </Form>
@@ -203,6 +212,13 @@ export default function LogPage() {
                         </TableHeader>
                         <TableBody>
                             {loading && <TableRow><TableCell colSpan={3}>Loading logs...</TableCell></TableRow>}
+                            {!loading && logs && logs.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                                        No logs recorded today. Add one to get started!
+                                    </TableCell>
+                                </TableRow>
+                            )}
                             {logs && logs.map((log) => {
                                 const Icon = iconMap[log.type];
                                 return (
@@ -216,8 +232,8 @@ export default function LogPage() {
                                         </TableCell>
                                         <TableCell>{log.details}</TableCell>
                                     </TableRow>
-                                )}
-                            )}
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </CardContent>
