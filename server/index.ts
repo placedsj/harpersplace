@@ -1,7 +1,7 @@
 import express from 'express';
 import next from 'next';
-import cors from 'cors';
 import { registerRoutes } from './routes';
+import { setupSecurity } from './security';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -12,10 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.prepare().then(async () => {
   const server = express();
 
-  server.use(cors({
-    origin: true,
-    credentials: true,
-  }));
+  setupSecurity(server);
 
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
