@@ -12,7 +12,9 @@ export type JournalEntry = {
   timestamp: Timestamp;
 };
 
-export const journalEntries: Omit<JournalEntry, 'id' | 'userId' | 'timestamp' | 'date'> & { date: Date }[] = [
+// This type definition was incorrect. It was trying to be an object AND an array.
+// Correcting it to be an array of objects.
+export const journalEntries = [
     {
       title: "Harper's First Soccer Goal!",
       date: new Date("2025-08-26"),
