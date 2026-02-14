@@ -13,3 +13,7 @@
 ## 2025-05-23 - CI/CD Compatibility
 **Learning:** Netlify deployment via `@netlify/plugin-nextjs` is incompatible with `output: 'standalone'` in `next.config.ts`. Additionally, `allowedDevOrigins` can cause configuration conflicts.
 **Action:** Always verify `next.config.ts` for these settings when encountering "Redirect rules" or "Header rules" build failures on Netlify. Also, be wary of syntax errors in config files that might slip through if local typechecking is unavailable.
+
+## 2025-05-23 - Netlify Headers
+**Learning:** Moving security headers from `next.config.ts` to `netlify.toml` resolves "Header rules" build failures by bypassing the Netlify plugin's configuration generation step, which can be brittle.
+**Action:** When deploying to Netlify, prefer `netlify.toml` for static headers and redirects over Next.js config to ensure reliability.
