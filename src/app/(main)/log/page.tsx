@@ -27,7 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp, limit } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,8 +56,9 @@ const iconMap: Record<string, LucideIcon> = {
 export default function LogPage() {
     const { user } = useAuth();
     const { db } = useFirestore();
+    const [limitCount, setLimitCount] = React.useState(20);
     const { data: logs, loading } = useCollection<DailyLog>(
-        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(limitCount)) : null
     );
 
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -236,6 +237,17 @@ export default function LogPage() {
                             })}
                         </TableBody>
                     </Table>
+                    {logs && logs.length >= limitCount && (
+                        <div className="mt-4 flex justify-center">
+                            <Button
+                                variant="outline"
+                                onClick={() => setLimitCount((prev) => prev + 20)}
+                                disabled={loading}
+                            >
+                                {loading ? 'Loading...' : 'Load More'}
+                            </Button>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

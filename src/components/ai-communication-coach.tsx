@@ -5,13 +5,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { improveCommunication, ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Wand2, ArrowRight } from 'lucide-react';
+import { improveCommunicationAction } from './ai-communication-coach/actions';
+import type { ImproveCommunicationOutput } from '@/ai/flows/improve-communication';
 
 const formSchema = z.object({
   message: z.string().min(10, 'Please enter a message of at least 10 characters.'),
@@ -33,8 +34,16 @@ export function AiCommunicationCoach() {
     setIsLoading(true);
     setResult(null);
     try {
-      const output = await improveCommunication(values);
-      setResult(output);
+      const output = await improveCommunicationAction(values.message);
+      if (output) {
+        setResult(output);
+      } else {
+        toast({
+            variant: 'destructive',
+            title: 'An error occurred',
+            description: 'Failed to analyze the message. Please try again.',
+        });
+      }
     } catch (error) {
       console.error('Error improving communication:', error);
       toast({

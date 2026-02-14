@@ -7,10 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Wand2, Send, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { coParentingActions, CoParentingActionsOutput } from '@/ai/flows/co-parenting-actions';
+import { coParentingActionsAction } from './actions';
+import type { CoParentingActionsOutput } from '@/ai/flows/co-parenting-actions';
 
 type Message = {
     id: number;
@@ -73,17 +74,19 @@ function CommunicationPageInternal() {
         setNewMessage('');
 
         try {
-            const result = await coParentingActions({ text: userMessage.text });
-            const aiResponse: Message = {
-                id: messages.length + 2,
-                user: 'Mom', // Simulating response from the other parent / AI mediator
-                avatar: '',
-                initials: 'AI',
-                text: result.text,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                actions: result.tool_requests
-            };
-            setMessages(prev => [...prev, aiResponse]);
+            const result = await coParentingActionsAction({ text: userMessage.text });
+            if (result) {
+                const aiResponse: Message = {
+                    id: messages.length + 2,
+                    user: 'Mom', // Simulating response from the other parent / AI mediator
+                    avatar: '',
+                    initials: 'AI',
+                    text: result.text || "Message received.",
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    actions: result.tool_requests
+                };
+                setMessages(prev => [...prev, aiResponse]);
+            }
         } catch (error) {
             console.error("Error with co-parenting actions:", error);
             toast({
@@ -96,10 +99,10 @@ function CommunicationPageInternal() {
         }
     };
     
-    const handleActionClick = (tool: string, args: any) => {
+    const handleActionClick = (title: string) => {
         toast({
             title: "Action Logged!",
-            description: `Your proposal '${args.title}' has been officially logged.`
+            description: `Your proposal '${title}' has been officially logged.`
         });
     }
 
@@ -150,9 +153,9 @@ function CommunicationPageInternal() {
                                         <p className="text-sm font-semibold flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> AI Suggested Actions</p>
                                         <p className="text-xs text-muted-foreground">The AI mediator detected an actionable item in the conversation. You can use these buttons to create a formal log entry.</p>
                                         <div className="flex flex-wrap gap-2 pt-2">
-                                            {msg.actions.map((tool, index) => (
-                                                <Button key={index} size="sm" variant="outline" onClick={() => handleActionClick(tool.name, tool.args)}>
-                                                    {tool.args.title}
+                                            {msg.actions.map((action, index) => (
+                                                <Button key={index} size="sm" variant="outline" onClick={() => handleActionClick(action.args.title)}>
+                                                    {action.args.title}
                                                 </Button>
                                             ))}
                                         </div>
