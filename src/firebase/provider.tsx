@@ -35,7 +35,7 @@ function FirebaseServicesProvider({ children }: { children: ReactNode }) {
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-        <UserProvider>
+        <UserProvider auth={contextValue.auth}>
             {children}
         </UserProvider>
     </FirebaseContext.Provider>

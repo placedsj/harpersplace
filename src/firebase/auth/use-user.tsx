@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { useAuth as useFirebaseAuth } from '@/firebase/provider';
+import { onAuthStateChanged, User, Auth } from 'firebase/auth';
 
 export type AuthContextType = {
   user: User | null;
@@ -10,8 +9,7 @@ export type AuthContextType = {
 
 const UserContext = createContext<AuthContextType | undefined>(undefined);
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const { auth } = useFirebaseAuth();
+export const UserProvider = ({ children, auth }: { children: ReactNode; auth: Auth | null }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
