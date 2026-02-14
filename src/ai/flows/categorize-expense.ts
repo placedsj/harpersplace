@@ -1,9 +1,5 @@
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
-import { defineFlow } from '@genkit-ai/flow';
-import { action } from '@genkit-ai/core';
-import { ai } from '@/ai/genkit';
-import { googleAI } from '@genkit-ai/googleai';
 
 const ExpenseCategorySchema = z.object({
   category: z.enum([
@@ -19,69 +15,34 @@ const ExpenseCategorySchema = z.object({
   currency: z.string().optional().describe('The currency of the expense, e.g., USD, EUR.'),
 });
 
-const categorizeExpensePrompt = ai.definePrompt({
-  name: 'categorizeExpense',
-  input: { schema: z.object({ description: z.string() }) },
-  output: { schema: ExpenseCategorySchema },
-  prompt: `
-    You are an expert at parsing and categorizing expenses for co-parents.
-    Analyze the following expense description and extract its category and cost.
-
-    Expense Description: "{{description}}"
-
-    Valid Categories:
-    - Health (doctor visits, prescriptions, dental, vision)
-    - Education (school fees, tutors, books, supplies)
-    - Extracurricular (sports, music lessons, clubs, camps)
-    - Clothing (new clothes, shoes, uniforms)
-    - Childcare (babysitting, daycare)
-    - Travel (costs related to custody exchange or trips)
-    - Other (anything that doesn't fit elsewhere)
-  `,
-});
-
 export const categorizeExpenseFlow = ai.defineFlow(
   {
     name: 'categorizeExpenseFlow',
-    inputSchema: z.string(),
+    inputSchema: z.string().describe('A description of the expense.'),
     outputSchema: ExpenseCategorySchema,
   },
-  async (prompt) => {
-    const { output } = await categorizeExpensePrompt({ description: prompt });
-    return output!;
-    const llmResponse = await action(
-        {
-            name: 'categorizeExpense',
-            actionType: 'custom',
-            inputSchema: z.string(),
-            outputSchema: ExpenseCategorySchema,
-        },
-        async (prompt) => {
-            const result = await ai.generate({
-                prompt: `
-                    You are an expert at parsing and categorizing expenses for co-parents.
-                    Analyze the following expense description and extract its category and cost.
-                    
-                    Expense Description: "${prompt}"
+  async (description) => {
+    const { output } = await ai.generate({
+        prompt: `
+            You are an expert at parsing and categorizing expenses for co-parents.
+            Analyze the following expense description and extract its category and cost.
 
-                    Valid Categories:
-                    - Health (doctor visits, prescriptions, dental, vision)
-                    - Education (school fees, tutors, books, supplies)
-                    - Extracurricular (sports, music lessons, clubs, camps)
-                    - Clothing (new clothes, shoes, uniforms)
-                    - Childcare (babysitting, daycare)
-                    - Travel (costs related to custody exchange or trips)
-                    - Other (anything that doesn't fit elsewhere)
-                `,
-                output: {
-                    schema: ExpenseCategorySchema,
-                }
-            });
+            Expense Description: "${description}"
 
-            return result.output || { category: 'Other' as const };
+            Valid Categories:
+            - Health (doctor visits, prescriptions, dental, vision)
+            - Education (school fees, tutors, books, supplies)
+            - Extracurricular (sports, music lessons, clubs, camps)
+            - Clothing (new clothes, shoes, uniforms)
+            - Childcare (babysitting, daycare)
+            - Travel (costs related to custody exchange or trips)
+            - Other (anything that doesn't fit elsewhere)
+        `,
+        output: {
+            schema: ExpenseCategorySchema,
         }
-    )(prompt);
+    });
 
-    return llmResponse;
+    return output || { category: 'Other' };
   }
 );
