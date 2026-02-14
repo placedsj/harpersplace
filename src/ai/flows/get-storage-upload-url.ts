@@ -61,9 +61,7 @@ export const getStorageUploadUrlFlow = defineFlow(
         if (!bucketName) {
             throw new Error("Firebase Storage bucket name is not configured.");
         }
-        // Use default bucket if not specified in config, or use the configured one
-        // Note: admin.storage().bucket() uses default if no name provided
-        const bucket = bucketName ? storage.bucket(bucketName) : storage.bucket();
+        const bucket = storage.bucket(bucketName);
 
         const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
         const file = bucket.file(filePath);
