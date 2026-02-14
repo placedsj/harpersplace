@@ -20,7 +20,6 @@
         import { useFirestore, useCollection } from '@/firebase';
 
         export const dynamic = 'force-dynamic';
-export const dynamic = 'force-dynamic';
 
         const logSchema = z.object({
           eventDate: z.string().min(1, 'Date is required.'),
