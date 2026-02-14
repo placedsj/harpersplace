@@ -1,7 +1,6 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -36,9 +35,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  allowedDevOrigins: process.env.REPLIT_DEV_DOMAIN 
-    ? [`${process.env.REPLIT_DEV_DOMAIN}`] 
-    : [],
   async headers() {
     return [
       {
@@ -68,7 +64,6 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           }
-          },
           // {
           //   key: 'Permissions-Policy',
           //   value: 'camera=(), microphone=(), geolocation=()'
