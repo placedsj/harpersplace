@@ -2,6 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { format, differenceInMonths, parse } from 'date-fns';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -11,6 +14,11 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+import { useCollection, useFirestore, useCount } from '@/firebase';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
+import type { JournalEntry } from '@/lib/journal-data';
+import type { DailyLog } from '@/app/(main)/log/page';
+
 import DashboardCard from '@/components/dashboard-card';
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +27,6 @@ export const dynamic = 'force-dynamic';
 const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
-    const [isClient, setIsClient] = useState(false);
     
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
         user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
@@ -28,6 +35,10 @@ const MainDashboard = () => {
 
     // Use manual fetching for counts to avoid additional hook dependencies and ensure stability
     const [stats, setStats] = useState({ logs: 0, journals: 0 });
+    // Fetch separate counts for overview to avoid fetching all data
+    const { count: journalCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
+    );
 
     // Limit logs fetch to 10 for performance, as we only show top 3.
     const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
@@ -57,6 +68,10 @@ const MainDashboard = () => {
         }
         fetchCounts();
     }, [user, db]);
+
+    const { count: logsCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
+    );
 
     // Reusable button style for main action cards
     const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
@@ -168,12 +183,14 @@ const MainDashboard = () => {
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                                 {stats.logs}
+                                {logsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
                                 {stats.journals}
+                                {journalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>
