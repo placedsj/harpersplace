@@ -11,38 +11,67 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
+import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
+import type { JournalEntry } from '@/lib/journal-data';
+import type { DailyLog } from '@/app/(main)/log/page';
+import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
+
 import DashboardCard from '@/components/dashboard-card';
 
-// --- Data based on Harper being 10 months old as of Sept 6, 2025 ---
-const harper_dob = new Date("2024-11-12T00:00:00Z");
+export const dynamic = 'force-dynamic';
 
 // --- Main Dashboard Component ---
 const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
-    const [isClient, setIsClient] = useState(false);
     
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
         user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
     );
     const latestStory = journalEntries?.[0];
 
-    const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
-        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc')) : null
+    // Use manual fetching for counts to avoid additional hook dependencies and ensure stability
+    const [stats, setStats] = useState({ logs: 0, journals: 0 });
+    // Fetch separate counts for overview to avoid fetching all data
+    const { count: journalCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
     );
 
-    const getLatestLog = (type: string) => logs?.find(log => log.type === type);
-
-    const latestFeed = getLatestLog('Feeding');
-    const latestNap = getLatestLog('Sleep');
-    const latestDiaper = getLatestLog('Diaper');
+    // Limit logs fetch to 10 for performance, as we only show top 3.
+    const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
+    );
     
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        async function fetchCounts() {
+            if (!user || !db) return;
+            try {
+                const logsQuery = query(collection(db, `users/${user.uid}/daily-logs`));
+                const journalsQuery = query(collection(db, `users/${user.uid}/journal`));
+
+                const [logsSnapshot, journalsSnapshot] = await Promise.all([
+                    getCountFromServer(logsQuery),
+                    getCountFromServer(journalsQuery)
+                ]);
+
+                setStats({
+                    logs: logsSnapshot.data().count,
+                    journals: journalsSnapshot.data().count
+                });
+            } catch (error) {
+                console.error("Error fetching counts:", error);
+            }
+        }
+        fetchCounts();
+    }, [user, db]);
+
+    const { count: logsCount } = useCount(
+        user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
+    );
 
     // Reusable button style for main action cards
     const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
@@ -104,7 +133,19 @@ const MainDashboard = () => {
             {/* 3. LOWER SECTION (3-COLUMN LAYOUT) */}
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 <DashboardCard title="RECENT ACTIVITY" description="LATEST ENTRIES AND UPDATES.">
-                    {logs && logs.length > 0 ? (
+                    {logsLoading ? (
+                        <div className="space-y-3">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="flex items-center gap-4 p-3 rounded-lg animate-pulse">
+                                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : logs && logs.length > 0 ? (
                         <div className="space-y-3">
                             {logs.slice(0, 3).map((log, index) => (
                                 <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -141,13 +182,15 @@ const MainDashboard = () => {
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {logs?.length || 0}
+                                {stats.logs}
+                                {logsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {journalEntries?.length || 0}
+                                {stats.journals}
+                                {journalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>

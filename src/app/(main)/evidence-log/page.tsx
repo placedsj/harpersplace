@@ -26,6 +26,15 @@ const logSchema = z.object({
   partiesInvolved: z.string().optional(),
   yourResponse: z.string().optional(),
 });
+        export const dynamic = 'force-dynamic';
+
+        const logSchema = z.object({
+          eventDate: z.string().min(1, 'Date is required.'),
+          category: z.string().min(1, 'Category is required.'),
+          description: z.string().min(1, 'Description is required.'),
+          partiesInvolved: z.string().optional(),
+          yourResponse: z.string().optional(),
+        });
 
 type LogFormValues = z.infer<typeof logSchema>;
 
@@ -271,6 +280,40 @@ function EvidenceLogPageInternal() {
                             </CardContent>
                         </Card>
                     ))}
+
+                        <div className="space-y-4">
+                            {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
+                            {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
+                            {events && events.map(event => (
+                                <Card key={event.id}>
+                                    <CardHeader>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <CardTitle className="text-lg">{event.category}</CardTitle>
+                                                 <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                                                     <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
+                                                      {event.timestamp?.toDate && (
+                                                          <>
+                                                           <span>&bull;</span>
+                                                           <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
+                                                          </>
+                                                      )}
+                                                       <span>&bull;</span>
+                                                       <span>by {event.loggedBy}</span>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p>{event.description}</p>
+                                        {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
+                                        {/* Use response if available, or fall back to yourResponse if it exists on older data, though type suggests only response */}
+                                        {(event.response || (event as any).yourResponse) && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response || (event as any).yourResponse}</p>}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

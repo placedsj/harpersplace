@@ -1,5 +1,7 @@
 'use server';
 
+import { defineFlow } from '@genkit-ai/flow';
+import { action } from '@genkit-ai/core';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 import { ai } from '@/ai/genkit';
@@ -58,6 +60,21 @@ export const getStorageUploadUrlFlow = ai.defineFlow(
     async (input) => {
         const { fileName, contentType, userId } = input;
         const storage = getStorage();
+        return await action(
+            { 
+                name: 'generateSignedUrl', 
+                actionType: 'custom',
+                inputSchema, 
+                outputSchema 
+            },
+            async ({ fileName, contentType, userId }) => {
+                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+                if (!bucketName) {
+                    throw new Error("Firebase Storage bucket name is not configured.");
+                }
+                const bucket = storage.bucket(bucketName);
+                const filePath = `user-uploads/${userId}/${Date.now()}-${fileName}`;
+                const file = bucket.file(filePath);
 
         const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
         if (!bucketName) {
