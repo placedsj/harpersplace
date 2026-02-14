@@ -17,6 +17,17 @@ app.prepare().then(async () => {
     credentials: true,
   }));
 
+  // Add security headers
+  server.use((req, res, next) => {
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (process.env.NODE_ENV === 'production') {
+      res.setHeader('Strict-Transport-Security', 'max-age=63072000');
+    }
+    next();
+  });
+
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
 
