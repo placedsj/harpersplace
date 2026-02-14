@@ -26,15 +26,8 @@ const logSchema = z.object({
   partiesInvolved: z.string().optional(),
   yourResponse: z.string().optional(),
 });
-        export const dynamic = 'force-dynamic';
 
-        const logSchema = z.object({
-          eventDate: z.string().min(1, 'Date is required.'),
-          category: z.string().min(1, 'Category is required.'),
-          description: z.string().min(1, 'Description is required.'),
-          partiesInvolved: z.string().optional(),
-          yourResponse: z.string().optional(),
-        });
+export const dynamic = 'force-dynamic';
 
 type LogFormValues = z.infer<typeof logSchema>;
 
