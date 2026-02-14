@@ -30,6 +30,7 @@ const MainDashboard = () => {
     const latestStory = journalEntries?.[0];
 
     // Fetch separate counts for overview to avoid fetching all data
+    // Note: useCount uses queryEqual internally, so creating queries in render is safe.
     const { count: journalCount } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
     );
