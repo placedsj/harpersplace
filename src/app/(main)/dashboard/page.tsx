@@ -10,12 +10,8 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
 import { useCollection, useFirestore, useCount } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 
@@ -45,6 +41,7 @@ const MainDashboard = () => {
         user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
     );
     
+    const [isClient, setIsClient] = useState(false);
     useEffect(() => {
         setIsClient(true);
         async function fetchCounts() {
