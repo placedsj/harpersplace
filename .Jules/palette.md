@@ -17,3 +17,7 @@
 ## 2025-05-23 - Netlify Headers
 **Learning:** Moving security headers from `next.config.ts` to `netlify.toml` resolves "Header rules" build failures by bypassing the Netlify plugin's configuration generation step, which can be brittle.
 **Action:** When deploying to Netlify, prefer `netlify.toml` for static headers and redirects over Next.js config to ensure reliability.
+
+## 2025-05-24 - Loading State in Slotted Components
+**Learning:** When using Radix UI `Slot` (via `asChild`), injecting auxiliary elements (like loading spinners) alongside children causes `React.Children.only` errors because `Slot` expects a single child.
+**Action:** For components supporting `asChild`, conditional rendering of auxiliary elements should check `!asChild`. Alternatively, wrap the spinner and child in a single element *before* passing to `Slot`, but be aware `Slot` merges props to the *immediate* child.

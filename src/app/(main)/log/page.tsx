@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { format, parse } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BedDouble, Utensils, Baby, Loader2, type LucideIcon } from 'lucide-react';
+import { PlusCircle, BedDouble, Utensils, Baby, type LucideIcon } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AiSleepSuggestor } from '@/components/ai-sleep-suggestor';
 import {
@@ -178,15 +178,8 @@ export default function LogPage() {
                           <DialogClose asChild>
                             <Button type="button" variant="secondary" disabled={form.formState.isSubmitting}>Cancel</Button>
                           </DialogClose>
-                          <Button type="submit" disabled={form.formState.isSubmitting}>
-                            {form.formState.isSubmitting ? (
-                              <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Saving...
-                              </>
-                            ) : (
-                              'Save Entry'
-                            )}
+                          <Button type="submit" isLoading={form.formState.isSubmitting}>
+                            Save Entry
                           </Button>
                         </DialogFooter>
                     </form>
@@ -242,9 +235,9 @@ export default function LogPage() {
                             <Button
                                 variant="outline"
                                 onClick={() => setLimitCount((prev) => prev + 20)}
-                                disabled={loading}
+                                isLoading={loading}
                             >
-                                {loading ? 'Loading...' : 'Load More'}
+                                Load More
                             </Button>
                         </div>
                     )}
