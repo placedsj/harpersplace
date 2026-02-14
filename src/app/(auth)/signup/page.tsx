@@ -12,7 +12,6 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import Link from "next/link";
-import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
@@ -152,9 +151,8 @@ export default function SignUpPage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading && <Loader2 className="animate-spin" />}
-                                <span>Create an account</span>
+                            <Button type="submit" className="w-full" isLoading={isLoading}>
+                                Create an account
                             </Button>
                         </form>
                     </Form>
