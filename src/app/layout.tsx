@@ -1,11 +1,11 @@
-import type {Metadata, Viewport} from 'next';
+'use client';
+
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Montserrat, Open_Sans } from 'next/font/google';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
-import { FirebaseProvider } from '@/firebase';
-import { Providers } from "@/components/providers";
+import { FirebaseProvider } from '@/firebase/provider';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -19,15 +19,6 @@ const openSans = Open_Sans({
   weight: ['400', '600'],
 });
 
-export const metadata: Metadata = {
-  title: "Harper's Place",
-  description: "Co-parenting and family management platform",
-};
-
-export const viewport: Viewport = {
-  themeColor: '#ffffff',
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,17 +26,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Harper&apos;s Place</title>
+        <meta name="description" content="Co-parenting and family management platform" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
       <body className={`antialiased ${openSans.variable} ${montserrat.variable}`}>
-        <FirebaseProvider>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <FirebaseProvider>
             {children}
-          </QueryClientProvider>
-          <Toaster />
-        </FirebaseProvider>
-        <Providers>
-          {children}
-        </Providers>
-        <Toaster />
+            <Toaster />
+          </FirebaseProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
