@@ -38,7 +38,7 @@
             response?: string;
             loggedBy: string;
             userId: string;
-            timestamp?: Timestamp
+            timestamp?: Timestamp;
         }
 
 
@@ -234,7 +234,7 @@
                         <Card>
                             <CardHeader>
                                 <CardTitle>Event History</CardTitle>
-                                <p className="text-muted-foreground">A chronological record of events</p>
+                                <CardDescription>A chronological record of events</CardDescription>
                             </CardHeader>
                              <CardContent>
                                 {/* Filters could be added here later */}
@@ -267,7 +267,7 @@
                                     <CardContent>
                                         <p>{event.description}</p>
                                         {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                        {event.yourResponse && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.yourResponse}</p>}
+                                        {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
                                     </CardContent>
                                 </Card>
                             ))}
