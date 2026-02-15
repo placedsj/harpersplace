@@ -1,19 +1,15 @@
-// src/app/(main)/dashboard/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
 import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
@@ -33,10 +29,7 @@ const MainDashboard = () => {
     );
     const latestStory = journalEntries?.[0];
 
-    // Use manual fetching for counts to avoid additional hook dependencies and ensure stability
-    const [stats, setStats] = useState({ logs: 0, journals: 0 });
-    // Fetch separate counts for overview to avoid fetching all data
-    const { count: journalCount } = useCount(
+    const { count: journalCount, loading: journalCountLoading } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
     );
 
@@ -45,31 +38,7 @@ const MainDashboard = () => {
         user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
     );
     
-    useEffect(() => {
-        setIsClient(true);
-        async function fetchCounts() {
-            if (!user || !db) return;
-            try {
-                const logsQuery = query(collection(db, `users/${user.uid}/daily-logs`));
-                const journalsQuery = query(collection(db, `users/${user.uid}/journal`));
-
-                const [logsSnapshot, journalsSnapshot] = await Promise.all([
-                    getCountFromServer(logsQuery),
-                    getCountFromServer(journalsQuery)
-                ]);
-
-                setStats({
-                    logs: logsSnapshot.data().count,
-                    journals: journalsSnapshot.data().count
-                });
-            } catch (error) {
-                console.error("Error fetching counts:", error);
-            }
-        }
-        fetchCounts();
-    }, [user, db]);
-
-    const { count: logsCount } = useCount(
+    const { count: logsCount, loading: logsCountLoading } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
     );
 
@@ -98,33 +67,27 @@ const MainDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                     
                     {/* Child's Daily Care - THE PURPLE GRADIENT */}
-                    <Link href="/log" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <BookOpen className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
-                        </button>
+                    <Link href="/log" className={`block ${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <BookOpen className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
                     </Link>
 
                     {/* Safe Communication */}
-                    <Link href="/communication" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <MessageSquare className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
-                        </button>
+                    <Link href="/communication" className={`block ${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <MessageSquare className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
                     </Link>
 
                     {/* Child's Fund */}
-                    <Link href="/fund" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <DollarSign className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
-                        </button>
+                    <Link href="/fund" className={`block ${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <DollarSign className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
                     </Link>
 
                 </div>
@@ -181,17 +144,23 @@ const MainDashboard = () => {
                 <DashboardCard title="FAMILY OVERVIEW" description="YOUR HARPER'S PLACE STATS.">
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
-                            <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {stats.logs}
-                                {logsCount || 0}
-                            </p>
+                            <div className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent min-h-[40px] flex items-center justify-center">
+                                {logsCountLoading ? (
+                                    <Skeleton className="h-8 w-12" />
+                                ) : (
+                                    logsCount || 0
+                                )}
+                            </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {stats.journals}
-                                {journalCount || 0}
-                            </p>
+                            <div className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent min-h-[40px] flex items-center justify-center">
+                                {journalCountLoading ? (
+                                    <Skeleton className="h-8 w-12" />
+                                ) : (
+                                    journalCount || 0
+                                )}
+                            </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
                         </div>
                     </div>
