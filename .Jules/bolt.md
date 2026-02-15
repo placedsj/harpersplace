@@ -1,3 +1,3 @@
-## 2025-02-19 - Circular Dependencies in Next.js Pages
-**Learning:** Importing types directly from page components (e.g., `import { DailyLog } from '@/app/(main)/log/page'`) into other components causes circular dependencies that can break Netlify builds with generic errors like "Pages changed" or "Header rules".
-**Action:** Always define shared types in `src/lib/types.ts` or similar shared modules, and import them from there in both the defining page and consuming components.
+## 2025-02-19 - Type Mismatches in Server Actions
+**Learning:** A type mismatch in a Server Action (e.g., passing `imageBase64` to a function expecting `imageDataUri`) can cause build failures in Next.js, often manifesting as generic "Pages changed" errors in Netlify if the build aborts silently or produces partial output.
+**Action:** Carefully check argument names and types when calling server-side functions from Client Components, especially when using Zod schemas for validation.
