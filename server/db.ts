@@ -6,8 +6,8 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is required');
+  console.warn('DATABASE_URL environment variable is required');
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL || 'postgres://placeholder' });
 export const db = drizzle(pool, { schema });
