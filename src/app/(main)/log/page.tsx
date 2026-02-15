@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp, limit } from 'firebase/firestore';
+import type { DailyLog } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,15 +37,6 @@ const logSchema = z.object({
   type: z.enum(['Feeding', 'Diaper', 'Sleep']),
   details: z.string().min(1, 'Details are required.'),
 });
-
-export type DailyLog = {
-    id: string;
-    time: string;
-    type: 'Feeding' | 'Diaper' | 'Sleep';
-    details: string;
-    userId: string;
-    timestamp: Timestamp;
-};
 
 
 const iconMap: Record<string, LucideIcon> = {
