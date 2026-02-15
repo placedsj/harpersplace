@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { onSnapshot, Query, DocumentData, QuerySnapshot, queryEqual } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,17 +9,29 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
+  // Use a ref to store the stable query object
+  const queryRef = useRef<Query<DocumentData> | null>(query);
+
+  // Update the ref only if the query has logically changed
+  // If we have both, check equality. If different, update.
+  if (query && queryRef.current && !queryEqual(query, queryRef.current)) {
+    queryRef.current = query;
+  }
+  // If we went from no query to a query, update.
+  else if (query && !queryRef.current) {
+    queryRef.current = query;
+  }
+  // If we went from query to no query, update.
+  else if (!query && queryRef.current) {
+    queryRef.current = null;
+  }
+
+  // Use the stable ref in the effect dependency array.
+  // This ensures we only re-subscribe when the query logically changes.
+  const stableQuery = queryRef.current;
 
   useEffect(() => {
-    const newQueryJson = query ? JSON.stringify(query) : null;
-    
-    if (queryRef.current === newQueryJson) {
-      return;
-    }
-    queryRef.current = newQueryJson;
-
-    if (!query) {
+    if (!stableQuery) {
       setData(null);
       setLoading(false);
       return;
@@ -28,7 +40,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-      query,
+      stableQuery,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const result: WithId<T>[] = [];
         snapshot.forEach((doc) => {
@@ -46,9 +58,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
     );
 
     return () => unsubscribe();
-  }, [query]);
+  }, [stableQuery]);
 
   return { data, loading, error };
 }
-
-    
