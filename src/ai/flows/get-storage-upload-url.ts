@@ -1,6 +1,6 @@
 'use server';
 
-import { defineFlow } from '@genkit-ai/flow';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import * as admin from 'firebase-admin';
 
@@ -48,7 +48,7 @@ const outputSchema = z.object({
     publicUrl: z.string(),
 });
 
-export const getStorageUploadUrlFlow = defineFlow(
+export const getStorageUploadUrlFlow = ai.defineFlow(
     {
         name: 'getStorageUploadUrlFlow',
         inputSchema,
