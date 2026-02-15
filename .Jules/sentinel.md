@@ -7,3 +7,8 @@
 **Vulnerability:** N/A (Build Failure)
 **Learning:** Netlify deployment of Next.js 15 requires `sharp` in `dependencies` and `@netlify/plugin-nextjs` in `devDependencies`. Also, `src/app/(main)/fund/page.tsx` corruption causes build failures.
 **Prevention:** Ensure these dependencies are present and files are intact before deploying.
+
+## 2025-02-21 - [Duplicate Imports]
+**Vulnerability:** N/A (Build Failure)
+**Learning:** Duplicate imports and definitions in TypeScript files (e.g., `dashboard/page.tsx`, `ai/flows/*.ts`) cause build failures (`Identifier '...' has already been declared`). This likely happened during a bad merge or copy-paste.
+**Prevention:** Always check for duplicate imports when merging or refactoring. Use linting tools to catch this early.
