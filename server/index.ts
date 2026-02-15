@@ -12,8 +12,52 @@ const PORT = process.env.PORT || 5000;
 app.prepare().then(async () => {
   const server = express();
 
+  // Security Headers Middleware
+  server.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    // X-Frame-Options omitted to prevent breaking Replit preview
+    next();
+  });
+
+  // Strict CORS configuration
+  const allowedOrigins = process.env.REPLIT_DOMAINS
+    ? process.env.REPLIT_DOMAINS.split(',').map(d => `https://${d.trim().replace(/\/$/, '')}`)
+    : [];
+
+  // Add local development origins if needed
+  if (dev) {
+    allowedOrigins.push('http://localhost:5000');
+    allowedOrigins.push('http://0.0.0.0:5000');
+  }
+
   server.use(cors({
-    origin: true,
+    // @ts-ignore - cors types don't support (req, origin, callback) signature but the library does
+    origin: (req, origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Check if origin matches the request host (Same-Origin fallback)
+      const host = req.get('host');
+      if (host) {
+        try {
+          const originHost = new URL(origin).host;
+          if (originHost === host) {
+            return callback(null, true);
+          }
+        } catch (e) {
+          // ignore invalid origin
+        }
+      }
+
+      console.error(`CORS blocked origin: ${origin} (Host: ${host})`);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }));
 
