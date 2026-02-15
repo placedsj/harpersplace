@@ -7,7 +7,7 @@ import {
   useContext,
   ReactNode,
 } from 'react';
-import { initializeFirebase, FirebaseServices } from '.';
+import { initializeFirebase, FirebaseServices } from './init';
 
 const FirebaseClientContext = createContext<FirebaseServices | null>(null);
 
