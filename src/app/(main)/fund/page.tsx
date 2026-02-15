@@ -2,8 +2,6 @@
 'use client';
 import { Card } from '@/components/ui/card';
 
-export const dynamic = 'force-dynamic';
-
 export default function FundPage() {
     return (
         <div className="space-y-6">
