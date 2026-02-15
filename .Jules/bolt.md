@@ -1,3 +1,3 @@
-## 2025-02-19 - Corrupted Files & Build Failures
-**Learning:** The file `src/app/(main)/fund/page.tsx` was found to be empty, causing "Pages changed" and "Header rules" failures in Netlify CI. This indicates that file corruption can manifest as generic build errors.
-**Action:** When encountering generic Netlify build errors, check for empty or corrupted source files, especially those mentioned in the "Pages changed" category.
+## 2025-02-19 - Circular Dependencies in Next.js Pages
+**Learning:** Importing types directly from page components (e.g., `import { DailyLog } from '@/app/(main)/log/page'`) into other components causes circular dependencies that can break Netlify builds with generic errors like "Pages changed" or "Header rules".
+**Action:** Always define shared types in `src/lib/types.ts` or similar shared modules, and import them from there in both the defining page and consuming components.
