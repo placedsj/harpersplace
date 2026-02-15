@@ -12,3 +12,8 @@
 **Vulnerability:** N/A (Build Failure)
 **Learning:** Duplicate imports and definitions in TypeScript files (e.g., `dashboard/page.tsx`, `ai/flows/*.ts`) cause build failures (`Identifier '...' has already been declared`). This likely happened during a bad merge or copy-paste.
 **Prevention:** Always check for duplicate imports when merging or refactoring. Use linting tools to catch this early.
+
+## 2025-02-21 - [Next.js Config Compatibility]
+**Vulnerability:** N/A (Deployment Failure)
+**Learning:** `next.config.ts` (TypeScript) may cause parsing issues with `@netlify/plugin-nextjs` during the Netlify build process. Converting it to `next.config.js` (CommonJS) ensures maximum compatibility.
+**Prevention:** Use standard `next.config.js` when deploying to Netlify with the Next.js plugin if build errors persist.
