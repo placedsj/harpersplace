@@ -1,24 +1,30 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { onSnapshot, Query, DocumentData, QuerySnapshot, queryEqual } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
-export function useCollection<T>(query: Query<DocumentData> | null) {
+function useStableQuery<T>(query: Query<T> | null) {
+  const queryRef = useRef(query);
+
+  if (
+    query === null && queryRef.current !== null ||
+    query !== null && queryRef.current === null ||
+    (query && queryRef.current && !queryEqual(query, queryRef.current))
+  ) {
+    queryRef.current = query;
+  }
+
+  return queryRef.current;
+}
+
+export function useCollection<T>(queryIn: Query<DocumentData> | null) {
+  const query = useStableQuery(queryIn);
   const [data, setData] = useState<WithId<T>[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
-
   useEffect(() => {
-    const newQueryJson = query ? JSON.stringify(query) : null;
-    
-    if (queryRef.current === newQueryJson) {
-      return;
-    }
-    queryRef.current = newQueryJson;
-
     if (!query) {
       setData(null);
       setLoading(false);
