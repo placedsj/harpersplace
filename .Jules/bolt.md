@@ -13,3 +13,7 @@
 ## 2024-05-22 - Empty Files in Netlify Build
 **Learning:** Empty page files (e.g., `src/app/(main)/fund/page.tsx`) can cause obscure Netlify build failures ("Pages changed", "Header rules", "Redirect rules") that mimic routing or configuration errors.
 **Action:** Ensure all page files export a valid React component, even if it's just a placeholder, to prevent build crashes.
+
+## 2024-05-22 - Next.js Config on Netlify
+**Learning:** `next.config.ts` (TypeScript) can sometimes cause build issues on Netlify if the environment or `@netlify/plugin-nextjs` has trouble parsing it.
+**Action:** Use `next.config.js` (CommonJS) for maximum compatibility with Netlify builds, especially when using plugins.
