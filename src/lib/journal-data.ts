@@ -1,16 +1,5 @@
 // src/lib/journal-data.ts
-import type { Timestamp } from 'firebase/firestore';
-
-export type JournalEntry = {
-  id: string;
-  title: string;
-  date: Timestamp;
-  content: string;
-  image?: string;
-  dataAiHint?: string;
-  userId: string;
-  timestamp: Timestamp;
-};
+import type { JournalEntry } from '@/lib/types';
 
 // This type definition was incorrect. It was trying to be an object AND an array.
 // Correcting it to be an array of objects.

@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
+import type { JournalEntry } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 

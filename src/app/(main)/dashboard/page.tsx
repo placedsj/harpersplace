@@ -11,8 +11,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
+import type { DailyLog, JournalEntry } from '@/lib/types';
 
 import DashboardCard from '@/components/dashboard-card';
 
