@@ -9,3 +9,7 @@
 ## 2024-05-22 - Netlify Build Failures & Type Exports
 **Learning:** Exporting types from Next.js Page components (e.g., `src/app/(main)/log/page.tsx`) and importing them elsewhere (e.g., `dashboard/page.tsx`) can cause Netlify build failures ("Pages changed", "Header rules") due to circular dependencies or server/client boundary violations.
 **Action:** Always define shared types in `src/lib/types.ts` or similar shared modules, never in Page components.
+
+## 2024-05-22 - Empty Files in Netlify Build
+**Learning:** Empty page files (e.g., `src/app/(main)/fund/page.tsx`) can cause obscure Netlify build failures ("Pages changed", "Header rules", "Redirect rules") that mimic routing or configuration errors.
+**Action:** Ensure all page files export a valid React component, even if it's just a placeholder, to prevent build crashes.
