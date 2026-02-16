@@ -79,7 +79,7 @@ export default function TransitionSummaryPage() {
     });
 
     const results = await Promise.all(uploadPromises);
-    const successfulUploads = results.filter((url): url is string => url !== null);
+    const successfulUploads = results.filter((url: string | null): url is string => url !== null);
     setUploadedFiles(prev => [...prev, ...successfulUploads]);
   };
 

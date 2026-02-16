@@ -87,7 +87,7 @@ export function UserNav() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {user ? (
-          <DropdownMenuItem onClick={logOut}>
+          <DropdownMenuItem onClick={() => logOut()}>
             🚪 Log out
           </DropdownMenuItem>
         ) : (
