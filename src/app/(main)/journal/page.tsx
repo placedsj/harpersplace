@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp, Loader2 } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -176,7 +176,7 @@ export default function JournalPage() {
                 <FormItem>
                     <FormLabel>Photo (Optional)</FormLabel>
                     <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center bg-muted/10">
-                        <ImageUp className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" aria-hidden="true" />
+                        <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" aria-hidden="true" />
                         <div className="space-y-2">
                             <Button type="button" variant="outline" disabled className="cursor-not-allowed">
                                 Upload Image
