@@ -6,6 +6,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  serverExternalPackages: ['firebase-admin', 'genkit', '@genkit-ai/flow', '@genkit-ai/core', '@genkit-ai/ai', 'express'],
   images: {
     remotePatterns: [
       {
