@@ -5,3 +5,7 @@
 ## 2024-05-22 - Redundant Data Fetching Pattern
 **Learning:** Components using both a custom hook (like `useCount`) AND a manual `useEffect` to fetch the same data cause duplicate network requests and potential race conditions/UI flickering.
 **Action:** Audit components for duplicate data fetching logic. Trust the custom hooks (if implemented correctly) or refactor them to be reliable, rather than adding manual fallbacks that double the load.
+
+## 2024-05-22 - Netlify Build Failures & Type Exports
+**Learning:** Exporting types from Next.js Page components (e.g., `src/app/(main)/log/page.tsx`) and importing them elsewhere (e.g., `dashboard/page.tsx`) can cause Netlify build failures ("Pages changed", "Header rules") due to circular dependencies or server/client boundary violations.
+**Action:** Always define shared types in `src/lib/types.ts` or similar shared modules, never in Page components.
