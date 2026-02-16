@@ -1,6 +1,7 @@
 import express from 'express';
 import next from 'next';
 import cors from 'cors';
+import { createCorsOriginCheck } from './security';
 import { registerRoutes } from './routes';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -12,8 +13,14 @@ const PORT = process.env.PORT || 5000;
 app.prepare().then(async () => {
   const server = express();
 
+  const allowedDomains = (process.env.REPLIT_DOMAINS?.split(',') || []).filter(Boolean);
+
+  if (dev) {
+    allowedDomains.push('localhost:3000', 'localhost:5000', '127.0.0.1:3000', '127.0.0.1:5000');
+  }
+
   server.use(cors({
-    origin: true,
+    origin: createCorsOriginCheck(allowedDomains),
     credentials: true,
   }));
 
