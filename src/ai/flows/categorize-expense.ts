@@ -1,8 +1,5 @@
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
-import { defineFlow } from '@genkit-ai/flow';
-import { action } from '@genkit-ai/core';
-import { googleAI } from '@genkit-ai/googleai';
 
 const ExpenseCategorySchema = z.object({
   category: z.enum([
