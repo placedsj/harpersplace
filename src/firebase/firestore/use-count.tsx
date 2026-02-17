@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { getCountFromServer, Query, DocumentData } from 'firebase/firestore';
 import { useStableQuery } from './use-stable-query';
