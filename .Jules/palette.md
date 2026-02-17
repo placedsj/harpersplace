@@ -17,3 +17,7 @@
 ## 2025-05-23 - Netlify Headers
 **Learning:** Moving security headers from `next.config.ts` to `netlify.toml` resolves "Header rules" build failures by bypassing the Netlify plugin's configuration generation step, which can be brittle.
 **Action:** When deploying to Netlify, prefer `netlify.toml` for static headers and redirects over Next.js config to ensure reliability.
+
+## 2025-05-23 - Standardized Button Loading
+**Learning:** Inconsistent loading states (manual `isLoading && <Loader />`) lead to code duplication and missed accessibility attributes (like `disabled`). Centralizing this in the base `Button` component enforces consistency and improves developer experience.
+**Action:** Add `isLoading` prop to core `Button` components that handles the spinner injection and disabled state automatically.
