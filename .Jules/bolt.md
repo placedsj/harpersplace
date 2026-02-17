@@ -1,3 +1,3 @@
-## 2024-05-23 - Type Naming Conflict in Build
-**Learning:** Using generic names like `Event` for interfaces can sometimes cause conflicts or confusion during build processes, especially if global types are involved.
-**Action:** Use specific names like `EvidenceEvent` for domain types to avoid ambiguity and potential shadowing issues.
+## 2024-05-23 - Build Failure on Colocated Component/Type Files
+**Learning:** Colocating non-page component or type files (e.g., `evidence-list.tsx`, `evidence-log-types.ts`) directly within Next.js App Router directories (`src/app/...`) can sometimes trigger build failures or confusion in certain CI environments (like Netlify) or with specific tooling.
+**Action:** Move shared components to `src/components/` and types to `src/lib/types.ts` or `src/types/` to ensure a clean separation of concerns and avoid build ambiguity.

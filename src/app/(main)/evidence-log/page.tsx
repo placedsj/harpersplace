@@ -18,8 +18,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
 import { useFirestore, useCollection } from '@/firebase';
-import { EvidenceList } from './evidence-list';
-import { EvidenceEvent } from './evidence-log-types';
+import { EvidenceList } from '@/components/evidence-list';
+import { EvidenceEvent } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 

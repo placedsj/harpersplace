@@ -3,7 +3,7 @@
 import React, { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from 'date-fns';
-import { EvidenceEvent } from './evidence-log-types';
+import { EvidenceEvent } from '@/lib/types';
 
 interface EvidenceListProps {
     events: EvidenceEvent[] | null;
