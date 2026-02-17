@@ -1,16 +1,16 @@
 'use client';
 
-import React, { memo } from 'react';
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from 'date-fns';
-import { Event } from './evidence-log-types';
+import { LogEvent } from './evidence-log-types';
 
 interface EvidenceListProps {
-  events: Event[] | null;
+  events: LogEvent[] | null;
   loading: boolean;
 }
 
-const EvidenceList = memo(({ events, loading }: EvidenceListProps) => {
+const EvidenceList = React.memo(({ events, loading }: EvidenceListProps) => {
   return (
     <div className="space-y-4">
       {loading && (

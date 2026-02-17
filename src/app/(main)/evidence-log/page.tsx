@@ -18,7 +18,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
 import { useFirestore, useCollection } from '@/firebase';
-import { Event } from './evidence-log-types';
+import { LogEvent } from './evidence-log-types';
 import { EvidenceList } from './evidence-list';
 
 const logSchema = z.object({
@@ -43,7 +43,7 @@ function EvidenceLogPageInternal() {
         return query(collection(db, `users/${user.uid}/evidence`), orderBy('timestamp', 'desc'));
     }, [user, db]);
 
-    const { data: events, loading: eventsLoading } = useCollection<Event>(evidenceQuery);
+    const { data: events, loading: eventsLoading } = useCollection<LogEvent>(evidenceQuery);
 
     const form = useForm<LogFormValues>({
         resolver: zodResolver(logSchema),
