@@ -1,4 +1,3 @@
-// src/app/(main)/dashboard/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,12 +9,8 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
 import { useCollection, useFirestore, useCount } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import type { DailyLog } from '@/app/(main)/log/page';
 
@@ -27,6 +22,7 @@ export const dynamic = 'force-dynamic';
 const MainDashboard = () => {
     const { user } = useAuth();
     const { db } = useFirestore();
+    const [isClient, setIsClient] = useState(false);
     
     const { data: journalEntries, loading: journalLoading } = useCollection<JournalEntry>(
         user && db ? query(collection(db, `users/${user.uid}/journal`), orderBy('timestamp', 'desc'), limit(1)) : null
