@@ -1,3 +1,3 @@
-## 2024-05-23 - Build Failure on Unused Imports and Dynamic Pages
-**Learning:** Next.js builds (especially on Netlify) can fail strictly on unused imports or when dynamic pages (using `useSearchParams`) lack `export const dynamic = 'force-dynamic'`.
-**Action:** Always clean up unused imports before submission and explicitly mark pages as dynamic if they rely on runtime request data like search params or auth state.
+## 2024-05-23 - Type Naming Conflict in Build
+**Learning:** Using generic names like `Event` for interfaces can sometimes cause conflicts or confusion during build processes, especially if global types are involved.
+**Action:** Use specific names like `EvidenceEvent` for domain types to avoid ambiguity and potential shadowing issues.

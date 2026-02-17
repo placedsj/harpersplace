@@ -3,10 +3,10 @@
 import React, { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from 'date-fns';
-import { Event } from './evidence-log-types';
+import { EvidenceEvent } from './evidence-log-types';
 
 interface EvidenceListProps {
-    events: Event[] | null;
+    events: EvidenceEvent[] | null;
     loading: boolean;
 }
 

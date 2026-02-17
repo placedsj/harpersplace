@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
 import { useFirestore, useCollection } from '@/firebase';
 import { EvidenceList } from './evidence-list';
-import { Event } from './evidence-log-types';
+import { EvidenceEvent } from './evidence-log-types';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +46,7 @@ function EvidenceLogPageInternal() {
         return query(collection(db, `users/${user.uid}/evidence`), orderBy('timestamp', 'desc'));
     }, [user, db]);
 
-    const { data: events, loading: eventsLoading } = useCollection<Event>(evidenceQuery);
+    const { data: events, loading: eventsLoading } = useCollection<EvidenceEvent>(evidenceQuery);
 
     const form = useForm<LogFormValues>({
         resolver: zodResolver(logSchema),
