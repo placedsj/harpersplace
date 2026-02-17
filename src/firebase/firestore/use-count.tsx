@@ -1,33 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { getCountFromServer, Query, DocumentData, queryEqual } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { getCountFromServer, Query, DocumentData } from 'firebase/firestore';
+import { useStableQuery } from './use-stable-query';
 
 export function useCount(query: Query<DocumentData> | null) {
   const [count, setCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // Use a ref to store the previous query object for comparison
-  const queryRef = useRef<Query<DocumentData> | null>(null);
+  const stableQuery = useStableQuery(query);
 
   useEffect(() => {
-    if (!query) {
-      queryRef.current = null;
+    if (!stableQuery) {
       setCount(null);
       setLoading(false);
       return;
     }
 
-    // If the query is equal to the previous one, don't refetch
-    if (queryRef.current && queryEqual(query, queryRef.current)) {
-      return;
-    }
-
-    queryRef.current = query;
-
     const fetchCount = async () => {
       setLoading(true);
       try {
-        const snapshot = await getCountFromServer(query);
+        const snapshot = await getCountFromServer(stableQuery);
         setCount(snapshot.data().count);
         setError(null);
       } catch (err) {
@@ -39,7 +31,7 @@ export function useCount(query: Query<DocumentData> | null) {
     };
 
     fetchCount();
-  }, [query]);
+  }, [stableQuery]);
 
   return { count, loading, error };
 }
