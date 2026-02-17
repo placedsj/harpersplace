@@ -5,7 +5,7 @@ import { createCorsOriginCheck } from '../server/security';
 describe('CORS Logic', () => {
   // Mock environment variables for testing
   process.env.REPLIT_DOMAINS = 'example.com,app.replit.dev';
-  process.env.NODE_ENV = 'production';
+  (process.env as any).NODE_ENV = 'production';
 
   it('allows matching REPLIT_DOMAINS', (t, done) => {
     createCorsOriginCheck('https://example.com', (err, allowed) => {
@@ -48,14 +48,14 @@ describe('CORS Logic', () => {
 
   it('allows localhost in development', (t, done) => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    (process.env as any).NODE_ENV = 'development';
 
     createCorsOriginCheck('http://localhost:3000', (err, allowed) => {
       assert.strictEqual(err, null);
       assert.strictEqual(allowed, true);
 
       // Reset environment
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
       done();
     });
   });
