@@ -1,3 +1,5 @@
+'use client';
+
 import { memo } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
