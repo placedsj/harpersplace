@@ -31,8 +31,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 
-export const dynamic = 'force-dynamic';
-
 const milestoneSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   date: z.date(),

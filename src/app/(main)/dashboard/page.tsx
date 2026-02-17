@@ -17,8 +17,6 @@ import type { DailyLog } from '@/app/(main)/log/page';
 
 import DashboardCard from '@/components/dashboard-card';
 
-export const dynamic = 'force-dynamic';
-
 // --- Main Dashboard Component ---
 const MainDashboard = () => {
     const { user } = useAuth();

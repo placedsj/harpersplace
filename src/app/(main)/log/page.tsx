@@ -29,8 +29,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, Timestamp, limit } from 'firebase/firestore';
 
-export const dynamic = 'force-dynamic';
-
 const logSchema = z.object({
   time: z.string().min(1, 'Time is required.'),
   type: z.enum(['Feeding', 'Diaper', 'Sleep']),

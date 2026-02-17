@@ -14,8 +14,6 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
-export const dynamic = 'force-dynamic';
-
 type GroceryItem = {
     id: string;
     name: string;
