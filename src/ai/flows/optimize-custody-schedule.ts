@@ -10,7 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { z } from 'zod';
 
 const OptimizeCustodyScheduleInputSchema = z.object({
   parentalNeeds: z.string().describe('Description of each parent\'s needs and availability.'),

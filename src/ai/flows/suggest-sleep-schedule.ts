@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { z } from 'zod';
 
 const SuggestSleepScheduleInputSchema = z.object({
   ageInMonths: z.number().describe("The child's age in months."),
