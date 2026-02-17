@@ -6,9 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, CalendarIcon, ImageUp } from 'lucide-react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -31,6 +29,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
+import { JournalEntryCard, JournalEntrySkeleton } from './journal-entry-card';
 
 export const dynamic = 'force-dynamic';
 
@@ -211,19 +210,17 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
-        {entries && entries.map((entry) => (
-          <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
-             <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
-            <CardHeader>
-              <CardTitle className="font-bebas uppercase text-primary tracking-widest">{entry.title.toUpperCase()}</CardTitle>
-              <CardDescription className="font-montserrat text-accent">{format(entry.date.toDate(), 'PPP')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground font-montserrat">{entry.content}</p>
-            </CardContent>
-          </Card>
+        {loading && Array.from({ length: 6 }).map((_, i) => (
+            <JournalEntrySkeleton key={i} />
         ))}
+        {!loading && entries && entries.map((entry) => (
+          <JournalEntryCard key={entry.id} entry={entry} />
+        ))}
+        {!loading && entries && entries.length === 0 && (
+             <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground">No journal entries yet. Add your first memory!</p>
+             </div>
+        )}
        </div>
     </div>
   );
