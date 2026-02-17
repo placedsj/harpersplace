@@ -7,7 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp } from 'lucide-react';
+import { PlusCircle, CalendarIcon, ImageUp, Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
@@ -63,6 +64,8 @@ export default function JournalPage() {
             dataAiHint: '',
         },
     });
+
+    const { isSubmitting } = form.formState;
 
     async function onSubmit(values: z.infer<typeof entrySchema>) {
         if (!user || !db) {
@@ -203,28 +206,75 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Entry
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
           </DialogContent>
         </Dialog>
       </div>
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
-        {entries && entries.map((entry) => (
-          <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
-             <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
-            <CardHeader>
-              <CardTitle className="font-bebas uppercase text-primary tracking-widest">{entry.title.toUpperCase()}</CardTitle>
-              <CardDescription className="font-montserrat text-accent">{format(entry.date.toDate(), 'PPP')}</CardDescription>
-            </CardHeader>
-            <CardContent>
+
+      {loading ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="overflow-hidden shadow-lg border-2 border-muted/40">
+              <Skeleton className="h-[200px] w-full rounded-none" />
+              <CardHeader>
+                <Skeleton className="h-8 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : !entries || entries.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg border-muted-foreground/25 bg-muted/5">
+          <div className="bg-primary/10 p-4 rounded-full mb-4">
+            <ImageUp className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">No memories yet</h3>
+          <p className="text-muted-foreground max-w-sm mt-2 mb-6">
+            Start documenting your family's journey. Add your first journal entry today!
+          </p>
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create Entry
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {entries.map((entry) => (
+            <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
+              <Image
+                src={entry.image || 'https://picsum.photos/400/200'}
+                data-ai-hint={entry.dataAiHint}
+                alt={entry.title}
+                width={400}
+                height={200}
+                className="object-cover w-full aspect-video"
+              />
+              <CardHeader>
+                <CardTitle className="font-bebas uppercase text-primary tracking-widest">
+                  {entry.title.toUpperCase()}
+                </CardTitle>
+                <CardDescription className="font-montserrat text-accent">
+                  {format(entry.date.toDate(), 'PPP')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <p className="text-muted-foreground font-montserrat">{entry.content}</p>
-            </CardContent>
-          </Card>
-        ))}
-       </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
