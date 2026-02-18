@@ -36,10 +36,13 @@ export function sanitizeText(input: string): string {
   const stripped = input.replace(/<[^>]*>/g, '');
   
   // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
+  if (typeof document !== 'undefined') {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = stripped;
+    return textarea.value.trim();
+  }
   
-  return textarea.value.trim();
+  return stripped.trim();
 }
 
 /**
