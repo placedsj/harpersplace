@@ -40,7 +40,7 @@ export default function LoginFormPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await logIn(values.email, values.password);
+      await logIn({ email: values.email, password: values.password });
     } catch (error: any) {
       toast({
         variant: 'destructive',
