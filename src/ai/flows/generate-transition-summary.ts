@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { ai } from '@/ai/genkit';
 import { defineFlow } from '@genkit-ai/flow';
 import { action } from '@genkit-ai/core';
-import { ai } from '@/ai/genkit';
 import { googleAI } from '@genkit-ai/googleai';
 
 const TransitionSummarySchema = z.object({
@@ -40,7 +39,6 @@ export const generateTransitionSummaryFlow = ai.defineFlow(
     const llmResponse = await action(
         {
             name: 'generateSummary',
-            actionType: 'custom',
             inputSchema: z.string(),
             outputSchema: TransitionSummarySchema,
         },

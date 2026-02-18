@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { ai } from '@/ai/genkit';
 import { defineFlow } from '@genkit-ai/flow';
 import { action } from '@genkit-ai/core';
-import { ai } from '@/ai/genkit';
 import { googleAI } from '@genkit-ai/googleai';
 
 const ExpenseCategorySchema = z.object({
@@ -52,7 +51,6 @@ export const categorizeExpenseFlow = ai.defineFlow(
     const llmResponse = await action(
         {
             name: 'categorizeExpense',
-            actionType: 'custom',
             inputSchema: z.string(),
             outputSchema: ExpenseCategorySchema,
         },
