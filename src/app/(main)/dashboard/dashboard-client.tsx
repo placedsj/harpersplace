@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
+import type { DailyLog } from '@/app/(main)/log/log-client';
 
 import DashboardCard from '@/components/dashboard-card';
 
