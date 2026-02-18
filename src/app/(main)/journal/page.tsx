@@ -33,8 +33,6 @@ import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/fi
 import type { JournalEntry } from '@/lib/journal-data';
 import { sanitizeText, sanitizeUrl } from '@/lib/input-sanitization';
 
-export const dynamic = 'force-dynamic';
-
 const entrySchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   date: z.date(),
