@@ -7,9 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp } from 'lucide-react';
+import { PlusCircle, CalendarIcon, ImageUp, Loader2, BookOpen } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,22 @@ const entrySchema = z.object({
   image: z.string().url('Please provide a valid image URL.').optional().or(z.literal('')),
   dataAiHint: z.string().optional(),
 });
+
+function JournalEntrySkeleton() {
+  return (
+    <Card className="overflow-hidden shadow-lg border-2 border-primary/40">
+      <Skeleton className="h-[200px] w-full aspect-video" />
+      <CardHeader>
+        <Skeleton className="h-8 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-5/6" />
+      </CardContent>
+    </Card>
+  );
+}
 
 
 export default function JournalPage() {
@@ -203,7 +220,16 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        "Save Entry"
+                    )}
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -211,7 +237,18 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
+        {loading && Array.from({ length: 3 }).map((_, i) => (
+          <JournalEntrySkeleton key={i} />
+        ))}
+        {!loading && entries && entries.length === 0 && (
+          <div className="col-span-full flex flex-col items-center justify-center p-12 text-center bg-muted/10 rounded-lg border-2 border-dashed border-muted-foreground/20">
+            <BookOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
+            <h3 className="text-xl font-semibold text-primary">No Journal Entries Yet</h3>
+            <p className="text-muted-foreground mt-2 max-w-sm">
+              Capture your family's precious moments. Click "New Entry" to get started!
+            </p>
+          </div>
+        )}
         {entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
