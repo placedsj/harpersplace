@@ -12,7 +12,6 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import Link from "next/link";
-import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
@@ -40,7 +39,7 @@ export default function LoginFormPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await logIn(values.email, values.password);
+      await logIn(values);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -109,9 +108,8 @@ export default function LoginFormPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="animate-spin" />}
-                <span>Login</span>
+              <Button type="submit" className="w-full" isLoading={isLoading}>
+                Login
               </Button>
             </form>
           </Form>
