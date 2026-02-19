@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview An AI agent for processing text-based evidence from documents or emails.
  *
@@ -9,7 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const ProcessEvidenceTextInputSchema = z.object({
   textContent: z

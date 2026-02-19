@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview An AI agent for processing image-based evidence.
  *
@@ -9,7 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const ProcessEvidenceImageInputSchema = z.object({
   imageDataUri: z

@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview An AI agent for improving co-parenting communication.
  *
@@ -10,7 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const ImproveCommunicationInputSchema = z.object({
   message: z.string().describe('The message draft written by one co-parent to the other.'),

@@ -1,5 +1,4 @@
 // src/ai/flows/co-parenting-actions.ts
-'use server';
 
 /**
  * @fileOverview An AI agent for handling co-parenting scheduling actions.
@@ -10,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 const scheduleAction = ai.defineTool(
     {
