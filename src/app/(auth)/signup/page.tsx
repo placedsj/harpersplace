@@ -54,7 +54,7 @@ export default function SignUpPage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
         try {
-            await signUp(values.firstName, values.lastName, values.email, values.password);
+            await signUp(values);
         } catch (error: any) {
             toast({
                 variant: 'destructive',
