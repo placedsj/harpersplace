@@ -1,19 +1,13 @@
 // src/app/(main)/dashboard/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { format, differenceInMonths, parse } from 'date-fns';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
+import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query, orderBy, limit, getCountFromServer } from 'firebase/firestore';
-import type { JournalEntry } from '@/lib/journal-data';
-import type { DailyLog } from '@/app/(main)/log/page';
 import { useCollection, useFirestore, useCount } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
@@ -33,8 +27,6 @@ const MainDashboard = () => {
     );
     const latestStory = journalEntries?.[0];
 
-    // Use manual fetching for counts to avoid additional hook dependencies and ensure stability
-    const [stats, setStats] = useState({ logs: 0, journals: 0 });
     // Fetch separate counts for overview to avoid fetching all data
     const { count: journalCount } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/journal`)) : null
@@ -44,30 +36,6 @@ const MainDashboard = () => {
     const { data: logs, loading: logsLoading } = useCollection<DailyLog>(
         user && db ? query(collection(db, `users/${user.uid}/daily-logs`), orderBy('timestamp', 'desc'), limit(10)) : null
     );
-    
-    useEffect(() => {
-        setIsClient(true);
-        async function fetchCounts() {
-            if (!user || !db) return;
-            try {
-                const logsQuery = query(collection(db, `users/${user.uid}/daily-logs`));
-                const journalsQuery = query(collection(db, `users/${user.uid}/journal`));
-
-                const [logsSnapshot, journalsSnapshot] = await Promise.all([
-                    getCountFromServer(logsQuery),
-                    getCountFromServer(journalsQuery)
-                ]);
-
-                setStats({
-                    logs: logsSnapshot.data().count,
-                    journals: journalsSnapshot.data().count
-                });
-            } catch (error) {
-                console.error("Error fetching counts:", error);
-            }
-        }
-        fetchCounts();
-    }, [user, db]);
 
     const { count: logsCount } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/daily-logs`)) : null
@@ -182,14 +150,12 @@ const MainDashboard = () => {
                     <div className="flex justify-around items-center mb-6">
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                                {stats.logs}
                                 {logsCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Log Entries</p>
                         </div>
                         <div className="text-center">
                             <p className="text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                                {stats.journals}
                                 {journalCount || 0}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Journal Stories</p>
@@ -266,11 +232,11 @@ const MainDashboard = () => {
                         </div>
                     </Link>
                     
-                    <Link href="/communication-platform" className="block group">
+                    <Link href="/ai-tools/co-parenting-actions" className="block group">
                         <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                            <Rocket className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Child-First Platform</h5>
-                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Protect their future</p>
+                            <Lightbulb className="h-8 w-8 text-orange-500 dark:text-orange-400 mx-auto mb-3" />
+                            <h5 className="font-bold text-sm text-center text-gray-900 dark:text-white mb-2">Co-Parenting Recommendations</h5>
+                            <p className="text-xs text-center text-gray-500 dark:text-gray-400">Get AI-guided action plans</p>
                         </div>
                     </Link>
                 </div>

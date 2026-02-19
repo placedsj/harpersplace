@@ -26,6 +26,7 @@ const legalEvidenceItems = [
 const aiToolsItems = [
     { href: '/ai-tools/schedule-optimizer', label: 'Schedule Optimizer' },
     { href: '/ai-tools/communication-coach', label: 'Communication Coach' },
+    { href: '/ai-tools/co-parenting-actions', label: 'Co-Parenting Recommendations' },
     { href: '/communication-platform', label: '🚀 Communication Platform' },
 ];
 
