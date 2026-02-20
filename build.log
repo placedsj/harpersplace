@@ -5,7 +5,7 @@
    ▲ Next.js 15.3.3
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 28.0s
+ ⚠ Compiled with warnings in 21.0s
 
 ./node_modules/@genkit-ai/ai/node_modules/express/lib/view.js
 Critical dependency: the request of a dependency is an expression
@@ -56,7 +56,7 @@ Import trace for requested module:
 ./node_modules/@genkit-ai/flow/lib/index.mjs
 ./src/app/(main)/transition-summary/actions.ts
 
- ✓ Compiled successfully in 40.0s
+ ✓ Compiled successfully in 26.0s
    Skipping validation of types
    Skipping linting
    Collecting page data ...
@@ -84,7 +84,7 @@ Route (app)                                 Size  First Load JS
 ├ ○ /evidence-ai                         2.08 kB         120 kB
 ├ ○ /evidence-log                        6.91 kB         327 kB
 ├ ○ /family-tree                           153 B         101 kB
-├ ƒ /fund                                  153 B         101 kB
+├ ○ /fund                                  153 B         101 kB
 ├ ○ /health                              2.81 kB         345 kB
 ├ ○ /journal                             8.43 kB         341 kB
 ├ ○ /log                                 11.1 kB         338 kB
@@ -101,5 +101,4 @@ Route (app)                                 Size  First Load JS
   └ other shared chunks (total)          1.94 kB
 
 
-○  (Static)   prerendered as static content
-ƒ  (Dynamic)  server-rendered on demand
+○  (Static)  prerendered as static content
