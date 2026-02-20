@@ -1,4 +1,4 @@
-// src/app/(main)/journal/page.tsx
+// src/app/(main)/journal/journal-client.tsx
 'use client';
 
 import * as React from 'react';
@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp, Loader2, Book } from 'lucide-react';
+import { PlusCircle, CalendarIcon, ImageUp, Loader2, BookOpen } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -230,7 +230,7 @@ export function JournalPageClient() {
         {!loading && entries && entries.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center py-16 text-center animate-in fade-in zoom-in duration-500">
             <div className="rounded-full bg-primary/10 p-6 mb-4">
-              <Book className="h-10 w-10 text-primary" />
+              <BookOpen className="h-10 w-10 text-primary" />
             </div>
             <h3 className="text-2xl font-bebas tracking-wide text-primary mb-2">No Memories Yet</h3>
             <p className="text-muted-foreground font-montserrat max-w-md mb-8">
