@@ -25,3 +25,7 @@
 ## 2026-02-20 - Route Segment Config in Client Components
 **Learning:** Exporting  (or any Route Segment Config) from a Client Component (`'use client'`) is technically invalid in Next.js, though the dev server may ignore it. However, build tools like `@netlify/plugin-nextjs` are stricter and will fail the deployment (often with generic errors like "Pages changed" or "Header rules").
 **Action:** Always place Route Segment Config exports in a **Server Component**. If the page requires client-side logic, create a wrapper Server Component (`page.tsx`) that exports the config and renders the Client Component (`page-client.tsx`).
+
+## 2026-02-20 - Route Segment Config in Client Components (Update)
+**Learning:** Verified that exporting `export const dynamic = 'force-dynamic'` from a Client Component causes CI build failures with `@netlify/plugin-nextjs` (manifesting as "Pages changed" errors), even if `next build` passes locally.
+**Action:** The "Server Component Wrapper" pattern (renaming the client component and creating a wrapper page.tsx) is the definitive fix for this. Ensure this pattern is applied to *all* dynamic pages using client-side logic.
