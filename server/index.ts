@@ -2,6 +2,7 @@ import express from 'express';
 import next from 'next';
 import cors from 'cors';
 import { registerRoutes } from './routes';
+import { createCorsOriginCheck } from './security';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -13,7 +14,7 @@ app.prepare().then(async () => {
   const server = express();
 
   server.use(cors({
-    origin: true,
+    origin: createCorsOriginCheck(process.env.REPLIT_DOMAINS),
     credentials: true,
   }));
 
