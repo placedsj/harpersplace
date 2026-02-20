@@ -17,3 +17,7 @@
 ## 2025-05-23 - Netlify Headers
 **Learning:** Moving security headers from `next.config.ts` to `netlify.toml` resolves "Header rules" build failures by bypassing the Netlify plugin's configuration generation step, which can be brittle.
 **Action:** When deploying to Netlify, prefer `netlify.toml` for static headers and redirects over Next.js config to ensure reliability.
+
+## 2026-02-20 - Robust Firestore Date Handling
+**Learning:** Firestore timestamps and native Date objects can coexist in the same UI component (due to optimistic updates or mocking). Assuming `.toDate()` exists on a date field without checking can crash the UI.
+**Action:** Always use a safe accessor like `const date = entry.date?.toDate ? entry.date.toDate() : new Date(entry.date);` when rendering dates from Firestore documents.

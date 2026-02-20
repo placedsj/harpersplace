@@ -7,9 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp } from 'lucide-react';
+import { PlusCircle, CalendarIcon, ImageUp, Loader2, Book } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
   DialogContent,
@@ -203,7 +204,10 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Entry
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -211,19 +215,45 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
-        {entries && entries.map((entry) => (
+        {loading && [...Array(6)].map((_, i) => (
+           <div key={i} className="flex flex-col space-y-3">
+            <Skeleton className="h-[200px] w-full rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        ))}
+        {!loading && entries && entries.length === 0 && (
+          <div className="col-span-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-muted-foreground/25 rounded-lg bg-muted/5">
+            <Book className="h-12 w-12 text-muted-foreground/50 mb-4" />
+            <h3 className="text-lg font-semibold text-primary">No entries yet</h3>
+            <p className="text-muted-foreground mb-6 max-w-sm">
+              Start capturing your family's precious moments.
+            </p>
+            <Button onClick={() => setIsDialogOpen(true)}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create First Entry
+            </Button>
+          </div>
+        )}
+        {entries && entries.map((entry) => {
+          // Handle both Firestore Timestamp and native Date objects safely
+          const date = entry.date as any;
+          const dateObj = date?.toDate ? date.toDate() : new Date(date);
+
+          return (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
             <CardHeader>
               <CardTitle className="font-bebas uppercase text-primary tracking-widest">{entry.title.toUpperCase()}</CardTitle>
-              <CardDescription className="font-montserrat text-accent">{format(entry.date.toDate(), 'PPP')}</CardDescription>
+              <CardDescription className="font-montserrat text-accent">{format(dateObj, 'PPP')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground font-montserrat">{entry.content}</p>
             </CardContent>
           </Card>
-        ))}
+        )})}
        </div>
     </div>
   );
