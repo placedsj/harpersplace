@@ -1,0 +1,105 @@
+
+> nextn@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings in 28.0s
+
+./node_modules/@genkit-ai/ai/node_modules/express/lib/view.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@genkit-ai/ai/node_modules/express/lib/view.js
+./node_modules/@genkit-ai/ai/node_modules/express/lib/application.js
+./node_modules/@genkit-ai/ai/node_modules/express/lib/express.js
+./node_modules/@genkit-ai/ai/node_modules/express/index.js
+./node_modules/@genkit-ai/ai/node_modules/@genkit-ai/core/lib/reflection.js
+./node_modules/@genkit-ai/ai/node_modules/@genkit-ai/core/lib/index.js
+./node_modules/@genkit-ai/ai/lib/session.js
+./node_modules/genkit/lib/common.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/flows/suggest-sleep-schedule.ts
+./src/components/ai-sleep-suggestor-actions.ts
+
+./node_modules/@genkit-ai/flow/node_modules/express/lib/view.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@genkit-ai/flow/node_modules/express/lib/view.js
+./node_modules/@genkit-ai/flow/node_modules/express/lib/application.js
+./node_modules/@genkit-ai/flow/node_modules/express/lib/express.js
+./node_modules/@genkit-ai/flow/node_modules/express/index.js
+./node_modules/@genkit-ai/flow/lib/flow.js
+./node_modules/@genkit-ai/flow/lib/index.mjs
+./src/app/(main)/transition-summary/actions.ts
+
+./node_modules/@genkit-ai/core/lib/config.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@genkit-ai/core/lib/config.js
+./node_modules/@genkit-ai/core/lib/tracing.js
+./node_modules/@genkit-ai/flow/lib/flow.js
+./node_modules/@genkit-ai/flow/lib/index.mjs
+./src/app/(main)/transition-summary/actions.ts
+
+./node_modules/@genkit-ai/core/lib/localFileFlowStateStore.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/@genkit-ai/core/lib/localFileFlowStateStore.js
+./node_modules/@genkit-ai/core/lib/config.js
+./node_modules/@genkit-ai/core/lib/tracing.js
+./node_modules/@genkit-ai/flow/lib/flow.js
+./node_modules/@genkit-ai/flow/lib/index.mjs
+./src/app/(main)/transition-summary/actions.ts
+
+ ✓ Compiled successfully in 40.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/29) ...
+   Generating static pages (7/29)
+   Generating static pages (14/29)
+   Generating static pages (21/29)
+ ✓ Generating static pages (29/29)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    1.05 kB         114 kB
+├ ○ /_not-found                            981 B         102 kB
+├ ○ /about                                 153 B         101 kB
+├ ○ /ai-tools/communication-coach        4.42 kB         138 kB
+├ ○ /ai-tools/schedule-optimizer         4.64 kB         138 kB
+├ ○ /blueprint                             153 B         101 kB
+├ ○ /calendar                            5.42 kB         131 kB
+├ ○ /communication                       7.23 kB         116 kB
+├ ○ /communication-platform              12.3 kB         129 kB
+├ ○ /dashboard                           7.42 kB         279 kB
+├ ○ /document-analyzer                   2.25 kB         115 kB
+├ ○ /emergency                             153 B         101 kB
+├ ○ /evidence-ai                         2.08 kB         120 kB
+├ ○ /evidence-log                        6.91 kB         327 kB
+├ ○ /family-tree                           153 B         101 kB
+├ ƒ /fund                                  153 B         101 kB
+├ ○ /health                              2.81 kB         345 kB
+├ ○ /journal                             8.43 kB         341 kB
+├ ○ /log                                 11.1 kB         338 kB
+├ ○ /login                               2.57 kB         115 kB
+├ ○ /login-form                          1.19 kB         153 kB
+├ ○ /milestones                          2.35 kB         345 kB
+├ ○ /profile                             9.11 kB         186 kB
+├ ○ /shared-lists                         4.1 kB         283 kB
+├ ○ /signup                              1.48 kB         154 kB
+└ ○ /transition-summary                  5.57 kB         156 kB
++ First Load JS shared by all             101 kB
+  ├ chunks/1684-d8e1a3ebd82664c8.js      45.5 kB
+  ├ chunks/4bd1b696-4b598c21943e634b.js  53.2 kB
+  └ other shared chunks (total)          1.94 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
