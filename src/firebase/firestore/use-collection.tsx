@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { onSnapshot, Query, DocumentData, QuerySnapshot, queryEqual } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,17 +9,19 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
+  // Memoize query to prevent unnecessary re-subscriptions and JSON serialization overhead
+  const queryRef = useRef<Query<DocumentData> | null>(query);
+
+  // Update ref only if query has actually changed (deep equality check)
+  // This allows us to pass a stable reference to useEffect even if the query object identity changes
+  if (!queryEqualWithNullCheck(query, queryRef.current)) {
+    queryRef.current = query;
+  }
+
+  const memoizedQuery = queryRef.current;
 
   useEffect(() => {
-    const newQueryJson = query ? JSON.stringify(query) : null;
-    
-    if (queryRef.current === newQueryJson) {
-      return;
-    }
-    queryRef.current = newQueryJson;
-
-    if (!query) {
+    if (!memoizedQuery) {
       setData(null);
       setLoading(false);
       return;
@@ -28,7 +30,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
     setLoading(true);
 
     const unsubscribe = onSnapshot(
-      query,
+      memoizedQuery,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const result: WithId<T>[] = [];
         snapshot.forEach((doc) => {
@@ -46,9 +48,13 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
     );
 
     return () => unsubscribe();
-  }, [query]);
+  }, [memoizedQuery]);
 
   return { data, loading, error };
 }
 
-    
+function queryEqualWithNullCheck(a: Query<DocumentData> | null, b: Query<DocumentData> | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return queryEqual(a, b);
+}
