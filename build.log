@@ -5,7 +5,7 @@
    ▲ Next.js 15.3.3
 
    Creating an optimized production build ...
- ⚠ Compiled with warnings in 21.0s
+ ⚠ Compiled with warnings in 18.0s
 
 ./node_modules/@genkit-ai/ai/node_modules/express/lib/view.js
 Critical dependency: the request of a dependency is an expression
@@ -56,7 +56,7 @@ Import trace for requested module:
 ./node_modules/@genkit-ai/flow/lib/index.mjs
 ./src/app/(main)/transition-summary/actions.ts
 
- ✓ Compiled successfully in 26.0s
+ ✓ Compiled successfully in 23.0s
    Skipping validation of types
    Skipping linting
    Collecting page data ...
