@@ -21,3 +21,7 @@
 ## 2026-02-20 - Robust Firestore Date Handling
 **Learning:** Firestore timestamps and native Date objects can coexist in the same UI component (due to optimistic updates or mocking). Assuming `.toDate()` exists on a date field without checking can crash the UI.
 **Action:** Always use a safe accessor like `const date = entry.date?.toDate ? entry.date.toDate() : new Date(entry.date);` when rendering dates from Firestore documents.
+
+## 2026-02-20 - Route Segment Config in Client Components
+**Learning:** Exporting  (or any Route Segment Config) from a Client Component (`'use client'`) is technically invalid in Next.js, though the dev server may ignore it. However, build tools like `@netlify/plugin-nextjs` are stricter and will fail the deployment (often with generic errors like "Pages changed" or "Header rules").
+**Action:** Always place Route Segment Config exports in a **Server Component**. If the page requires client-side logic, create a wrapper Server Component (`page.tsx`) that exports the config and renders the Client Component (`page-client.tsx`).
