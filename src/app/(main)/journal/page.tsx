@@ -7,9 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, CalendarIcon, ImageUp } from 'lucide-react';
+import { PlusCircle, CalendarIcon, ImageUp, Loader2, BookHeart } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
   DialogContent,
@@ -203,7 +204,10 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Entry
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -211,13 +215,44 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
+        {loading && Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-xl border border-muted shadow-sm bg-card">
+            <Skeleton className="h-[200px] w-full" />
+            <div className="p-6 space-y-4">
+               <Skeleton className="h-8 w-3/4" />
+               <Skeleton className="h-4 w-1/4" />
+               <div className="space-y-2 pt-2">
+                 <Skeleton className="h-4 w-full" />
+                 <Skeleton className="h-4 w-5/6" />
+               </div>
+            </div>
+          </div>
+        ))}
+
+        {!loading && entries && entries.length === 0 && (
+          <div className="col-span-full flex flex-col items-center justify-center py-16 text-center animate-in fade-in zoom-in duration-500">
+            <div className="rounded-full bg-primary/10 p-6 mb-4">
+              <BookHeart className="h-10 w-10 text-primary" />
+            </div>
+            <h3 className="text-2xl font-bebas tracking-wide text-primary mb-2">No Memories Yet</h3>
+            <p className="text-muted-foreground font-montserrat max-w-md mb-8">
+              Start capturing your family's precious moments. Your first entry is just a click away!
+            </p>
+            <Button onClick={() => setIsDialogOpen(true)} size="lg" className="font-montserrat">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Create First Entry
+            </Button>
+          </div>
+        )}
+
         {entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
             <CardHeader>
               <CardTitle className="font-bebas uppercase text-primary tracking-widest">{entry.title.toUpperCase()}</CardTitle>
-              <CardDescription className="font-montserrat text-accent">{format(entry.date.toDate(), 'PPP')}</CardDescription>
+              <CardDescription className="font-montserrat text-accent">
+                {format((entry.date as any).toDate ? (entry.date as any).toDate() : entry.date, 'PPP')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground font-montserrat">{entry.content}</p>
