@@ -31,6 +31,7 @@ const MainDashboard = () => {
 
     // Use manual fetching for counts to avoid additional hook dependencies and ensure stability
     const [stats, setStats] = useState({ logs: 0, journals: 0 });
+    const [isClient, setIsClient] = useState(false);
     // Fetch separate counts for overview to avoid fetching all data
     const { count: journalCount } = useCount(
         user && db ? query(collection(db, `users/${user.uid}/journal`)) : null

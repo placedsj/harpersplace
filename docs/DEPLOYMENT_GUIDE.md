@@ -8,7 +8,7 @@
 - [ ] Production Firebase security rules deployed
 - [ ] API keys generated and secured
 - [ ] Domain name configured (if applicable)
-- [ ] SSL certificate obtained (usually automatic with Vercel/Netlify)
+- [ ] SSL certificate obtained (usually automatic with Vercel)
 
 ### Code Quality
 - [ ] All tests passing
@@ -115,42 +115,6 @@
 5. **Deploy**
    ```bash
    npm run deploy
-   ```
-
-### Option 3: Netlify
-
-1. **Install Netlify CLI**
-   ```bash
-   npm install -g netlify-cli
-   ```
-
-2. **Login to Netlify**
-   ```bash
-   netlify login
-   ```
-
-3. **Initialize Site**
-   ```bash
-   netlify init
-   ```
-
-4. **Configure Build Settings**
-   Create `netlify.toml`:
-   ```toml
-   [build]
-     command = "npm run build"
-     publish = ".next"
-   
-   [[plugins]]
-     package = "@netlify/plugin-nextjs"
-   
-   [build.environment]
-     NODE_VERSION = "18"
-   ```
-
-5. **Deploy**
-   ```bash
-   netlify deploy --prod
    ```
 
 ## Post-Deployment Checklist
@@ -334,7 +298,7 @@ npm run build
 ### Environment Variables Not Working
 - Ensure variables are prefixed with `NEXT_PUBLIC_` for client-side access
 - Restart dev server after adding variables
-- Check Vercel/Netlify dashboard for proper configuration
+- Check Vercel dashboard for proper configuration
 - Verify no typos in variable names
 
 ### Firebase Connection Issues
