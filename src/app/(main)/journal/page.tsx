@@ -31,6 +31,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
+import { JournalEntrySkeleton, JournalEmptyState } from './journal-skeleton';
 
 export const dynamic = 'force-dynamic';
 
@@ -203,7 +204,7 @@ export default function JournalPage() {
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Entry</Button>
+                  <Button type="submit" isLoading={form.formState.isSubmitting}>Save Entry</Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -211,8 +212,11 @@ export default function JournalPage() {
         </Dialog>
       </div>
        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {loading && <p>Loading entries...</p>}
-        {entries && entries.map((entry) => (
+        {loading && Array.from({ length: 6 }).map((_, i) => (
+          <JournalEntrySkeleton key={i} />
+        ))}
+        {!loading && (!entries || entries.length === 0) && <JournalEmptyState />}
+        {!loading && entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
             <CardHeader>
