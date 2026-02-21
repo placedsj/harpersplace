@@ -1,0 +1,45 @@
+name: Close Open Pull Requests
+
+on:
+  push:
+    branches:
+      - 'copilot/close-open-pull-requests'
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  close-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close all open pull requests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Fetching all open pull requests..."
+          PR_NUMBERS=$(gh pr list --repo "$REPO" --state open --json number --jq '.[].number')
+
+          if [ -z "$PR_NUMBERS" ]; then
+            echo "No open pull requests found."
+            exit 0
+          fi
+
+          echo "Found open PRs: $PR_NUMBERS"
+
+          for PR_NUMBER in $PR_NUMBERS; do
+            echo "Adding comment to PR #$PR_NUMBER..."
+            gh pr comment "$PR_NUMBER" \
+              --repo "$REPO" \
+              --body "Closing this pull request per maintainer request. This PR can be reopened if needed by clicking the 'Reopen pull request' button."
+
+            echo "Closing PR #$PR_NUMBER..."
+            gh pr close "$PR_NUMBER" \
+              --repo "$REPO"
+
+            echo "PR #$PR_NUMBER has been closed."
+          done
+
+          echo "All open pull requests have been closed."
