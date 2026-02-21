@@ -16,16 +16,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          CURRENT_PR=82
           echo "Fetching all open pull requests..."
-          gh pr list --repo placedsj/harpersplace --state open --json number --limit 100 \
+          gh pr list --repo placedsj/harpersplace --state open --json number --limit 1000 \
             | jq -r '.[].number' \
             | while read pr; do
-                if [ "$pr" -eq "$CURRENT_PR" ]; then
-                  echo "Skipping current PR #$pr"
-                else
-                  echo "Closing PR #$pr..."
-                  gh pr close "$pr" --repo placedsj/harpersplace --comment "Closing as requested by repository owner."
-                fi
+                echo "Closing PR #$pr..."
+                gh pr close "$pr" --repo placedsj/harpersplace --comment "Closing as requested by repository owner."
               done
           echo "Done."
