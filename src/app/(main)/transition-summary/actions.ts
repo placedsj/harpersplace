@@ -20,9 +20,7 @@ export async function generateSummaryAction(ramble: string, uploadedFiles: strin
       prompt += `\n\n The user has uploaded the following images related to the day. Briefly mention them in the summary where relevant: ${uploadedFiles.join(', ')}`;
     }
     
-    // The 'run' and 'runFlow' functions from Genkit should not be used in client components.
-    // Instead, we call the flow directly from this server action.
-    const result = await runFlow(generateTransitionSummaryFlow as any, prompt);
+    const result = await generateTransitionSummaryFlow(prompt);
     
     const finalResult: Summary = {
         ...result,
