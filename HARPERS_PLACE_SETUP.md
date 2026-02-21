@@ -42,7 +42,7 @@ This guide will help you set up and run the Google Drive exhibits automation scr
    - Grant "Editor" permissions
    - Copy the folder ID from the URL (the last part after `/folders/`)
 
-2. **Set up environment variables (Replit Secrets or local .env):**
+2. **Set up environment variables (Vercel Environment Variables or local .env):**
    
    You need to configure three secrets:
 
@@ -50,9 +50,9 @@ This guide will help you set up and run the Google Drive exhibits automation scr
    - `GEMINI_API_KEY`: Your Gemini API key (get from [Google AI Studio](https://makersuite.google.com/app/apikey))
    - `DRIVE_FOLDER_ID`: The ID of your Google Drive folder
 
-   **For Replit:**
-   - Go to the "Secrets" tab (lock icon in left sidebar)
-   - Add each secret with its value
+   **For Vercel:**
+   - Go to your project in the Vercel Dashboard → Settings → Environment Variables
+   - Add each variable with its value
 
    **For local development:**
    - Create a `.env` file (not recommended for production)
@@ -105,12 +105,12 @@ The script includes comprehensive error handling:
 ## Troubleshooting
 
 **"DRIVE_SERVICE_ACCOUNT environment variable not set"**
-- Ensure you've set up the secret in Replit or environment variable correctly
+- Ensure you've set up the environment variable correctly (Vercel Dashboard or local .env)
 - The value should be the entire JSON content of the service account key
 
 **"GEMINI_API_KEY environment variable not set"**
 - Get your API key from Google AI Studio
-- Set it in Replit Secrets or environment variables
+- Set it in Vercel Environment Variables or local .env
 
 **"No files found in the folder"**
 - Verify the folder ID is correct
@@ -124,7 +124,7 @@ The script includes comprehensive error handling:
 ## Security Notes
 
 - Never commit the service account JSON file or API keys to version control
-- Use Replit Secrets or environment variables for all sensitive data
+- Use Vercel Environment Variables or a local .env file for all sensitive data
 - The service account should have minimal permissions (only access to specific folders)
 - Regularly rotate API keys and service account credentials
 
