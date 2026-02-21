@@ -72,12 +72,6 @@ npm run dev
 4. In **Project Settings → Environment Variables**, add the variables listed in `.env.example`
 5. Deploy automatically!
 
-### Deploy to Netlify
-1. Visit [netlify.com](https://netlify.com)
-2. Connect your GitHub repository
-3. Build command: `npm run build`
-4. Publish directory: `.next`
-
 ## 🎯 **Interactive Features**
 
 ### **📱 Communication Platform Demo**
@@ -171,7 +165,7 @@ See [DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for detailed setup instructi
 - **UI**: React 18 + Tailwind CSS + Radix UI
 - **Forms**: React Hook Form + Zod validation
 - **TypeScript**: Full type safety
-- **Deployment**: Vercel-ready (also supports Firebase Hosting, Netlify)
+- **Deployment**: Vercel-ready (also supports Firebase Hosting)
 
 ## 🔒 Security Features
 
