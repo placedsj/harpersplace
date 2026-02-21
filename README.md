@@ -69,7 +69,8 @@ npm run dev
 1. Push to GitHub (already done! ✅)
 2. Visit [vercel.com](https://vercel.com)
 3. Import your GitHub repository
-4. Deploy automatically!
+4. In **Project Settings → Environment Variables**, add the variables listed in `.env.example`
+5. Deploy automatically!
 
 ### Deploy to Netlify
 1. Visit [netlify.com](https://netlify.com)
