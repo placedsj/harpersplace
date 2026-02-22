@@ -32,14 +32,10 @@ export function sanitizeHtml(input: string): string {
 export function sanitizeText(input: string): string {
   if (!input) return '';
   
-  // Remove all HTML tags
-  const stripped = input.replace(/<[^>]*>/g, '');
-  
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
-  
-  return textarea.value.trim();
+  // Remove all HTML tags and trim whitespace
+  // Note: We avoid using DOM APIs (like document.createElement) here to ensure
+  // this function is safe to use in Server-Side Rendering (SSR) environments.
+  return input.replace(/<[^>]*>/g, '').trim();
 }
 
 /**
