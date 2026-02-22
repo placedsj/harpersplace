@@ -33,13 +33,9 @@ export function sanitizeText(input: string): string {
   if (!input) return '';
   
   // Remove all HTML tags
-  const stripped = input.replace(/<[^>]*>/g, '');
-  
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
-  
-  return textarea.value.trim();
+  // Note: We do not decode HTML entities (like &amp;) to ensure SSR safety (no document object)
+  // and because keeping them encoded is generally safer.
+  return input.replace(/<[^>]*>/g, '').trim();
 }
 
 /**
