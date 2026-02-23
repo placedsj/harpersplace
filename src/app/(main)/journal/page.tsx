@@ -215,7 +215,7 @@ export default function JournalPage() {
         {loading && Array.from({ length: 6 }).map((_, i) => (
           <JournalEntrySkeleton key={i} />
         ))}
-        {!loading && (!entries || entries.length === 0) && <JournalEmptyState />}
+        {!loading && (!entries || entries.length === 0) && <JournalEmptyState onCreateEntry={() => setIsDialogOpen(true)} />}
         {!loading && entries && entries.map((entry) => (
           <Card key={entry.id} className="overflow-hidden shadow-lg border-2 border-primary/40">
              <Image src={entry.image || 'https://picsum.photos/400/200'} data-ai-hint={entry.dataAiHint} alt={entry.title} width={400} height={200} className="object-cover w-full aspect-video" />
