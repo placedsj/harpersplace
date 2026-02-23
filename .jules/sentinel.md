@@ -1,0 +1,4 @@
+## 2024-05-22 - Unsafe DOM Usage in Shared Utilities
+**Vulnerability:** The `sanitizeText` function in `src/lib/input-sanitization.ts` utilized `document.createElement` to decode HTML entities. This caused a runtime crash when the function was imported or used in a Server-Side Rendering (SSR) context (Node.js environment), leading to a Denial of Service (DoS) or build failure.
+**Learning:** Shared utility functions intended for general data processing must be environment-agnostic. Relying on browser-specific APIs (like `document`) breaks isomorphic/universal JavaScript applications.
+**Prevention:** Always verify if a utility function will run on the server. Use environment checks (`typeof window !== 'undefined'`) or avoid DOM APIs entirely for logic that should work in both environments (like string manipulation).
