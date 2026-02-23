@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FilePlus2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export function JournalEntrySkeleton() {
   return (
@@ -19,7 +20,11 @@ export function JournalEntrySkeleton() {
   )
 }
 
-export function JournalEmptyState() {
+interface JournalEmptyStateProps {
+  onCreateEntry?: () => void;
+}
+
+export function JournalEmptyState({ onCreateEntry }: JournalEmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center col-span-full border-2 border-dashed border-primary/20 rounded-xl bg-primary/5 min-h-[400px]">
       <div className="bg-background p-6 rounded-full mb-6 shadow-sm ring-1 ring-primary/10">
@@ -29,6 +34,11 @@ export function JournalEmptyState() {
       <p className="text-muted-foreground font-montserrat max-w-md mb-8 px-4 text-lg">
         Your journal is waiting for its first story. Capture a precious family moment today!
       </p>
+      {onCreateEntry && (
+        <Button onClick={onCreateEntry} size="lg" className="shadow-lg hover:shadow-xl transition-all">
+          <FilePlus2 className="mr-2 h-4 w-4" /> Start Journaling
+        </Button>
+      )}
     </div>
   )
 }
