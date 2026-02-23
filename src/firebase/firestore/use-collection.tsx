@@ -9,7 +9,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
+  const queryRef = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
     const newQueryJson = query ? JSON.stringify(query) : null;
