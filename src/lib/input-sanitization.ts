@@ -35,11 +35,10 @@ export function sanitizeText(input: string): string {
   // Remove all HTML tags
   const stripped = input.replace(/<[^>]*>/g, '');
   
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
+  // Note: We deliberately avoid decoding HTML entities here using document.createElement
+  // to ensure this function is safe to run in Server-Side Rendering (SSR) environments.
   
-  return textarea.value.trim();
+  return stripped.trim();
 }
 
 /**
