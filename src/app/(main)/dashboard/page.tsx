@@ -43,7 +43,7 @@ const MainDashboard = () => {
     );
 
     // Reusable button style for main action cards
-    const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
+    const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-500";
 
     return (
         <div className="space-y-8 pb-8">
@@ -67,33 +67,27 @@ const MainDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                     
                     {/* Child's Daily Care - THE PURPLE GRADIENT */}
-                    <Link href="/log" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <BookOpen className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
-                        </button>
+                    <Link href="/log" className={`block ${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <BookOpen className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
                     </Link>
 
                     {/* Safe Communication */}
-                    <Link href="/communication" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <MessageSquare className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
-                        </button>
+                    <Link href="/communication" className={`block ${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <MessageSquare className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
                     </Link>
 
                     {/* Child's Fund */}
-                    <Link href="/fund" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <DollarSign className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
-                        </button>
+                    <Link href="/fund" className={`block ${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        <DollarSign className="h-10 w-10 mx-auto mb-3" />
+                        <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
+                        <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
                     </Link>
 
                 </div>
