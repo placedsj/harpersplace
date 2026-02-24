@@ -35,11 +35,16 @@ export function sanitizeText(input: string): string {
   // Remove all HTML tags
   const stripped = input.replace(/<[^>]*>/g, '');
   
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
+  // Decode common HTML entities without DOM dependency for SSR safety
+  const decoded = stripped
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ');
   
-  return textarea.value.trim();
+  return decoded.trim();
 }
 
 /**
