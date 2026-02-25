@@ -29,17 +29,23 @@ export function sanitizeHtml(input: string): string {
  * @param input - The string to sanitize
  * @returns Plain text string
  */
+const entities: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&nbsp;': ' ',
+};
+
 export function sanitizeText(input: string): string {
   if (!input) return '';
   
   // Remove all HTML tags
   const stripped = input.replace(/<[^>]*>/g, '');
   
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
-  
-  return textarea.value.trim();
+  // Decode common HTML entities (SSR-safe replacement for document.createElement)
+  return stripped.replace(/&[a-z0-9#]+;/gi, (match) => entities[match] || match).trim();
 }
 
 /**
