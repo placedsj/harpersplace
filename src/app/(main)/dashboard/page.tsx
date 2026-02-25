@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format, differenceInMonths, parse } from 'date-fns';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket } from 'lucide-react';
+import { Utensils, BedDouble, Baby, MessageSquare, DollarSign, BookOpen, Clock, Sparkles, Shield, Tag, FileText, Rocket, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -43,7 +43,16 @@ const MainDashboard = () => {
     );
 
     // Reusable button style for main action cards
-    const actionButtonStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden";
+    const actionLinkStyle = "group relative w-full p-8 rounded-xl text-white font-bold text-center text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-[1.02] overflow-hidden block";
+
+    const ActionLink = ({ href, className, icon: Icon, title, subtitle }: { href: string, className: string, icon: LucideIcon, title: string, subtitle: string }) => (
+        <Link href={href} className={`${actionLinkStyle} ${className}`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+            <Icon className="h-10 w-10 mx-auto mb-3" />
+            <span className="block text-xl uppercase font-bebas">{title}</span>
+            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">{subtitle}</span>
+        </Link>
+    );
 
     return (
         <div className="space-y-8 pb-8">
@@ -51,7 +60,7 @@ const MainDashboard = () => {
            <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
                 <div className="mb-8 px-4 py-6 rounded-2xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10 shadow-md">
                     <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">🧒</span>
+                        <span className="text-2xl" role="img" aria-label="Child">🧒</span>
                         <h1 className="text-3xl sm:text-4xl font-bebas font-extrabold uppercase tracking-widest text-primary drop-shadow-md">CHILD-CENTERED ACTIONS</h1>
                     </div>
                     <p className="text-base sm:text-lg font-montserrat text-muted-foreground tracking-wide">TOOLS THAT PRIORITIZE YOUR CHILD'S NEEDS AND WELL-BEING</p>
@@ -67,34 +76,31 @@ const MainDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                     
                     {/* Child's Daily Care - THE PURPLE GRADIENT */}
-                    <Link href="/log" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <BookOpen className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S DAILY CARE</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">MONITOR WELL-BEING & MILESTONES</span>
-                        </button>
-                    </Link>
+                    <ActionLink
+                        href="/log"
+                        className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700"
+                        icon={BookOpen}
+                        title="CHILD'S DAILY CARE"
+                        subtitle="MONITOR WELL-BEING & MILESTONES"
+                    />
 
                     {/* Safe Communication */}
-                    <Link href="/communication" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-pink-500 via-rose-500 to-red-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <MessageSquare className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">SAFE COMMUNICATION</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">CHILD-FOCUSED MESSAGING & AI COACH</span>
-                        </button>
-                    </Link>
+                    <ActionLink
+                        href="/communication"
+                        className="bg-gradient-to-br from-pink-500 via-rose-500 to-red-600"
+                        icon={MessageSquare}
+                        title="SAFE COMMUNICATION"
+                        subtitle="CHILD-FOCUSED MESSAGING & AI COACH"
+                    />
 
                     {/* Child's Fund */}
-                    <Link href="/fund" className="block">
-                        <button className={`${actionButtonStyle} bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600`}>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                            <DollarSign className="h-10 w-10 mx-auto mb-3" />
-                            <span className="block text-xl uppercase font-bebas">CHILD'S FUND</span>
-                            <span className="block text-sm font-normal mt-2 opacity-90 uppercase font-montserrat">TRANSPARENT SUPPORT & EXPENSE TRACKING</span>
-                        </button>
-                    </Link>
+                    <ActionLink
+                        href="/fund"
+                        className="bg-gradient-to-br from-green-500 via-emerald-600 to-teal-600"
+                        icon={DollarSign}
+                        title="CHILD'S FUND"
+                        subtitle="TRANSPARENT SUPPORT & EXPENSE TRACKING"
+                    />
 
                 </div>
             </DashboardCard>
