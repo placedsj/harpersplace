@@ -35,11 +35,24 @@ export function sanitizeText(input: string): string {
   // Remove all HTML tags
   const stripped = input.replace(/<[^>]*>/g, '');
   
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
+  // Decode HTML entities (environment-safe)
+  if (typeof document !== 'undefined') {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = stripped;
+    return textarea.value.trim();
+  }
+
+  // Server-side fallback for common entities
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'"
+  };
   
-  return textarea.value.trim();
+  return stripped.replace(/&(?:amp|lt|gt|quot|#39|apos);/g, match => entities[match] || match).trim();
 }
 
 /**
