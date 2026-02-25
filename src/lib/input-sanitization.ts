@@ -24,6 +24,15 @@ export function sanitizeHtml(input: string): string {
   return sanitized;
 }
 
+const htmlEntities: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&apos;': "'"
+};
+
 /**
  * Sanitizes user input for display (strips all HTML)
  * @param input - The string to sanitize
@@ -35,11 +44,8 @@ export function sanitizeText(input: string): string {
   // Remove all HTML tags
   const stripped = input.replace(/<[^>]*>/g, '');
   
-  // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
-  
-  return textarea.value.trim();
+  // Decode common HTML entities (SSR-safe replacement for document.createElement)
+  return stripped.replace(/&(amp|lt|gt|quot|#39|apos);/g, (entity) => htmlEntities[entity] || entity).trim();
 }
 
 /**
