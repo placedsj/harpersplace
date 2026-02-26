@@ -11,9 +11,11 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-const ProcessEvidenceTextInputSchema = z.object({
+export const ProcessEvidenceTextInputSchema = z.object({
   textContent: z
     .string()
+    .min(20, "Text content must be at least 20 characters long.")
+    .max(20000, "Text content must not exceed 20,000 characters.")
     .describe(
       "The full text content copied from a document, email, or other text-based source."
     ),
