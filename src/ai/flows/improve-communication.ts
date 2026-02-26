@@ -13,7 +13,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const ImproveCommunicationInputSchema = z.object({
-  message: z.string().describe('The message draft written by one co-parent to the other.'),
+  message: z.string().min(1).max(2000).describe('The message draft written by one co-parent to the other.'),
 });
 export type ImproveCommunicationInput = z.infer<typeof ImproveCommunicationInputSchema>;
 

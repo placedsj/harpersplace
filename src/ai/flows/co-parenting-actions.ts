@@ -27,7 +27,7 @@ const scheduleAction = ai.defineTool(
 );
 
 const CoParentingActionsInputSchema = z.object({
-  text: z.string().describe('The user message regarding a scheduling issue or request.'),
+  text: z.string().min(1).max(2000).describe('The user message regarding a scheduling issue or request.'),
 });
 export type CoParentingActionsInput = z.infer<typeof CoParentingActionsInputSchema>;
 

@@ -13,8 +13,8 @@ import {z} from 'genkit';
 
 const SuggestSleepScheduleInputSchema = z.object({
   ageInMonths: z.number().describe("The child's age in months."),
-  recentLogs: z.string().describe("A summary of the child's recent logs, including sleep times, feedings, and diaper changes."),
-  desiredSchedule: z.string().optional().describe("Any desired schedule goals the parents have, like a specific bedtime."),
+  recentLogs: z.string().min(1).max(5000).describe("A summary of the child's recent logs, including sleep times, feedings, and diaper changes."),
+  desiredSchedule: z.string().max(500).optional().describe("Any desired schedule goals the parents have, like a specific bedtime."),
 });
 
 export type SuggestSleepScheduleInput = z.infer<typeof SuggestSleepScheduleInputSchema>;
