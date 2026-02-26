@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
 import { useFirestore, useCollection } from '@/firebase';
+import { EvidenceEventCard, EvidenceEvent } from '@/components/evidence-event-card';
 
 const logSchema = z.object({
   eventDate: z.string().min(1, 'Date is required.'),
@@ -28,19 +29,6 @@ const logSchema = z.object({
 });
 
 type LogFormValues = z.infer<typeof logSchema>;
-
-interface Event {
-    id: string;
-    eventDate: string;
-    category: string;
-    description: string;
-    partiesInvolved?: string;
-    response?: string;
-    loggedBy: string;
-    userId: string;
-    timestamp?: Timestamp;
-}
-
 
 function EvidenceLogPageInternal() {
     const { user } = useAuth();
@@ -54,7 +42,7 @@ function EvidenceLogPageInternal() {
         return query(collection(db, `users/${user.uid}/evidence`), orderBy('timestamp', 'desc'));
     }, [user, db]);
 
-    const { data: events, loading: eventsLoading } = useCollection<Event>(evidenceQuery);
+    const { data: events, loading: eventsLoading } = useCollection<EvidenceEvent>(evidenceQuery);
 
     const form = useForm<LogFormValues>({
         resolver: zodResolver(logSchema),
@@ -245,31 +233,7 @@ function EvidenceLogPageInternal() {
                     {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
                     {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
                     {events && events.map(event => (
-                        <Card key={event.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="text-lg">{event.category}</CardTitle>
-                                         <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
-                                              {event.timestamp?.toDate && (
-                                                  <>
-                                                   <span>&bull;</span>
-                                                   <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
-                                                  </>
-                                              )}
-                                               <span>&bull;</span>
-                                               <span>by {event.loggedBy}</span>
-                                         </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{event.description}</p>
-                                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
-                            </CardContent>
-                        </Card>
+                        <EvidenceEventCard key={event.id} event={event} />
                     ))}
                 </div>
             </div>
