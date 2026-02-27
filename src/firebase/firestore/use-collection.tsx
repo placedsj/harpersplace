@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { onSnapshot, Query, DocumentData, QuerySnapshot, queryEqual } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,21 +9,27 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
+  // Use a ref to store the stable query object
+  const queryRef = useRef<Query<DocumentData> | null>(null);
 
+  // Effect to handle query updates and subscription
   useEffect(() => {
-    const newQueryJson = query ? JSON.stringify(query) : null;
-    
-    if (queryRef.current === newQueryJson) {
-      return;
-    }
-    queryRef.current = newQueryJson;
-
+    // If the new query is null, clear state and stop listening
     if (!query) {
+      queryRef.current = null;
       setData(null);
       setLoading(false);
       return;
     }
+
+    // Check if the query is logically equal to the stored one
+    // If it is, do nothing (preserve the existing subscription)
+    if (queryRef.current && queryEqual(query, queryRef.current)) {
+      return;
+    }
+
+    // Update the stored query reference
+    queryRef.current = query;
     
     setLoading(true);
 
@@ -46,9 +52,7 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
     );
 
     return () => unsubscribe();
-  }, [query]);
+  }, [query]); // Re-run if the query object reference changes (or other dependencies)
 
   return { data, loading, error };
 }
-
-    

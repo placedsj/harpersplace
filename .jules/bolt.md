@@ -1,3 +1,3 @@
-## 2025-02-23 - Duplicate Data Fetching in Dashboard
-**Learning:** The `MainDashboard` component was fetching the same data twice: once via the `useCount` hook (efficient) and again via a manual `useEffect` with `getCountFromServer` (redundant). This caused double network requests and potential double rendering ("00").
-**Action:** Always check if existing hooks (`useCount`, `useCollection`) already provide the data before adding manual fetching logic. When refactoring, ensure old fetching logic is fully removed.
+## 2025-02-23 - Firestore Query Serialization Performance
+**Learning:** Using `JSON.stringify(query)` to detect changes in Firestore queries is an anti-pattern. Not only is it slow (O(N) string serialization), but it can also fail on circular structures often found in complex objects. The Firestore SDK provides `queryEqual(q1, q2)` which is optimized for this exact purpose.
+**Action:** Always use `queryEqual` for comparing Firestore queries in hooks like `useCollection` or `useCount`. Avoid `JSON.stringify` on any complex SDK objects.
