@@ -80,7 +80,5 @@ export const categorizeExpenseFlow = ai.defineFlow(
             return result.output || { category: 'Other' as const };
         }
     )(prompt);
-
-    return llmResponse;
   }
 );

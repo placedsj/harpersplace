@@ -58,7 +58,5 @@ export const generateTransitionSummaryFlow = ai.defineFlow(
             return result.output!;
         }
     )(prompt);
-
-    return llmResponse;
   }
 );
