@@ -36,10 +36,23 @@ export function sanitizeText(input: string): string {
   const stripped = input.replace(/<[^>]*>/g, '');
   
   // Decode HTML entities
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = stripped;
-  
-  return textarea.value.trim();
+  if (typeof document !== 'undefined') {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = stripped;
+    return textarea.value.trim();
+  }
+
+  // Fallback for SSR/Node environment
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&nbsp;': ' '
+  };
+
+  return stripped.replace(/&[a-z0-9]+;/g, (entity) => entities[entity] || entity).trim();
 }
 
 /**
