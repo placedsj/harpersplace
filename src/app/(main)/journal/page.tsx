@@ -32,6 +32,7 @@ import { useCollection, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import type { JournalEntry } from '@/lib/journal-data';
 import { JournalEntrySkeleton, JournalEmptyState } from './journal-skeleton';
+import { sanitizeText, sanitizeUrl } from '@/lib/input-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,7 +75,9 @@ export default function JournalPage() {
         try {
             const newEntry = {
               ...values,
-              image: values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`,
+              title: sanitizeText(values.title),
+              content: sanitizeText(values.content),
+              image: sanitizeUrl(values.image || `https://images.unsplash.com/photo-1516627145497-ae4db4e4da1d?w=400&h=200&fit=crop&crop=center`),
               dataAiHint: values.dataAiHint || 'family memory placeholder',
               userId: user.uid,
               timestamp: serverTimestamp(),
