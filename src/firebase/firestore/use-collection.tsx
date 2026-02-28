@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { onSnapshot, Query, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { onSnapshot, Query, DocumentData, QuerySnapshot, queryEqual } from 'firebase/firestore';
 
 export type WithId<T> = T & { id: string };
 
@@ -9,22 +9,21 @@ export function useCollection<T>(query: Query<DocumentData> | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const queryRef = useRef(query ? JSON.stringify(query) : null);
+  const queryRef = useRef<Query<DocumentData> | null>(null);
 
   useEffect(() => {
-    const newQueryJson = query ? JSON.stringify(query) : null;
-    
-    if (queryRef.current === newQueryJson) {
-      return;
-    }
-    queryRef.current = newQueryJson;
-
     if (!query) {
+      queryRef.current = null;
       setData(null);
       setLoading(false);
       return;
     }
-    
+
+    if (queryRef.current && queryEqual(query, queryRef.current)) {
+      return;
+    }
+    queryRef.current = query;
+
     setLoading(true);
 
     const unsubscribe = onSnapshot(
