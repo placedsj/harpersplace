@@ -39,7 +39,46 @@ interface Event {
     loggedBy: string;
     userId: string;
     timestamp?: Timestamp;
+    yourResponse?: string; // Add yourResponse to interface to support legacy data
 }
+
+// ⚡ Bolt Optimization:
+// Wrapped EvidenceEventCard in React.memo to prevent O(N) re-renders
+// when the parent EvidenceLogPageInternal component updates (e.g., during form keystrokes).
+// This isolates the expensive list rendering from the form state.
+const EvidenceEventCard = React.memo(({ event }: { event: Event }) => {
+    // Determine the response to display (fallback for legacy data)
+    const displayResponse = event.response || event.yourResponse;
+
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle className="text-lg">{event.category}</CardTitle>
+                            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                                <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
+                                {event.timestamp?.toDate && (
+                                    <>
+                                    <span>&bull;</span>
+                                    <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
+                                    </>
+                                )}
+                                <span>&bull;</span>
+                                <span>by {event.loggedBy}</span>
+                            </div>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <p>{event.description}</p>
+                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
+                {displayResponse && <p className="mt-2 text-sm"><strong>Your Response:</strong> {displayResponse}</p>}
+            </CardContent>
+        </Card>
+    );
+});
+EvidenceEventCard.displayName = 'EvidenceEventCard';
 
 
 function EvidenceLogPageInternal() {
@@ -245,31 +284,7 @@ function EvidenceLogPageInternal() {
                     {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
                     {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
                     {events && events.map(event => (
-                        <Card key={event.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="text-lg">{event.category}</CardTitle>
-                                         <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
-                                              {event.timestamp?.toDate && (
-                                                  <>
-                                                   <span>&bull;</span>
-                                                   <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
-                                                  </>
-                                              )}
-                                               <span>&bull;</span>
-                                               <span>by {event.loggedBy}</span>
-                                         </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{event.description}</p>
-                                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
-                            </CardContent>
-                        </Card>
+                        <EvidenceEventCard key={event.id} event={event} />
                     ))}
                 </div>
             </div>
