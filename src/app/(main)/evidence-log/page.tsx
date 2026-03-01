@@ -36,11 +36,42 @@ interface Event {
     description: string;
     partiesInvolved?: string;
     response?: string;
+    yourResponse?: string;
     loggedBy: string;
     userId: string;
     timestamp?: Timestamp;
 }
 
+const EvidenceEventCard = React.memo(({ event }: { event: Event }) => {
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle className="text-lg">{event.category}</CardTitle>
+                         <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
+                              {event.timestamp?.toDate && (
+                                  <>
+                                   <span>&bull;</span>
+                                   <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
+                                  </>
+                              )}
+                               <span>&bull;</span>
+                               <span>by {event.loggedBy}</span>
+                         </div>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <p>{event.description}</p>
+                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
+                {(event.response || event.yourResponse) && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response || event.yourResponse}</p>}
+            </CardContent>
+        </Card>
+    );
+});
+EvidenceEventCard.displayName = 'EvidenceEventCard';
 
 function EvidenceLogPageInternal() {
     const { user } = useAuth();
@@ -245,31 +276,7 @@ function EvidenceLogPageInternal() {
                     {eventsLoading && <Card><CardContent className="text-center text-muted-foreground py-8">Loading events...</CardContent></Card>}
                     {!eventsLoading && events && events.length === 0 && <Card><CardContent className="text-center text-muted-foreground py-8">No events logged yet.</CardContent></Card>}
                     {events && events.map(event => (
-                        <Card key={event.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="text-lg">{event.category}</CardTitle>
-                                         <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                             <span>{format(new Date(event.eventDate.replace(/-/g, '/')), 'MMMM do, yyyy')}</span>
-                                              {event.timestamp?.toDate && (
-                                                  <>
-                                                   <span>&bull;</span>
-                                                   <span>Logged at {format(event.timestamp.toDate(), 'p')}</span>
-                                                  </>
-                                              )}
-                                               <span>&bull;</span>
-                                               <span>by {event.loggedBy}</span>
-                                         </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p>{event.description}</p>
-                                {event.partiesInvolved && <p className="mt-2 text-sm"><strong>Parties Involved:</strong> {event.partiesInvolved}</p>}
-                                {event.response && <p className="mt-2 text-sm"><strong>Your Response:</strong> {event.response}</p>}
-                            </CardContent>
-                        </Card>
+                        <EvidenceEventCard key={event.id} event={event} />
                     ))}
                 </div>
             </div>
