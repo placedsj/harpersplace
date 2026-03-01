@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon } from 'lucide-react';
 import { useFirestore, useCollection } from '@/firebase';
+import { sanitizeText } from '@/lib/input-sanitization';
 
 const logSchema = z.object({
   eventDate: z.string().min(1, 'Date is required.'),
@@ -100,7 +101,11 @@ function EvidenceLogPageInternal() {
             const evidenceCollectionRef = collection(db, `users/${user.uid}/evidence`);
             await addDoc(evidenceCollectionRef, {
                 ...values,
-                loggedBy: user.displayName || 'Unknown User',
+                category: sanitizeText(values.category),
+                description: sanitizeText(values.description),
+                partiesInvolved: values.partiesInvolved ? sanitizeText(values.partiesInvolved) : undefined,
+                yourResponse: values.yourResponse ? sanitizeText(values.yourResponse) : undefined,
+                loggedBy: sanitizeText(user.displayName || 'Unknown User'),
                 userId: user.uid,
                 timestamp: serverTimestamp()
             });
